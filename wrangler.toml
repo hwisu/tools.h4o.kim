@@ -1,10 +1,9 @@
-name = "cloudflare-workers-tools"
+name = "tools"
 main = "src/index.js"
-compatibility_date = "2024-01-15"
-# account_id = "your-account-id"  # GitHub Secrets에서 관리하거나 여기에 직접 입력
+compatibility_date = "2024-12-15"
 
 [env.production]
-name = "cloudflare-workers-tools-prod"
+name = "tools-prod"
 
 [env.staging]
-name = "cloudflare-workers-tools-staging"
+name = "tools-staging"

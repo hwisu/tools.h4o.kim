@@ -1,4 +1,4 @@
-# Cloudflare Workers Tools
+# Tools
 
 > Cloudflare Workers를 활용한 빌드 및 배포 도구 모음
 
@@ -38,7 +38,7 @@ npm run deploy
 ## 📂 프로젝트 구조
 
 ```
-cloudflare-workers-tools/
+tools/
 ├── .github/
 │   └── workflows/        # GitHub Actions 워크플로우
 │       ├── ci.yml        # CI (테스트, 린팅)
