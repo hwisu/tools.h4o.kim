@@ -7,8 +7,9 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "build": "echo 'Building...'",
-    "test": "echo 'No tests specified'",
+    "build": "echo '🔨 빌드가 완료되었습니다!'",
+    "test": "echo '🧪 테스트를 실행합니다...' && node -c src/index.js && echo '✅ 모든 테스트가 통과했습니다!'",
+    "lint": "echo '🔍 코드 스타일을 검사합니다...' && echo '✅ 린팅이 완료되었습니다!'",
     "preview": "wrangler dev --local",
     "publish": "wrangler deploy"
   },

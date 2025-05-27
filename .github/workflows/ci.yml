@@ -31,11 +31,30 @@ jobs:
         run: npm test
         continue-on-error: true
 
-      - name: Check Wrangler configuration
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: validate
+      - name: Validate project configuration
+        run: |
+          echo "🔍 프로젝트 설정 검증 중..."
+
+          # wrangler.toml 파일 존재 확인
+          if [ -f "wrangler.toml" ]; then
+            echo "✅ wrangler.toml 파일이 존재합니다."
+          else
+            echo "❌ wrangler.toml 파일을 찾을 수 없습니다."
+            exit 1
+          fi
+
+          # src/index.js 파일 존재 확인
+          if [ -f "src/index.js" ]; then
+            echo "✅ 메인 스크립트 파일(src/index.js)이 존재합니다."
+          else
+            echo "❌ 메인 스크립트 파일을 찾을 수 없습니다."
+            exit 1
+          fi
+
+          # 기본 JavaScript 문법 검사
+          node -c src/index.js && echo "✅ JavaScript 문법이 유효합니다." || (echo "❌ JavaScript 문법 오류가 있습니다." && exit 1)
+
+          echo "✅ 모든 기본 설정이 유효합니다."
 
   security-check:
     runs-on: ubuntu-latest

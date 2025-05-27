@@ -142,6 +142,12 @@ git push origin feature/new-feature
 account_id = "your-account-id"
 ```
 
+### "Unknown argument: validate" 오류
+
+- Wrangler v4에서는 `validate` 명령어가 제거되었습니다
+- 대신 프로젝트 파일 존재 여부와 JavaScript 문법을 검사합니다
+- 실제 배포 시 설정이 검증되므로 별도 validate 명령어 불필요
+
 ### API Token 권한 오류
 
 - API Token이 올바른 권한을 가지고 있는지 확인
