@@ -61,84 +61,85 @@ export default {
 };
 
 /**
- * 공통 스타일 - 중복 제거로 응답 크기 최적화
+ * 공통 스타일 - 타이포그래피 중심의 종이같은 디자인
  */
 const commonStyles = `
   * { box-sizing: border-box; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Georgia', 'Times New Roman', serif;
     max-width: 800px;
     margin: 0 auto;
-    padding: 1rem;
-    line-height: 1.6;
-    background: #f8f9fa;
+    padding: 2rem;
+    line-height: 1.7;
+    background: #fefefe;
+    color: #333;
   }
   .header {
-    text-align: center;
-    margin-bottom: 2rem;
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
   }
   .back-link {
     display: inline-block;
     margin-bottom: 1rem;
-    color: #3498db;
+    color: #666;
     text-decoration: none;
+    font-size: 0.9rem;
   }
   .back-link:hover { text-decoration: underline; }
   .tool-container {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid #eee;
   }
   .input-group {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
   }
   label {
     display: block;
     margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #2c3e50;
+    font-weight: normal;
+    color: #444;
+    font-size: 1rem;
   }
   textarea, input[type="text"] {
     width: 100%;
-    padding: 1rem;
-    border: 2px solid #e1e8ed;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 1rem;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.9rem;
+    background: #fff;
   }
   textarea:focus, input[type="text"]:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: #666;
+    box-shadow: 0 0 3px rgba(0,0,0,0.1);
   }
   button {
-    background: #3498db;
+    background: #333;
     color: white;
     border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
+    padding: 0.5rem 1rem;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
     margin-right: 0.5rem;
     margin-bottom: 0.5rem;
+    font-family: inherit;
   }
-  button:hover { background: #2980b9; }
+  button:hover { background: #555; }
   .result {
-    background: #f8f9fa;
+    background: #f9f9f9;
     padding: 1rem;
-    border-radius: 8px;
     margin-top: 1rem;
-    border-left: 4px solid #3498db;
+    border-left: 3px solid #333;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.9rem;
   }
   .error {
-    background: #fee;
-    border-left-color: #e74c3c;
-    color: #c0392b;
+    background: #fff5f5;
+    border-left-color: #d33;
+    color: #d33;
   }
 `;
 
@@ -150,82 +151,171 @@ function handleHome() {
     <!DOCTYPE html>
     <html lang="ko">
     <head>
-      <title>🛠️ Tools - 유용한 웹 도구 모음</title>
+      <title>Tools - 유용한 웹 도구 모음</title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <style>
         ${commonStyles}
-        .tools-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 1rem;
+        .search-container {
           margin-bottom: 2rem;
         }
-        .tool-card {
-          background: white;
-          border-radius: 12px;
-          padding: 1.5rem;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-          transition: transform 0.2s;
-          text-decoration: none;
-          color: inherit;
+        .search-input {
+          width: 100%;
+          padding: 0.75rem;
+          font-size: 1rem;
+          border: 1px solid #ccc;
+          border-radius: 3px;
+          font-family: inherit;
         }
-        .tool-card:hover { transform: translateY(-2px); }
-        .tool-icon { font-size: 2rem; margin-bottom: 1rem; }
-        .tool-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
-        .tool-description { color: #7f8c8d; font-size: 0.9rem; }
+        .search-input:focus {
+          outline: none;
+          border-color: #666;
+          box-shadow: 0 0 3px rgba(0,0,0,0.1);
+        }
+        .category {
+          margin-bottom: 2rem;
+        }
         .category-title {
-          font-size: 1.5rem;
-          font-weight: 600;
-          margin: 2rem 0 1rem 0;
-          color: #2c3e50;
-          border-bottom: 2px solid #3498db;
+          font-size: 1.3rem;
+          font-weight: normal;
+          margin-bottom: 1rem;
+          color: #333;
+          border-bottom: 1px solid #ddd;
           padding-bottom: 0.5rem;
+        }
+        .tool-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+        .tool-item {
+          margin-bottom: 0.5rem;
+          padding-left: 1rem;
+        }
+        .tool-item::before {
+          content: "- ";
+          margin-left: -1rem;
+          color: #666;
+        }
+        .tool-link {
+          color: #333;
+          text-decoration: none;
+          font-weight: 500;
+        }
+        .tool-link:hover {
+          text-decoration: underline;
+        }
+        .tool-description {
+          color: #666;
+          font-weight: normal;
+        }
+        .hidden {
+          display: none;
         }
       </style>
     </head>
     <body>
       <div class="header">
-        <h1>🛠️ Tools</h1>
-        <p>광고 없는 유용한 웹 도구 모음</p>
+        <h1>Tools</h1>
+        <p>Miscellaneous web tools for daily use</p>
       </div>
 
-      <h2 class="category-title">📝 텍스트 도구</h2>
-      <div class="tools-grid">
-        <a href="/tools/text-counter" class="tool-card">
-          <div class="tool-icon">📊</div>
-          <div class="tool-title">텍스트 카운터</div>
-          <div class="tool-description">글자 수, 단어 수, 줄 수 실시간 계산</div>
-        </a>
-        <a href="/tools/url-encoder" class="tool-card">
-          <div class="tool-icon">🔗</div>
-          <div class="tool-title">URL 인코더/디코더</div>
-          <div class="tool-description">URL 안전 인코딩/디코딩</div>
-        </a>
+      <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search tools..." autofocus>
       </div>
 
-      <h2 class="category-title">🔧 개발자 도구</h2>
-      <div class="tools-grid">
-        <a href="/tools/json-formatter" class="tool-card">
-          <div class="tool-icon">📋</div>
-          <div class="tool-title">JSON 포맷터</div>
-          <div class="tool-description">JSON 포맷팅 및 검증</div>
-        </a>
-        <a href="/tools/base64-converter" class="tool-card">
-          <div class="tool-icon">🔄</div>
-          <div class="tool-title">Base64 변환기</div>
-          <div class="tool-description">Base64 인코딩/디코딩</div>
-        </a>
+      <div class="category" data-category="text">
+        <h2 class="category-title">Text Tools</h2>
+        <ul class="tool-list">
+          <li class="tool-item" data-keywords="text counter character word line count">
+            <a href="/tools/text-counter" class="tool-link">Text Counter</a>
+            <span class="tool-description"> : Count characters, words, and lines in real-time</span>
+          </li>
+          <li class="tool-item" data-keywords="url encoder decoder encode decode uri">
+            <a href="/tools/url-encoder" class="tool-link">URL Encoder/Decoder</a>
+            <span class="tool-description"> : Safely encode and decode URLs</span>
+          </li>
+        </ul>
       </div>
 
-      <h2 class="category-title">🎨 유틸리티</h2>
-      <div class="tools-grid">
-        <a href="/tools/qr-generator" class="tool-card">
-          <div class="tool-icon">📱</div>
-          <div class="tool-title">QR 코드 생성기</div>
-          <div class="tool-description">텍스트/URL을 QR 코드로 변환</div>
-        </a>
+      <div class="category" data-category="developer">
+        <h2 class="category-title">Developer Tools</h2>
+        <ul class="tool-list">
+          <li class="tool-item" data-keywords="json formatter pretty print validate minify">
+            <a href="/tools/json-formatter" class="tool-link">JSON Formatter</a>
+            <span class="tool-description"> : Format, validate, and minify JSON</span>
+          </li>
+          <li class="tool-item" data-keywords="base64 encoder decoder encode decode">
+            <a href="/tools/base64-converter" class="tool-link">Base64 Converter</a>
+            <span class="tool-description"> : Encode and decode Base64 strings</span>
+          </li>
+        </ul>
       </div>
+
+      <div class="category" data-category="utility">
+        <h2 class="category-title">Utilities</h2>
+        <ul class="tool-list">
+          <li class="tool-item" data-keywords="qr code generator qrcode barcode">
+            <a href="/tools/qr-generator" class="tool-link">QR Code Generator</a>
+            <span class="tool-description"> : Generate QR codes from text or URLs</span>
+          </li>
+        </ul>
+      </div>
+
+      <script>
+        const searchInput = document.getElementById('searchInput');
+        const toolItems = document.querySelectorAll('.tool-item');
+        const categories = document.querySelectorAll('.category');
+
+        function filterTools() {
+          const query = searchInput.value.toLowerCase();
+
+          if (!query) {
+            // Show all tools and categories
+            toolItems.forEach(item => item.classList.remove('hidden'));
+            categories.forEach(category => category.classList.remove('hidden'));
+            return;
+          }
+
+          let hasVisibleItems = false;
+
+          categories.forEach(category => {
+            const categoryItems = category.querySelectorAll('.tool-item');
+            let categoryHasVisible = false;
+
+            categoryItems.forEach(item => {
+              const keywords = item.dataset.keywords || '';
+              const toolName = item.querySelector('.tool-link').textContent.toLowerCase();
+              const description = item.querySelector('.tool-description').textContent.toLowerCase();
+
+              if (keywords.includes(query) || toolName.includes(query) || description.includes(query)) {
+                item.classList.remove('hidden');
+                categoryHasVisible = true;
+                hasVisibleItems = true;
+              } else {
+                item.classList.add('hidden');
+              }
+            });
+
+            if (categoryHasVisible) {
+              category.classList.remove('hidden');
+            } else {
+              category.classList.add('hidden');
+            }
+          });
+        }
+
+        searchInput.addEventListener('input', filterTools);
+
+        // Focus on search input when any key is pressed
+        document.addEventListener('keydown', function(e) {
+          if (e.target !== searchInput && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            if (e.key.length === 1 || e.key === 'Backspace') {
+              searchInput.focus();
+            }
+          }
+        });
+      </script>
     </body>
     </html>
   `;
@@ -243,58 +333,59 @@ function handleTextCounter() {
     <!DOCTYPE html>
     <html lang="ko">
     <head>
-      <title>📊 텍스트 카운터</title>
+      <title>Text Counter</title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <style>
         ${commonStyles}
         .stats {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-          gap: 1rem;
-          margin-top: 1rem;
+          margin-top: 2rem;
+          padding: 1rem 0;
+          border-top: 1px solid #eee;
         }
-        .stat-card {
-          background: #f8f9fa;
-          padding: 1rem;
-          border-radius: 8px;
-          text-align: center;
-        }
-        .stat-number {
-          font-size: 2rem;
-          font-weight: bold;
-          color: #3498db;
+        .stat-line {
+          margin-bottom: 0.5rem;
+          font-family: 'Monaco', 'Menlo', monospace;
+          font-size: 0.9rem;
         }
         .stat-label {
-          color: #7f8c8d;
-          font-size: 0.9rem;
+          color: #666;
+          display: inline-block;
+          width: 120px;
+        }
+        .stat-number {
+          font-weight: bold;
+          color: #333;
         }
       </style>
     </head>
     <body>
       <div class="header">
-        <a href="/" class="back-link">← 홈으로</a>
-        <h1>📊 텍스트 카운터</h1>
+        <a href="/" class="back-link">← Back</a>
+        <h1>Text Counter</h1>
+        <p>Count characters, words, and lines in real-time</p>
       </div>
 
       <div class="tool-container">
-        <textarea id="text" placeholder="텍스트를 입력하세요..." rows="8"></textarea>
+        <label for="text">Text input</label>
+        <textarea id="text" placeholder="Enter your text here..." rows="12" autofocus></textarea>
+
         <div class="stats">
-          <div class="stat-card">
-            <div class="stat-number" id="chars">0</div>
-            <div class="stat-label">글자 수</div>
+          <div class="stat-line">
+            <span class="stat-label">Characters:</span>
+            <span class="stat-number" id="chars">0</span>
           </div>
-          <div class="stat-card">
-            <div class="stat-number" id="charsNoSpace">0</div>
-            <div class="stat-label">공백 제외</div>
+          <div class="stat-line">
+            <span class="stat-label">No spaces:</span>
+            <span class="stat-number" id="charsNoSpace">0</span>
           </div>
-          <div class="stat-card">
-            <div class="stat-number" id="words">0</div>
-            <div class="stat-label">단어 수</div>
+          <div class="stat-line">
+            <span class="stat-label">Words:</span>
+            <span class="stat-number" id="words">0</span>
           </div>
-          <div class="stat-card">
-            <div class="stat-number" id="lines">0</div>
-            <div class="stat-label">줄 수</div>
+          <div class="stat-line">
+            <span class="stat-label">Lines:</span>
+            <span class="stat-number" id="lines">0</span>
           </div>
         </div>
       </div>
@@ -334,25 +425,26 @@ function handleUrlEncoder() {
     <!DOCTYPE html>
     <html lang="ko">
     <head>
-      <title>🔗 URL 인코더/디코더</title>
+      <title>URL Encoder/Decoder</title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <style>${commonStyles}</style>
     </head>
     <body>
       <div class="header">
-        <a href="/" class="back-link">← 홈으로</a>
-        <h1>🔗 URL 인코더/디코더</h1>
+        <a href="/" class="back-link">← Back</a>
+        <h1>URL Encoder/Decoder</h1>
+        <p>Safely encode and decode URLs</p>
       </div>
 
       <div class="tool-container">
         <div class="input-group">
-          <label for="input">입력 텍스트</label>
-          <textarea id="input" placeholder="URL이나 텍스트를 입력하세요..." rows="4"></textarea>
+          <label for="input">Input text</label>
+          <textarea id="input" placeholder="Enter URL or text here..." rows="4" autofocus></textarea>
         </div>
-        <button onclick="encode()">인코딩</button>
-        <button onclick="decode()">디코딩</button>
-        <button onclick="clear()">지우기</button>
+        <button onclick="encode()">Encode</button>
+        <button onclick="decode()">Decode</button>
+        <button onclick="clear()">Clear</button>
         <div id="result" class="result" style="display:none;"></div>
       </div>
 
@@ -365,7 +457,7 @@ function handleUrlEncoder() {
             const encoded = encodeURIComponent(input.value);
             showResult(encoded);
           } catch (e) {
-            showError('인코딩 실패: ' + e.message);
+            showError('Encoding failed: ' + e.message);
           }
         }
 
@@ -374,7 +466,7 @@ function handleUrlEncoder() {
             const decoded = decodeURIComponent(input.value);
             showResult(decoded);
           } catch (e) {
-            showError('디코딩 실패: ' + e.message);
+            showError('Decoding failed: ' + e.message);
           }
         }
 
@@ -384,7 +476,7 @@ function handleUrlEncoder() {
         }
 
         function showResult(text) {
-          result.innerHTML = '<strong>결과:</strong><br>' + text;
+          result.innerHTML = 'Result:<br>' + text;
           result.className = 'result';
           result.style.display = 'block';
         }
@@ -412,37 +504,37 @@ function handleJsonFormatter() {
     <!DOCTYPE html>
     <html lang="ko">
     <head>
-      <title>📋 JSON 포맷터</title>
+      <title>JSON Formatter</title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <style>
         ${commonStyles}
         .json-output {
-          background: #2d3748;
-          color: #e2e8f0;
+          background: #f5f5f5;
           padding: 1rem;
-          border-radius: 8px;
           font-family: 'Monaco', 'Menlo', monospace;
           white-space: pre-wrap;
           overflow-x: auto;
+          border: 1px solid #ddd;
         }
       </style>
     </head>
     <body>
       <div class="header">
-        <a href="/" class="back-link">← 홈으로</a>
-        <h1>📋 JSON 포맷터</h1>
+        <a href="/" class="back-link">← Back</a>
+        <h1>JSON Formatter</h1>
+        <p>Format, validate, and minify JSON</p>
       </div>
 
       <div class="tool-container">
         <div class="input-group">
-          <label for="input">JSON 입력</label>
-          <textarea id="input" placeholder='{"key": "value"}' rows="6"></textarea>
+          <label for="input">JSON input</label>
+          <textarea id="input" placeholder='{"key": "value"}' rows="6" autofocus></textarea>
         </div>
-        <button onclick="format()">포맷팅</button>
-        <button onclick="minify()">압축</button>
-        <button onclick="validate()">검증</button>
-        <button onclick="clear()">지우기</button>
+        <button onclick="format()">Format</button>
+        <button onclick="minify()">Minify</button>
+        <button onclick="validate()">Validate</button>
+        <button onclick="clear()">Clear</button>
         <div id="result" class="result" style="display:none;"></div>
       </div>
 
@@ -456,7 +548,7 @@ function handleJsonFormatter() {
             const formatted = JSON.stringify(obj, null, 2);
             showResult('<div class="json-output">' + formatted + '</div>');
           } catch (e) {
-            showError('JSON 파싱 오류: ' + e.message);
+            showError('JSON parsing error: ' + e.message);
           }
         }
 
@@ -466,16 +558,16 @@ function handleJsonFormatter() {
             const minified = JSON.stringify(obj);
             showResult('<div class="json-output">' + minified + '</div>');
           } catch (e) {
-            showError('JSON 파싱 오류: ' + e.message);
+            showError('JSON parsing error: ' + e.message);
           }
         }
 
         function validate() {
           try {
             JSON.parse(input.value);
-            showResult('✅ 유효한 JSON입니다!');
+            showResult('Valid JSON');
           } catch (e) {
-            showError('❌ 유효하지 않은 JSON: ' + e.message);
+            showError('Invalid JSON: ' + e.message);
           }
         }
 
@@ -513,25 +605,26 @@ function handleBase64Converter() {
     <!DOCTYPE html>
     <html lang="ko">
     <head>
-      <title>🔄 Base64 변환기</title>
+      <title>Base64 Converter</title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <style>${commonStyles}</style>
     </head>
     <body>
       <div class="header">
-        <a href="/" class="back-link">← 홈으로</a>
-        <h1>🔄 Base64 변환기</h1>
+        <a href="/" class="back-link">← Back</a>
+        <h1>Base64 Converter</h1>
+        <p>Encode and decode Base64 strings</p>
       </div>
 
       <div class="tool-container">
         <div class="input-group">
-          <label for="input">입력 텍스트</label>
-          <textarea id="input" placeholder="텍스트를 입력하세요..." rows="4"></textarea>
+          <label for="input">Input text</label>
+          <textarea id="input" placeholder="Enter text here..." rows="4" autofocus></textarea>
         </div>
-        <button onclick="encode()">Base64 인코딩</button>
-        <button onclick="decode()">Base64 디코딩</button>
-        <button onclick="clear()">지우기</button>
+        <button onclick="encode()">Encode</button>
+        <button onclick="decode()">Decode</button>
+        <button onclick="clear()">Clear</button>
         <div id="result" class="result" style="display:none;"></div>
       </div>
 
@@ -544,7 +637,7 @@ function handleBase64Converter() {
             const encoded = btoa(unescape(encodeURIComponent(input.value)));
             showResult(encoded);
           } catch (e) {
-            showError('인코딩 실패: ' + e.message);
+            showError('Encoding failed: ' + e.message);
           }
         }
 
@@ -553,7 +646,7 @@ function handleBase64Converter() {
             const decoded = decodeURIComponent(escape(atob(input.value)));
             showResult(decoded);
           } catch (e) {
-            showError('디코딩 실패: 유효하지 않은 Base64 문자열');
+            showError('Decoding failed: Invalid Base64 string');
           }
         }
 
@@ -563,7 +656,7 @@ function handleBase64Converter() {
         }
 
         function showResult(text) {
-          result.innerHTML = '<strong>결과:</strong><br>' + text;
+          result.innerHTML = 'Result:<br>' + text;
           result.className = 'result';
           result.style.display = 'block';
         }
@@ -591,47 +684,51 @@ function handleQrGenerator() {
     <!DOCTYPE html>
     <html lang="ko">
     <head>
-      <title>📱 QR 코드 생성기</title>
+      <title>QR Code Generator</title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <style>
         ${commonStyles}
         #qrcode {
           text-align: center;
-          margin: 1rem 0;
+          margin: 2rem 0;
+          padding: 1rem 0;
+          border-top: 1px solid #eee;
         }
         .size-controls {
           margin: 1rem 0;
         }
         .size-controls label {
-          display: inline;
-          margin-right: 1rem;
+          display: block;
+          margin-bottom: 0.5rem;
         }
         .size-controls input[type="range"] {
-          width: 200px;
+          width: 100%;
+          margin-top: 0.5rem;
         }
       </style>
     </head>
     <body>
       <div class="header">
-        <a href="/" class="back-link">← 홈으로</a>
-        <h1>📱 QR 코드 생성기</h1>
+        <a href="/" class="back-link">← Back</a>
+        <h1>QR Code Generator</h1>
+        <p>Generate QR codes from text or URLs</p>
       </div>
 
       <div class="tool-container">
         <div class="input-group">
-          <label for="input">텍스트 또는 URL</label>
-          <textarea id="input" placeholder="QR 코드로 변환할 텍스트나 URL을 입력하세요..." rows="3"></textarea>
+          <label for="input">Text or URL</label>
+          <textarea id="input" placeholder="Enter text or URL to convert..." rows="3" autofocus></textarea>
         </div>
 
         <div class="size-controls">
-          <label for="size">크기: <span id="sizeValue">200</span>px</label>
+          <label for="size">Size: <span id="sizeValue">200</span>px</label>
           <input type="range" id="size" min="100" max="400" value="200">
         </div>
 
-        <button onclick="generate()">QR 코드 생성</button>
-        <button onclick="download()">다운로드</button>
-        <button onclick="clear()">지우기</button>
+        <button onclick="generate()">Generate</button>
+        <button onclick="download()">Download</button>
+        <button onclick="clear()">Clear</button>
 
         <div id="qrcode"></div>
       </div>
@@ -651,7 +748,7 @@ function handleQrGenerator() {
 
         function generate() {
           if (!input.value.trim()) {
-            alert('텍스트를 입력해주세요.');
+            alert('Please enter text or URL.');
             return;
           }
 
@@ -666,7 +763,7 @@ function handleQrGenerator() {
             }
           }, function (error, canvas) {
             if (error) {
-              qrcodeDiv.innerHTML = '<div class="result error">QR 코드 생성 실패: ' + error + '</div>';
+              qrcodeDiv.innerHTML = '<div class="result error">QR code generation failed: ' + error + '</div>';
             } else {
               qrcodeDiv.appendChild(canvas);
               currentCanvas = canvas;
@@ -676,7 +773,7 @@ function handleQrGenerator() {
 
         function download() {
           if (!currentCanvas) {
-            alert('먼저 QR 코드를 생성해주세요.');
+            alert('Please generate a QR code first.');
             return;
           }
 
