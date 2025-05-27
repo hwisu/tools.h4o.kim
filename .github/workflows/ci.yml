@@ -23,6 +23,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build project
+        run: npm run build
+
       - name: Run linting (if available)
         run: npm run lint
         continue-on-error: true
@@ -51,8 +54,16 @@ jobs:
             exit 1
           fi
 
-          # 기본 JavaScript 문법 검사
-          node -c src/index.js && echo "✅ JavaScript 문법이 유효합니다." || (echo "❌ JavaScript 문법 오류가 있습니다." && exit 1)
+          # dist/index.js 파일 존재 확인 (빌드 후)
+          if [ -f "dist/index.js" ]; then
+            echo "✅ 빌드된 파일(dist/index.js)이 존재합니다."
+          else
+            echo "❌ 빌드된 파일을 찾을 수 없습니다."
+            exit 1
+          fi
+
+          # 기본 JavaScript 문법 검사 (빌드된 파일 기준)
+          node -c dist/index.js && echo "✅ JavaScript 문법이 유효합니다." || (echo "❌ JavaScript 문법 오류가 있습니다." && exit 1)
 
           echo "✅ 모든 기본 설정이 유효합니다."
 

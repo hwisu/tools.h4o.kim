@@ -4,16 +4,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: "배포할 환경을 선택하세요"
-        required: true
-        default: "production"
-        type: choice
-        options:
-          - production
-          - staging
 
 jobs:
   deploy:
@@ -32,16 +22,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests (if available)
+      - name: Build project
+        run: npm run build
+
+      - name: Run tests
         run: npm test
-        continue-on-error: true
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --env ${{ github.event.inputs.environment || 'production' }}
 
       - name: Print deployment info
         run: |
