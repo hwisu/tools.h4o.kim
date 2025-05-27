@@ -6,9 +6,12 @@
   "main": "src/index.js",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "deploy": "npm test && wrangler deploy",
+    "predeploy": "echo '🚀 배포 전 테스트를 실행합니다...'",
     "build": "echo '🔨 빌드가 완료되었습니다!'",
-    "test": "echo '🧪 테스트를 실행합니다...' && node -c src/index.js && echo '✅ 모든 테스트가 통과했습니다!'",
+    "test": "echo '🧪 테스트를 실행합니다...' && node tests/tools.test.js && node -c src/index.js && echo '✅ 모든 테스트가 통과했습니다!'",
+    "pretest": "echo '🔧 테스트 준비 중...'",
+    "test:tools": "node tests/tools.test.js",
     "lint": "echo '🔍 코드 스타일을 검사합니다...' && echo '✅ 린팅이 완료되었습니다!'",
     "preview": "wrangler dev --local",
     "publish": "wrangler deploy"
