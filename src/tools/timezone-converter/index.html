@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <title>Universal Time Converter</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Common styles will be injected here */
+    /* {{COMMON_STYLES}} */
+
+    /* Override header margin for tighter spacing */
+    .header {
+      margin-bottom: 1rem !important;
+    }
+
+    .tool-container {
+      padding: 1rem 0 !important;
+    }
+
+    .converter-tabs {
+      display: flex;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid #ddd;
+    }
+    .tab-button {
+      background: none;
+      border: none;
+      padding: 1rem 2rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      color: #6c757d; /* Make inactive tabs visible */
+    }
+    .tab-button.active {
+      border-bottom-color: #007bff;
+      color: #007bff;
+      font-weight: bold;
+    }
+    .tab-button:hover {
+      background-color: #f8f9fa;
+      color: #495057; /* Darker color on hover */
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .converter-grid {
+      display: grid !important;
+      grid-template-columns: 1fr !important; /* Force single column for consistent width */
+      gap: 2rem !important;
+      margin: 2rem 0 !important;
+      align-items: start !important; /* Align cards to top */
+    }
+    @media (max-width: 768px) {
+      .converter-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+      }
+    }
+    .converter-section {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 1.5rem;
+      width: 100%; /* Ensure full width */
+      display: flex;
+      flex-direction: column;
+    }
+    .converter-section h3 {
+      margin: 0 0 1.5rem 0;
+      color: #495057;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .time-input-group {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 0.5rem;
+      align-items: end;
+    }
+    .time-precision {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .time-seconds, .time-milliseconds {
+      width: 70px;
+      text-align: center;
+    }
+    .result-box {
+      background: #ffffff;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      min-height: 120px;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      flex-grow: 1;
+    }
+    .result-item {
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #f1f3f4;
+    }
+    .result-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    .result-label {
+      font-weight: 600;
+      color: #495057;
+      margin-right: 0.5rem;
+    }
+    .result-value {
+      color: #212529;
+    }
+    .formats-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      font-size: 0.9rem;
+      background: #ffffff;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .formats-table th,
+    .formats-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+    .formats-table th {
+      background: #f8f9fa;
+      font-weight: 600;
+      color: #495057;
+      font-family: inherit;
+    }
+    .formats-table tr:last-child td {
+      border-bottom: none;
+    }
+    .copy-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 0.375rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .copy-btn:hover {
+      background: #0056b3;
+      transform: translateY(-1px);
+    }
+    .copy-btn:active {
+      background: #004085;
+      transform: translateY(0);
+    }
+    .copy-success {
+      background: #28a745 !important;
+    }
+    select, input {
+      width: 100%;
+      padding: 0.75rem;
+      font-family: inherit;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.2s ease;
+      background-color: #ffffff;
+      color: #495057;
+    }
+    select:focus, input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    }
+    select option {
+      background-color: #ffffff;
+      color: #495057;
+      padding: 0.5rem;
+    }
+    select option:checked {
+      background-color: #007bff;
+      color: #ffffff;
+    }
+    .timestamp-input {
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    }
+    .button-group {
+      display: flex;
+      gap: 0.75rem;
+      margin: 1.5rem 0;
+    }
+    .button-group button {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .button-group button:hover {
+      background: #5a6268;
+      transform: translateY(-1px);
+    }
+    .button-group button:active {
+      transform: translateY(0);
+    }
+    .copy-list {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    .copy-list h4 {
+      margin: 0 0 1rem 0;
+      color: #495057;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+    .input-group:last-child {
+      margin-bottom: 0;
+    }
+    .input-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #495057;
+    }
+
+    /* Override common styles with more specific selector */
+    .timezone-converter-grid {
+      display: grid !important;
+      grid-template-columns: 1fr !important; /* Single column for consistent width */
+      gap: 2rem;
+      margin: 2rem 0;
+      align-items: start;
+    }
+
+    /* Force single column layout with very specific selectors */
+    body .tool-container .timezone-converter-grid,
+    body .tool-container #timezone-tab .timezone-converter-grid,
+    body .tool-container #timestamp-tab .timezone-converter-grid {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 2rem !important;
+      margin: 2rem 0 !important;
+    }
+
+    @media (max-width: 768px) {
+      .timezone-converter-grid {
+        gap: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/" class="back-link">← Back</a>
+    <h1>Universal Time Converter</h1>
+    <p>Convert between timezones, timestamps, and various time formats</p>
+  </div>
+
+  <div class="tool-container">
+    <div class="converter-tabs">
+      <button class="tab-button active" onclick="switchTab('timezone')">Timezone Converter</button>
+      <button class="tab-button" onclick="switchTab('timestamp')">Timestamp Converter</button>
+    </div>
+
+    <!-- Timezone Converter Tab -->
+    <div id="timezone-tab" class="tab-content active">
+      <div class="converter-grid timezone-converter-grid">
+        <div class="converter-section">
+          <h3>From</h3>
+          <div class="input-group">
+            <label for="fromTime">Date & Time</label>
+            <div class="time-input-group">
+              <input type="datetime-local" id="fromTime" step="1">
+              <div class="time-precision">
+                <input type="number" id="fromSeconds" class="time-seconds" placeholder="Sec" min="0" max="59" title="Seconds">
+                <input type="number" id="fromMilliseconds" class="time-milliseconds" placeholder="Ms" min="0" max="999" title="Milliseconds">
+              </div>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="fromTimezone">Timezone</label>
+            <select id="fromTimezone">
+              <option value="UTC">UTC (GMT+0)</option>
+              <option value="Pacific/Midway">Midway (GMT-11)</option>
+              <option value="Pacific/Honolulu">Honolulu (GMT-10)</option>
+              <option value="America/Anchorage">Anchorage (GMT-9)</option>
+              <option value="America/Los_Angeles">Los Angeles (GMT-8)</option>
+              <option value="America/Denver">Denver (GMT-7)</option>
+              <option value="America/Chicago">Chicago (GMT-6)</option>
+              <option value="America/New_York">New York (GMT-5)</option>
+              <option value="America/Caracas">Caracas (GMT-4)</option>
+              <option value="America/Sao_Paulo">São Paulo (GMT-3)</option>
+              <option value="America/Noronha">Fernando de Noronha (GMT-2)</option>
+              <option value="Atlantic/Azores">Azores (GMT-1)</option>
+              <option value="Europe/London">London (GMT+0)</option>
+              <option value="Europe/Paris">Paris (GMT+1)</option>
+              <option value="Europe/Athens">Athens (GMT+2)</option>
+              <option value="Europe/Moscow">Moscow (GMT+3)</option>
+              <option value="Asia/Dubai">Dubai (GMT+4)</option>
+              <option value="Asia/Karachi">Karachi (GMT+5)</option>
+              <option value="Asia/Dhaka">Dhaka (GMT+6)</option>
+              <option value="Asia/Bangkok">Bangkok (GMT+7)</option>
+              <option value="Asia/Shanghai">Shanghai (GMT+8)</option>
+              <option value="Asia/Seoul" selected>Seoul (GMT+9)</option>
+              <option value="Asia/Tokyo">Tokyo (GMT+9)</option>
+              <option value="Australia/Sydney">Sydney (GMT+10)</option>
+              <option value="Pacific/Noumea">Noumea (GMT+11)</option>
+              <option value="Pacific/Auckland">Auckland (GMT+12)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="converter-section">
+          <h3>To</h3>
+          <div class="input-group">
+            <label for="toTimezone">Timezone</label>
+            <select id="toTimezone">
+              <option value="UTC" selected>UTC (GMT+0)</option>
+              <option value="Pacific/Midway">Midway (GMT-11)</option>
+              <option value="Pacific/Honolulu">Honolulu (GMT-10)</option>
+              <option value="America/Anchorage">Anchorage (GMT-9)</option>
+              <option value="America/Los_Angeles">Los Angeles (GMT-8)</option>
+              <option value="America/Denver">Denver (GMT-7)</option>
+              <option value="America/Chicago">Chicago (GMT-6)</option>
+              <option value="America/New_York">New York (GMT-5)</option>
+              <option value="America/Caracas">Caracas (GMT-4)</option>
+              <option value="America/Sao_Paulo">São Paulo (GMT-3)</option>
+              <option value="America/Noronha">Fernando de Noronha (GMT-2)</option>
+              <option value="Atlantic/Azores">Azores (GMT-1)</option>
+              <option value="Europe/London">London (GMT+0)</option>
+              <option value="Europe/Paris">Paris (GMT+1)</option>
+              <option value="Europe/Athens">Athens (GMT+2)</option>
+              <option value="Europe/Moscow">Moscow (GMT+3)</option>
+              <option value="Asia/Dubai">Dubai (GMT+4)</option>
+              <option value="Asia/Karachi">Karachi (GMT+5)</option>
+              <option value="Asia/Dhaka">Dhaka (GMT+6)</option>
+              <option value="Asia/Bangkok">Bangkok (GMT+7)</option>
+              <option value="Asia/Shanghai">Shanghai (GMT+8)</option>
+              <option value="Asia/Seoul">Seoul (GMT+9)</option>
+              <option value="Asia/Tokyo">Tokyo (GMT+9)</option>
+              <option value="Australia/Sydney">Sydney (GMT+10)</option>
+              <option value="Pacific/Noumea">Noumea (GMT+11)</option>
+              <option value="Pacific/Auckland">Auckland (GMT+12)</option>
+            </select>
+          </div>
+          <div class="result-box" id="timezoneResult">
+            <div style="color: #6c757d; text-align: center; padding: 2rem;">
+              Select a date and time to convert
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button onclick="convertTimezone()">Convert</button>
+        <button onclick="setCurrentTime()">Use Current Time</button>
+      </div>
+    </div>
+
+    <!-- Timestamp Converter Tab -->
+    <div id="timestamp-tab" class="tab-content">
+      <div class="converter-grid timezone-converter-grid">
+        <div class="converter-section">
+          <h3>Unix Timestamp → Date</h3>
+          <div class="input-group">
+            <label for="timestampInput">Unix Timestamp</label>
+            <input type="text" id="timestampInput" class="timestamp-input" placeholder="1640995200 or 1640995200000">
+          </div>
+          <div class="button-group">
+            <button onclick="timestampToDate()">Convert</button>
+            <button onclick="useCurrentTimestamp()">Current Time</button>
+          </div>
+          <div class="result-box" id="timestampResult" style="display:none;"></div>
+        </div>
+
+        <div class="converter-section">
+          <h3>Date → Unix Timestamp</h3>
+          <div class="input-group">
+            <label for="dateInput">Date & Time</label>
+            <div class="time-input-group">
+              <input type="datetime-local" id="dateInput" step="1">
+              <div class="time-precision">
+                <input type="number" id="dateSeconds" class="time-seconds" placeholder="Sec" min="0" max="59" title="Seconds">
+                <input type="number" id="dateMilliseconds" class="time-milliseconds" placeholder="Ms" min="0" max="999" title="Milliseconds">
+              </div>
+            </div>
+          </div>
+          <div class="button-group">
+            <button onclick="dateToTimestamp()">Convert</button>
+            <button onclick="useCurrentDate()">Current Time</button>
+          </div>
+          <div class="result-box" id="dateResult" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copy List Section -->
+    <div id="copyList" class="copy-list" style="display:none;">
+      <h4>📋 All Formats</h4>
+      <table class="formats-table">
+        <thead>
+          <tr>
+            <th>Format</th>
+            <th>Value</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="copyListBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

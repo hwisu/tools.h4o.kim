@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Unit Converter</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Common styles will be injected here */
+    /* {{COMMON_STYLES}} */
+
+    .converter-container {
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+
+    .input-section {
+      background: #f9f9f9;
+      padding: 2rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+
+    .input-section h3 {
+      margin: 0 0 1.5rem 0;
+      font-size: 1.2rem;
+      color: #333;
+      text-align: center;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .tab-btn {
+      padding: 0.75rem 1.5rem;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #333;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: #333;
+      color: white;
+      border-color: #333;
+    }
+
+    .tab-btn:hover {
+      background: #f0f0f0;
+      border-color: #999;
+    }
+
+    .tab-btn.active:hover {
+      background: #555;
+    }
+
+    .unit-input {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .unit-input input {
+      flex: 1;
+      min-width: 200px;
+      padding: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      background: white;
+      color: #333;
+      text-align: center;
+    }
+
+    .unit-input input::placeholder {
+      color: #999;
+      opacity: 1;
+    }
+
+    .unit-input input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    }
+
+    .unit-input select {
+      min-width: 200px;
+      padding: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      background: white;
+      color: #333;
+    }
+
+    .unit-input select:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    }
+
+    .results-section {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .results-header {
+      background: #f8f9fa;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #ddd;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+    }
+
+    .results-list {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .result-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.2s ease;
+    }
+
+    .result-item:last-child {
+      border-bottom: none;
+    }
+
+    .result-item:hover {
+      background-color: #f8f9fa;
+    }
+
+    .result-info {
+      flex: 1;
+    }
+
+    .result-value {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 0.25rem;
+    }
+
+    .result-unit {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .copy-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid #007bff;
+      border-radius: 4px;
+      background: white;
+      color: #007bff;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+      margin-left: 1rem;
+    }
+
+    .copy-btn:hover {
+      background: #007bff;
+      color: white;
+    }
+
+    .copy-btn:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+
+    .copy-btn.copied {
+      background: #28a745;
+      border-color: #28a745;
+      color: white;
+    }
+
+    .empty-state {
+      padding: 3rem;
+      text-align: center;
+      color: #666;
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .clear-btn {
+      display: block;
+      margin: 1rem auto 0;
+      padding: 0.75rem 1.5rem;
+      border: 1px solid #dc3545;
+      border-radius: 6px;
+      background: white;
+      color: #dc3545;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+
+    .clear-btn:hover {
+      background: #dc3545;
+      color: white;
+    }
+
+    @media (max-width: 600px) {
+      .unit-input {
+        flex-direction: column;
+      }
+
+      .unit-input input,
+      .unit-input select {
+        min-width: 100%;
+      }
+
+      .result-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      .copy-btn {
+        margin-left: 0;
+        align-self: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/" class="back-link">← Back</a>
+    <h1>Unit Converter</h1>
+    <p>Select a unit and enter a value to see conversions to all available units</p>
+  </div>
+
+  <div class="tool-container">
+    <div class="category-tabs">
+      <button class="tab-btn active" data-category="length">Length</button>
+      <button class="tab-btn" data-category="weight">Weight</button>
+      <button class="tab-btn" data-category="temperature">Temperature</button>
+      <button class="tab-btn" data-category="area">Area</button>
+      <button class="tab-btn" data-category="volume">Volume</button>
+      <button class="tab-btn" data-category="speed">Speed</button>
+      <button class="tab-btn" data-category="energy">Energy</button>
+      <button class="tab-btn" data-category="pressure">Pressure</button>
+    </div>
+
+    <div class="converter-container">
+      <div class="input-section">
+        <h3>Enter value and select unit</h3>
+        <div class="unit-input">
+          <input type="number" id="inputValue" placeholder="Enter value to convert" autofocus>
+          <select id="inputUnit"></select>
+        </div>
+        <button class="clear-btn" onclick="clear()">Clear</button>
+      </div>
+
+      <div class="results-section">
+        <div class="results-header">
+          Conversion Results
+        </div>
+        <div id="conversionResults" class="results-list">
+          <div class="empty-state">
+            <div class="empty-state-icon">🔄</div>
+            <div>Enter a value and select a unit to see all conversion results</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

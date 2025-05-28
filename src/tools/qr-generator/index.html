@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <title>QR Code Generator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Common styles will be injected here */
+    /* {{COMMON_STYLES}} */
+
+    #qrcode {
+      text-align: center;
+      margin: 2rem 0;
+      padding: 1rem 0;
+      border-top: 1px solid #eee;
+    }
+    .size-controls {
+      margin: 1rem 0;
+    }
+    .size-controls label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .size-controls input[type="range"] {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .advanced-options {
+      margin: 1rem 0;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      border-radius: 3px;
+    }
+    .advanced-options h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1rem;
+      color: #333;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    @media (max-width: 600px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .color-input {
+      width: 60px;
+      height: 30px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .qr-stats {
+      margin: 1rem 0;
+      padding: 1rem;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.85rem;
+    }
+    .engine-status {
+      margin: 0.5rem 0;
+      font-size: 0.85rem;
+      color: #666;
+    }
+    .engine-loading {
+      color: #ff9800;
+    }
+    .engine-ready {
+      color: #4caf50;
+    }
+    .engine-error {
+      color: #f44336;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/" class="back-link">← Back</a>
+    <h1>QR Code Generator</h1>
+    <p>Generate QR codes from text or URLs with advanced customization</p>
+  </div>
+
+  <div class="tool-container">
+    <div class="input-group">
+      <label for="input">Text or URL</label>
+      <textarea id="input" placeholder="Enter text or URL to convert..." rows="3" autofocus></textarea>
+    </div>
+
+    <div class="options-grid">
+      <div class="size-controls">
+        <label for="size">Size: <span id="sizeValue">200</span>px</label>
+        <input type="range" id="size" min="100" max="600" value="200">
+      </div>
+
+      <div class="input-group">
+        <label for="errorCorrection">Error Correction Level</label>
+        <select id="errorCorrection">
+          <option value="L">Low (~7%)</option>
+          <option value="M" selected>Medium (~15%)</option>
+          <option value="Q">Quartile (~25%)</option>
+          <option value="H">High (~30%)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="advanced-options">
+      <h3>Appearance Options</h3>
+      <div class="options-grid">
+        <div class="input-group">
+          <label for="foregroundColor">Foreground Color</label>
+          <input type="color" id="foregroundColor" value="#000000" class="color-input">
+        </div>
+        <div class="input-group">
+          <label for="backgroundColor">Background Color</label>
+          <input type="color" id="backgroundColor" value="#FFFFFF" class="color-input">
+        </div>
+        <div class="input-group">
+          <label for="margin">Margin: <span id="marginValue">2</span></label>
+          <input type="range" id="margin" min="0" max="10" value="2">
+        </div>
+        <div class="input-group">
+          <label for="qrStyle">QR Style</label>
+          <select id="qrStyle">
+            <option value="square">Square (Default)</option>
+            <option value="dots">Dots</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button onclick="generate()" id="generateBtn" disabled>Generate</button>
+    <button onclick="download()" id="downloadBtn" disabled>Download</button>
+
+    <div id="qrStats" class="qr-stats" style="display:none;"></div>
+    <div id="qrcode"></div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

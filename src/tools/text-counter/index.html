@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <title>Text Counter</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Common styles will be injected here */
+    /* {{COMMON_STYLES}} */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .stat-item {
+      background: #f9f9f9;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #333;
+      font-family: 'Monaco', 'Menlo', monospace;
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/" class="back-link">← Back</a>
+    <h1>Text Counter</h1>
+    <p>Count characters, words, and lines in your text</p>
+  </div>
+
+  <div class="tool-container">
+    <div class="input-group">
+      <label for="text">Enter your text</label>
+      <textarea id="text" placeholder="Type or paste your text here..." rows="10" autofocus></textarea>
+    </div>
+
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-number" id="chars">0</div>
+        <div class="stat-label">Characters</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="chars-no-spaces">0</div>
+        <div class="stat-label">Characters (no spaces)</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="words">0</div>
+        <div class="stat-label">Words</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="lines">0</div>
+        <div class="stat-label">Lines</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

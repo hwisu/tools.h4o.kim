@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <title>URL Encoder</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Common styles will be injected here */
+    /* {{COMMON_STYLES}} */
+
+    .converter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    @media (max-width: 800px) {
+      .converter-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/" class="back-link">← Back</a>
+    <h1>URL Encoder</h1>
+    <p>Encode and decode URLs and URI components</p>
+  </div>
+
+  <div class="tool-container">
+    <div class="converter-grid">
+      <div class="input-group">
+        <label for="input">Input Text</label>
+        <textarea id="input" placeholder="Enter text to encode/decode..." rows="10" autofocus></textarea>
+      </div>
+      <div class="input-group">
+        <label for="output">Output</label>
+        <textarea id="output" placeholder="Result will appear here..." rows="10" readonly></textarea>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button onclick="encode()">Encode URL</button>
+      <button onclick="decode()">Decode URL</button>
+      <button onclick="encodeComponent()">Encode Component</button>
+      <button onclick="decodeComponent()">Decode Component</button>
+      <button onclick="swap()">Swap Input/Output</button>
+      <button onclick="clear()">Clear</button>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

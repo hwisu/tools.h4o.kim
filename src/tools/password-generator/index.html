@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <title>Password Generator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Common styles will be injected here */
+    /* {{COMMON_STYLES}} */
+
+    .options {
+      margin: 1rem 0;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      background: #f8f8f8;
+    }
+    .options h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1rem;
+    }
+    .option-group {
+      margin-bottom: 1rem;
+    }
+    .option-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .password-output {
+      background: #f9f9f9;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 1.2rem;
+      word-break: break-all;
+      margin: 1rem 0;
+    }
+    .strength-meter {
+      margin: 1rem 0;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+    }
+    .strength-bar {
+      height: 10px;
+      background: #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+    .strength-fill {
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+    .strength-weak { background: #dc3545; }
+    .strength-fair { background: #ffc107; }
+    .strength-good { background: #28a745; }
+    .strength-strong { background: #007bff; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/" class="back-link">← Back</a>
+    <h1>Password Generator</h1>
+    <p>Generate secure passwords with customizable options</p>
+  </div>
+
+  <div class="tool-container">
+    <div class="options">
+      <h3>Password Options</h3>
+
+      <div class="option-group">
+        <label>
+          <input type="radio" name="passwordType" value="random" checked> Random Password
+        </label>
+      </div>
+      <div class="option-group">
+        <label>
+          <input type="radio" name="passwordType" value="passphrase"> Passphrase (recommended)
+        </label>
+      </div>
+
+      <div id="randomOptions">
+        <div class="option-group">
+          <label for="length">Length: <span id="lengthValue">15</span></label>
+          <input type="range" id="length" min="8" max="128" value="15">
+        </div>
+        <div class="option-group">
+          <label>
+            <input type="checkbox" id="uppercase" checked> Include uppercase letters (A-Z)
+          </label>
+        </div>
+        <div class="option-group">
+          <label>
+            <input type="checkbox" id="lowercase" checked> Include lowercase letters (a-z)
+          </label>
+        </div>
+        <div class="option-group">
+          <label>
+            <input type="checkbox" id="numbers" checked> Include numbers (0-9)
+          </label>
+        </div>
+        <div class="option-group">
+          <label>
+            <input type="checkbox" id="symbols"> Include symbols (!@#$%^&*)
+          </label>
+        </div>
+        <div class="option-group">
+          <label>
+            <input type="checkbox" id="spaces"> Include spaces (for passphrases)
+          </label>
+        </div>
+        <div class="option-group">
+          <label>
+            <input type="checkbox" id="excludeSimilar"> Exclude similar characters (0, O, l, I)
+          </label>
+        </div>
+      </div>
+
+      <div id="passphraseOptions" style="display: none;">
+        <div class="option-group">
+          <label for="wordCount">Number of words: <span id="wordCountValue">4</span></label>
+          <input type="range" id="wordCount" min="3" max="8" value="4">
+        </div>
+        <div class="option-group">
+          <label>
+            <input type="checkbox" id="capitalizeWords" checked> Capitalize first letter of each word
+          </label>
+        </div>
+        <div class="option-group">
+          <label>
+            <input type="checkbox" id="addNumbers" checked> Add numbers
+          </label>
+        </div>
+        <div class="option-group">
+          <label>
+            <input type="checkbox" id="addSymbols"> Add symbols
+          </label>
+        </div>
+        <div class="option-group">
+          <label for="separator">Word separator:</label>
+          <select id="separator">
+            <option value=" ">Space</option>
+            <option value="-">Hyphen (-)</option>
+            <option value="_">Underscore (_)</option>
+            <option value=".">Period (.)</option>
+            <option value="">No separator</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button onclick="generate()">Generate Password</button>
+    <button onclick="copyPassword()" id="copyBtn" disabled>Copy Password</button>
+
+    <div id="passwordOutput" class="password-output" style="display:none;"></div>
+
+    <div id="strengthMeter" class="strength-meter" style="display:none;">
+      <h4>Password Strength</h4>
+      <div class="strength-bar">
+        <div id="strengthFill" class="strength-fill"></div>
+      </div>
+      <div id="strengthText"></div>
+      <div id="strengthDetails"></div>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

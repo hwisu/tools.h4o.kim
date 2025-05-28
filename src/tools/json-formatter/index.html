@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <title>JSON Formatter</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Common styles will be injected here */
+    /* {{COMMON_STYLES}} */
+
+    .formatter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    @media (max-width: 800px) {
+      .formatter-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+    .options {
+      margin: 1rem 0;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      background: #f8f8f8;
+    }
+    .options h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1rem;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    @media (max-width: 600px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .slider-control {
+      margin-bottom: 1rem;
+    }
+    .slider-control label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .slider-control input[type="range"] {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .checkbox-control {
+      margin-bottom: 1rem;
+    }
+    .checkbox-control label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/" class="back-link">← Back</a>
+    <h1>JSON Formatter</h1>
+    <p>Format, validate, and beautify JSON with advanced options</p>
+  </div>
+
+  <div class="tool-container">
+    <div class="formatter-grid">
+      <div class="input-group">
+        <label for="input">Input JSON</label>
+        <textarea id="input" placeholder="Enter JSON to format..." rows="15" autofocus></textarea>
+      </div>
+      <div class="input-group">
+        <label for="output">Formatted JSON</label>
+        <textarea id="output" placeholder="Formatted JSON will appear here..." rows="15" readonly></textarea>
+      </div>
+    </div>
+
+    <div class="options">
+      <h3>Formatting Options</h3>
+      <div class="options-grid">
+        <div class="slider-control">
+          <label for="indentSize">Indent Size: <span id="indentSizeValue">2</span> spaces</label>
+          <input type="range" id="indentSize" min="1" max="8" value="2">
+        </div>
+
+        <div class="checkbox-control">
+          <label>
+            <input type="checkbox" id="sortKeys">
+            Sort object keys alphabetically
+          </label>
+        </div>
+
+        <div class="checkbox-control">
+          <label>
+            <input type="checkbox" id="trailingComma">
+            Add trailing commas (where supported)
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button onclick="format()">Format JSON</button>
+      <button onclick="minify()">Minify JSON</button>
+      <button onclick="validate()">Validate JSON</button>
+      <button onclick="swap()">Swap Input/Output</button>
+      <button onclick="clear()">Clear</button>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

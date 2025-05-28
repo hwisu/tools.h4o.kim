@@ -1,0 +1,9 @@
+name = "tools"
+main = "dist/index.js"
+compatibility_date = "2024-12-15"
+
+[env.production]
+name = "tools-prod"
+
+[env.staging]
+name = "tools-staging"
