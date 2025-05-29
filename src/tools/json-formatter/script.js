@@ -30,6 +30,7 @@ async function loadPrettier() {
         if (window.prettier && window.prettierPlugins) {
           prettier = window.prettier;
           prettierPlugins = window.prettierPlugins;
+          console.log('Prettier loaded successfully');
           break;
         }
       } catch (error) {
@@ -42,13 +43,23 @@ async function loadPrettier() {
       throw new Error('All CDN sources failed');
     }
 
-    // Auto-format if there's content
+    // Auto-format if there's content (but don't await it to prevent Promise display)
     if (input.value.trim()) {
-      format();
+      // Use setTimeout to avoid returning a Promise
+      setTimeout(() => {
+        format();
+      }, 100);
     }
   } catch (error) {
     console.error('Failed to load Prettier:', error);
     prettier = createBasicFormatter();
+
+    // Auto-format with basic formatter if there's content
+    if (input.value.trim()) {
+      setTimeout(() => {
+        format();
+      }, 100);
+    }
   }
 }
 
@@ -117,30 +128,97 @@ function format() {
     }
 
     let formatted;
+    const indent = parseInt(indentSizeInput.value);
 
-    if (prettier && prettierPlugins) {
-      // Use Prettier for advanced formatting
-      const options = {
-        parser: 'json',
-        plugins: prettierPlugins,
-        tabWidth: parseInt(indentSizeInput.value),
-        trailingComma: trailingCommaCheckbox.checked ? 'all' : 'none',
-        printWidth: 80,
-        semi: false
-      };
+    if (prettier && prettierPlugins && !trailingCommaCheckbox.checked) {
+      // Use Prettier for advanced formatting (only when trailing comma is disabled)
+      try {
+        const options = {
+          parser: 'json',
+          plugins: prettierPlugins,
+          tabWidth: indent,
+          trailingComma: 'none', // JSON doesn't support trailing commas
+          printWidth: 80,
+          semi: false
+        };
 
-      formatted = prettier.format(JSON.stringify(jsonData), options);
+        // Ensure we're working with a string, not a Promise
+        const jsonString = JSON.stringify(jsonData);
+        formatted = prettier.format(jsonString, options);
+      } catch (prettierError) {
+        console.warn('Prettier formatting failed, using fallback:', prettierError);
+        // Fallback to basic formatting if Prettier fails
+        formatted = JSON.stringify(jsonData, null, indent);
+      }
     } else {
-      // Fallback to basic formatting
-      const indent = parseInt(indentSizeInput.value);
-      formatted = JSON.stringify(jsonData, null, indent);
+      // Use custom formatting for trailing commas or fallback
+      if (trailingCommaCheckbox.checked) {
+        // Custom formatting with trailing commas (JavaScript-like syntax)
+        formatted = formatWithTrailingCommas(jsonData, indent);
+      } else {
+        // Standard JSON formatting
+        formatted = JSON.stringify(jsonData, null, indent);
+      }
     }
 
-    output.value = formatted;
+    // Ensure formatted is a string, not a Promise
+    if (formatted && typeof formatted === 'string') {
+      output.value = formatted;
+    } else {
+      // If somehow we got a Promise or other object, use basic formatting
+      output.value = JSON.stringify(jsonData, null, indent);
+    }
   } catch (error) {
     output.value = `Formatting Error: ${error.message}`;
     console.error('JSON formatting error:', error);
   }
+}
+
+// Custom formatter that adds trailing commas (JavaScript-like syntax)
+function formatWithTrailingCommas(obj, indent = 2, currentDepth = 0) {
+  const indentStr = ' '.repeat(indent);
+  const currentIndent = indentStr.repeat(currentDepth);
+  const nextIndent = indentStr.repeat(currentDepth + 1);
+
+  if (obj === null) {
+    return 'null';
+  }
+
+  if (typeof obj === 'string') {
+    return JSON.stringify(obj);
+  }
+
+  if (typeof obj === 'number' || typeof obj === 'boolean') {
+    return String(obj);
+  }
+
+  if (Array.isArray(obj)) {
+    if (obj.length === 0) {
+      return '[]';
+    }
+
+    const items = obj.map(item =>
+      nextIndent + formatWithTrailingCommas(item, indent, currentDepth + 1)
+    );
+
+    return '[\n' + items.join(',\n') + ',\n' + currentIndent + ']';
+  }
+
+  if (typeof obj === 'object') {
+    const keys = Object.keys(obj);
+    if (keys.length === 0) {
+      return '{}';
+    }
+
+    const items = keys.map(key => {
+      const value = formatWithTrailingCommas(obj[key], indent, currentDepth + 1);
+      return nextIndent + JSON.stringify(key) + ': ' + value;
+    });
+
+    return '{\n' + items.join(',\n') + ',\n' + currentIndent + '}';
+  }
+
+  return String(obj);
 }
 
 function minify() {
@@ -151,8 +229,15 @@ function minify() {
 
   try {
     const parsed = JSON.parse(input.value);
-    const minified = JSON.stringify(parsed);
-    output.value = minified;
+
+    if (trailingCommaCheckbox.checked) {
+      // When trailing commas are enabled, show a note that minified output is standard JSON
+      const minified = JSON.stringify(parsed);
+      output.value = `// Note: Minified output is standard JSON (no trailing commas)\n${minified}`;
+    } else {
+      const minified = JSON.stringify(parsed);
+      output.value = minified;
+    }
   } catch (error) {
     output.value = `JSON Parse Error: ${error.message}`;
   }
@@ -260,19 +345,32 @@ function swap() {
 }
 
 function clear() {
+  // Clear any pending timeouts first
+  clearTimeout(timeout);
+
+  // Clear both input and output
   input.value = '';
   output.value = '';
+
+  // Focus back to input for better UX
+  input.focus();
 }
 
 // Real-time formatting (debounced)
 let timeout;
 input.addEventListener('input', function() {
   clearTimeout(timeout);
+
+  // If input is empty, immediately clear output
+  if (!this.value.trim()) {
+    output.value = '';
+    return;
+  }
+
+  // Debounced formatting for non-empty input
   timeout = setTimeout(() => {
     if (this.value.trim()) {
       format();
-    } else {
-      output.value = '';
     }
   }, 500);
 });

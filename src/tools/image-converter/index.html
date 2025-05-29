@@ -287,18 +287,16 @@
   </div>
 
   <div class="tool-container">
-    <div class="warning-info" id="corsWarning" style="display: none;">
-      <strong>Advanced Features Limited:</strong> WASM VIPS requires special server headers for full functionality.
-      Currently using Canvas API fallback which supports JPEG, PNG, and WebP formats.
-      <br><br>
-      <strong>For developers:</strong> To enable AVIF support and advanced optimizations, serve with these headers:
-      <br>• <code>Cross-Origin-Embedder-Policy: require-corp</code>
-      <br>• <code>Cross-Origin-Opener-Policy: same-origin</code>
+    <div id="corsWarning" class="cors-warning" style="display: none;">
+      <strong>CORS Notice:</strong> Some features may be limited when loading images from external sources.
+      <strong>For developers:</strong> To enable advanced optimizations, serve with these headers:
+      <code>Cross-Origin-Embedder-Policy: require-corp</code> and
+      <code>Cross-Origin-Opener-Policy: same-origin</code>
     </div>
 
     <div class="upload-area" id="uploadArea">
       <div class="upload-area-text">Click to select an image or drag & drop</div>
-      <div class="upload-area-hint">Supports JPEG, PNG, WebP, AVIF, BMP and more</div>
+      <div class="upload-area-hint">Supports JPEG, PNG, WebP, BMP and more</div>
       <input type="file" id="fileInput" accept="image/*" style="display: none;">
     </div>
 
@@ -306,13 +304,12 @@
       <div class="controls-section">
         <h3>Conversion Settings</h3>
         <div class="controls-grid">
-          <div class="input-group">
-            <label for="outputFormat">Output Format</label>
+          <div>
+            <label for="outputFormat">Output Format:</label>
             <select id="outputFormat">
               <option value="webp">WebP</option>
               <option value="jpeg">JPEG</option>
               <option value="png">PNG</option>
-              <option value="avif">AVIF</option>
             </select>
             <div class="format-note" id="formatNote">
               WebP provides excellent compression with good quality

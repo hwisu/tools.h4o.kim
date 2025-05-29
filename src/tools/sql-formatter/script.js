@@ -113,7 +113,14 @@ function format() {
     const formatted = sqlFormatter.format(input.value, options);
     output.value = formatted;
   } catch (error) {
-    output.value = `Error formatting SQL: ${error.message}`;
+    // Provide more helpful error messages
+    let errorMessage = error.message;
+
+    if (errorMessage.includes('Unsupported SQL dialect') || errorMessage.includes('dialect')) {
+      errorMessage = `${errorMessage}\n\nSupported dialects: sql, bigquery, db2, hive, mariadb, mysql, n1ql, plsql, postgresql, redshift, singlestoredb, snowflake, spark, sqlite, tidb, transactsql, trino`;
+    }
+
+    output.value = `Error formatting SQL: ${errorMessage}`;
     console.error('SQL formatting error:', error);
   }
 }
@@ -144,19 +151,32 @@ function swap() {
 }
 
 function clear() {
+  // Clear any pending timeouts first
+  clearTimeout(timeout);
+
+  // Clear both input and output
   input.value = '';
   output.value = '';
+
+  // Focus back to input for better UX
+  input.focus();
 }
 
 // Real-time formatting (debounced)
 let timeout;
 input.addEventListener('input', function() {
   clearTimeout(timeout);
+
+  // If input is empty, immediately clear output
+  if (!this.value.trim()) {
+    output.value = '';
+    return;
+  }
+
+  // Debounced formatting for non-empty input
   timeout = setTimeout(() => {
     if (this.value.trim() && sqlFormatter) {
       format();
-    } else {
-      output.value = '';
     }
   }, 500);
 });
