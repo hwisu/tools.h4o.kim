@@ -61,3 +61,6 @@ out/
 
 # TypeScript
 *.tsbuildinfo
+
+# 빌드 시 생성되는 설정 파일
+src/config.js

@@ -6,6 +6,10 @@
 // 통합 도구 핸들러 임포트
 import { handleTool } from './common/tool-handler.js';
 import { commonStyles } from './common/styles.js';
+import { APP_CONFIG } from './config.js';
+
+// 버전 정보를 콘솔에 출력 (디버깅용)
+console.log(`App starting - Version: ${APP_CONFIG.version}, Build time: ${APP_CONFIG.buildTime}`);
 
 export default {
   async fetch(request, env, ctx) {
@@ -287,15 +291,113 @@ function handleHome() {
         class SimplePWAManager {
           constructor() {
             this.iconGenerator = new IconGenerator();
+            this.currentVersion = '${APP_CONFIG.version}'; // 중앙 설정에서 버전 가져오기
+            this.updateCheckInterval = null;
             this.init();
           }
 
           async init() {
             await this.registerServiceWorker();
+            await this.checkInstallStatus();
             this.setupInstallPrompt();
             this.setupOnlineStatus();
             this.setupPageSave();
             this.applyDynamicIcons();
+          }
+
+          async checkInstallStatus() {
+            // Check if app is already installed
+            if (window.matchMedia('(display-mode: standalone)').matches ||
+                window.navigator.standalone === true) {
+              // App is running in standalone mode (installed)
+              this.hideInstallButton();
+              this.hideSavePageButton();
+              console.log('PWA: App is already installed');
+
+              // 설치된 앱에서만 자동 업데이트 확인 시작
+              this.startAutoUpdateCheck();
+            }
+          }
+
+          startAutoUpdateCheck() {
+            // 즉시 한 번 확인
+            this.checkForUpdates();
+
+            // 5분마다 업데이트 확인
+            this.updateCheckInterval = setInterval(() => {
+              this.checkForUpdates();
+            }, 5 * 60 * 1000); // 5분
+
+            // 앱이 포커스를 받을 때도 업데이트 확인
+            window.addEventListener('focus', () => {
+              this.checkForUpdates();
+            });
+
+            // 페이지 언로드 시 인터벌 정리
+            window.addEventListener('beforeunload', () => {
+              this.stopAutoUpdateCheck();
+            });
+
+            console.log('PWA: Auto-update checking started');
+          }
+
+          async checkForUpdates() {
+            try {
+              const response = await fetch('/api/status', {
+                cache: 'no-cache',
+                headers: {
+                  'Cache-Control': 'no-cache'
+                }
+              });
+
+              if (!response.ok) {
+                console.log('PWA: Failed to check for updates');
+                return;
+              }
+
+              const data = await response.json();
+              const serverVersion = data.version;
+              const serverHash = data.contentHash;
+
+              // 로컬 스토리지에서 마지막 확인한 해시 가져오기
+              const lastKnownHash = localStorage.getItem('app-content-hash');
+
+              console.log(\`PWA: Current version: \${this.currentVersion}, Server version: \${serverVersion}\`);
+              console.log(\`PWA: Last known hash: \${lastKnownHash}, Server hash: \${serverHash}\`);
+
+              // 버전이 다르거나 콘텐츠 해시가 다르면 업데이트
+              if ((serverVersion && serverVersion !== this.currentVersion) ||
+                  (serverHash && serverHash !== lastKnownHash)) {
+
+                console.log('PWA: Update available, refreshing...');
+                this.showUpdateNotification('New version available! Updating...', true);
+
+                // 새 해시를 저장
+                if (serverHash) {
+                  localStorage.setItem('app-content-hash', serverHash);
+                }
+
+                // 2초 후 새로고침 (사용자가 알림을 볼 수 있도록)
+                setTimeout(() => {
+                  window.location.reload();
+                }, 2000);
+              } else {
+                // 해시가 같으면 로컬 스토리지에 저장
+                if (serverHash && !lastKnownHash) {
+                  localStorage.setItem('app-content-hash', serverHash);
+                }
+              }
+            } catch (error) {
+              console.error('PWA: Error checking for updates:', error);
+            }
+          }
+
+          stopAutoUpdateCheck() {
+            if (this.updateCheckInterval) {
+              clearInterval(this.updateCheckInterval);
+              this.updateCheckInterval = null;
+              console.log('PWA: Auto-update checking stopped');
+            }
           }
 
           applyDynamicIcons() {
@@ -313,10 +415,25 @@ function handleHome() {
                   const newWorker = registration.installing;
                   newWorker.addEventListener('statechange', () => {
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                      this.showUpdateNotification();
+                      console.log('PWA: New service worker installed, update available');
+                      // Service Worker 업데이트가 있을 때도 새로고침
+                      this.showUpdateNotification('Service worker updated! Refreshing...', true);
+                      setTimeout(() => {
+                        window.location.reload();
+                      }, 2000);
                     }
                   });
                 });
+
+                // 기존 Service Worker가 업데이트되었을 때 처리
+                if (registration.waiting) {
+                  console.log('PWA: Service worker update waiting');
+                  this.showUpdateNotification('Update ready! Refreshing...', true);
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 2000);
+                }
+
               } catch (error) {
                 console.error('PWA: Service worker registration failed:', error);
               }
@@ -325,9 +442,18 @@ function handleHome() {
 
           setupPageSave() {
             const saveBtn = document.getElementById('savePageBtn');
-            saveBtn.addEventListener('click', () => {
-              this.saveCurrentPage();
-            });
+            if (saveBtn) {
+              saveBtn.addEventListener('click', () => {
+                this.saveCurrentPage();
+              });
+            }
+          }
+
+          hideSavePageButton() {
+            const saveBtn = document.getElementById('savePageBtn');
+            if (saveBtn) {
+              saveBtn.style.display = 'none';
+            }
           }
 
           saveCurrentPage() {
@@ -367,12 +493,18 @@ function handleHome() {
               e.preventDefault();
               deferredPrompt = e;
               this.deferredPrompt = deferredPrompt;
-              this.showInstallButton(deferredPrompt);
+
+              // Only show install button if not already installed
+              if (!window.matchMedia('(display-mode: standalone)').matches &&
+                  window.navigator.standalone !== true) {
+                this.showInstallButton(deferredPrompt);
+              }
             });
 
             window.addEventListener('appinstalled', () => {
               this.hideInstallButton();
-              this.showNotification('앱이 설치되었습니다! 🎉', 'success');
+              this.hideSavePageButton();
+              this.showNotification('App installed successfully! 🎉', 'success');
             });
           }
 
@@ -438,26 +570,14 @@ function handleHome() {
             if (button) button.remove();
           }
 
-          showUpdateNotification() {
+          showUpdateNotification(message = 'New version available! Updating...', isUpdate = false) {
             const notification = document.createElement('div');
-            notification.innerHTML = \`
-              <div style="margin-bottom: 8px;">새 버전이 사용 가능합니다</div>
-              <button onclick="window.location.reload()" style="
-                background: white;
-                color: #2196F3;
-                border: none;
-                padding: 4px 8px;
-                border-radius: 3px;
-                font-size: 12px;
-                cursor: pointer;
-              ">업데이트</button>
-            \`;
-
+            notification.textContent = message;
             notification.style.cssText = \`
               position: fixed;
               top: 20px;
               right: 20px;
-              background: #2196F3;
+              background: \${isUpdate ? '#2196F3' : '#4CAF50'};
               color: white;
               padding: 12px 16px;
               border-radius: 4px;
@@ -465,9 +585,14 @@ function handleHome() {
               z-index: 1001;
               max-width: 300px;
               box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+              line-height: 1.4;
             \`;
 
             document.body.appendChild(notification);
+
+            setTimeout(() => {
+              notification.remove();
+            }, 5000);
           }
 
           showNotification(message, type = 'info', duration = 5000) {
@@ -554,10 +679,18 @@ function handleHome() {
  * 상태 확인 API
  */
 function handleStatus() {
+  // 간단한 콘텐츠 해시 생성 (실제로는 빌드 시 생성하는 것이 좋음)
+  const contentHash = btoa(APP_CONFIG.version + APP_CONFIG.buildTime + (APP_CONFIG.gitHash || '')).slice(0, 8);
+
   return Response.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    tools: 12
+    tools: 12,
+    version: APP_CONFIG.version,
+    lastUpdated: APP_CONFIG.buildTime,
+    buildTime: APP_CONFIG.buildTime,
+    gitHash: APP_CONFIG.gitHash,
+    contentHash: contentHash // 콘텐츠 변경 감지용
   });
 }
 
@@ -566,9 +699,9 @@ function handleStatus() {
  */
 function handleManifest() {
   const manifest = {
-    "name": "tools.h4o.kim",
+    "name": APP_CONFIG.name,
     "short_name": "tools",
-    "description": "Miscellaneous web tools for daily use - JSON formatter, text counter, image converter, and more",
+    "description": APP_CONFIG.description,
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
@@ -670,8 +803,8 @@ async function handleServiceWorker() {
   // Service Worker 코드를 여기에 인라인으로 포함
   const swCode = `
 // Service Worker for Tools Platform PWA
-const CACHE_NAME = 'tools-platform-v1.0.0';
-const STATIC_CACHE_NAME = 'tools-static-v1.0.0';
+const CACHE_NAME = 'tools-platform-v${APP_CONFIG.version}';
+const STATIC_CACHE_NAME = 'tools-static-v${APP_CONFIG.version}';
 
 // 캐시할 정적 리소스들
 const STATIC_ASSETS = [
