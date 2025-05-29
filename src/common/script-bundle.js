@@ -13,6 +13,7 @@ import hashGeneratorScript from '../tools/hash-generator/script.js?raw';
 import passwordGeneratorScript from '../tools/password-generator/script.js?raw';
 import unitConverterScript from '../tools/unit-converter/script.js?raw';
 import cronBuilderScript from '../tools/cron-builder/script.js?raw';
+import iconGeneratorScript from '../tools/icon-generator/script.js?raw';
 
 // 도구별 스크립트 맵
 const TOOL_SCRIPTS = {
@@ -29,7 +30,8 @@ const TOOL_SCRIPTS = {
   'hash-generator': hashGeneratorScript,
   'password-generator': passwordGeneratorScript,
   'unit-converter': unitConverterScript,
-  'cron-builder': cronBuilderScript
+  'cron-builder': cronBuilderScript,
+  'icon-generator': iconGeneratorScript
 };
 
 /**

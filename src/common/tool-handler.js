@@ -14,6 +14,7 @@ import hashGeneratorHtml from '../tools/hash-generator/index.html?inline';
 import passwordGeneratorHtml from '../tools/password-generator/index.html?inline';
 import unitConverterHtml from '../tools/unit-converter/index.html?inline';
 import cronBuilderHtml from '../tools/cron-builder/index.html?inline';
+import iconGeneratorHtml from '../tools/icon-generator/index.html?inline';
 
 // URL 단축 매핑 - 짧은 URL을 실제 도구 이름으로 매핑
 const URL_MAPPING = {
@@ -29,7 +30,8 @@ const URL_MAPPING = {
   'diff': 'text-diff',
   'tz': 'timezone-converter',
   'unit': 'unit-converter',
-  'url': 'url-encoder'
+  'url': 'url-encoder',
+  'icons': 'icon-generator'
 };
 
 // 도구 설정 맵 - 빌드 시점에 HTML 내용이 포함됨
@@ -85,6 +87,10 @@ const TOOLS_CONFIG = {
   'cron-builder': {
     html: cronBuilderHtml,
     title: 'Cron Builder'
+  },
+  'icon-generator': {
+    html: iconGeneratorHtml,
+    title: 'Icon Generator'
   }
 };
 
@@ -102,7 +108,8 @@ const ALL_HTML_IMPORTS = {
   hashGeneratorHtml,
   passwordGeneratorHtml,
   unitConverterHtml,
-  cronBuilderHtml
+  cronBuilderHtml,
+  iconGeneratorHtml
 };
 
 // 개발 모드에서 import 확인용 (tree-shaking 방지)

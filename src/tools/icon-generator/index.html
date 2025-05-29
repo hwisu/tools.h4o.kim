@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <title>Icon Generator - tools.h4o.kim</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* {{COMMON_STYLES}} */
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .control-group {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+    }
+    .control-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #333;
+    }
+    .control-group input, .control-group select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      font-family: inherit;
+    }
+    .emoji-picker {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 0.5rem;
+      border-radius: 3px;
+    }
+    .emoji-btn {
+      background: none;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      padding: 0.5rem;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s;
+    }
+    .emoji-btn:hover {
+      background: #f0f0f0;
+      border-color: #999;
+    }
+    .emoji-btn.selected {
+      background: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+    .preview-section {
+      background: #f8f9fa;
+      padding: 2rem;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .icon-preview {
+      display: inline-block;
+      margin: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+    }
+    .icon-preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .size-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .download-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .download-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 0.75rem 1rem;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    .download-btn:hover {
+      background: #218838;
+    }
+    .download-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+    .color-input {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .color-input input[type="color"] {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .preset-colors {
+      display: flex;
+      gap: 0.25rem;
+      margin-top: 0.5rem;
+    }
+    .preset-color {
+      width: 24px;
+      height: 24px;
+      border-radius: 3px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .preset-color:hover {
+      border-color: #333;
+    }
+    .transparent-preset {
+      position: relative;
+      overflow: hidden;
+    }
+    .transparent-preset:hover {
+      border-color: #333;
+    }
+    .preview-transparent {
+      background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+                  linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+                  linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+                  linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎨 Icon Generator</h1>
+    <p>Create custom PWA icons and favicons using emojis</p>
+    <a href="/" class="back-link">← Back to Tools</a>
+  </div>
+
+  <div class="controls">
+    <div class="control-group">
+      <label for="emojiInput">Emoji</label>
+      <input type="text" id="emojiInput" value="🛠️" placeholder="Enter emoji or select below">
+      <div class="emoji-picker" id="emojiPicker">
+        <!-- Emoji buttons will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label for="bgColor">Background Color</label>
+      <div class="color-input">
+        <input type="color" id="bgColor" value="#333333">
+        <input type="text" id="bgColorText" value="#333333" placeholder="#333333 or transparent">
+      </div>
+      <div class="preset-colors">
+        <div class="preset-color" style="background: #333333" data-color="#333333" title="Dark Gray"></div>
+        <div class="preset-color" style="background: #007bff" data-color="#007bff" title="Blue"></div>
+        <div class="preset-color" style="background: #28a745" data-color="#28a745" title="Green"></div>
+        <div class="preset-color" style="background: #dc3545" data-color="#dc3545" title="Red"></div>
+        <div class="preset-color" style="background: #ffc107" data-color="#ffc107" title="Yellow"></div>
+        <div class="preset-color" style="background: #6f42c1" data-color="#6f42c1" title="Purple"></div>
+        <div class="preset-color" style="background: #fd7e14" data-color="#fd7e14" title="Orange"></div>
+        <div class="preset-color transparent-preset" data-color="transparent" title="Transparent">
+          <div style="background: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%); background-size: 8px 8px; background-position: 0 0, 0 4px, 4px -4px, -4px 0px; width: 100%; height: 100%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label for="iconName">Icon Name</label>
+      <input type="text" id="iconName" value="my-icon" placeholder="Enter icon name">
+    </div>
+
+    <div class="control-group">
+      <label for="format">Format</label>
+      <select id="format">
+        <option value="png">PNG</option>
+        <option value="svg">SVG</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="preview-section">
+    <h3>Preview</h3>
+    <div class="size-grid" id="previewGrid">
+      <!-- Preview icons will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <div class="download-section">
+    <button class="download-btn" onclick="downloadIcon(32)">Download 32x32 (Favicon)</button>
+    <button class="download-btn" onclick="downloadIcon(72)">Download 72x72</button>
+    <button class="download-btn" onclick="downloadIcon(96)">Download 96x96</button>
+    <button class="download-btn" onclick="downloadIcon(128)">Download 128x128</button>
+    <button class="download-btn" onclick="downloadIcon(144)">Download 144x144</button>
+    <button class="download-btn" onclick="downloadIcon(152)">Download 152x152</button>
+    <button class="download-btn" onclick="downloadIcon(180)">Download 180x180 (Apple)</button>
+    <button class="download-btn" onclick="downloadIcon(192)">Download 192x192</button>
+    <button class="download-btn" onclick="downloadIcon(384)">Download 384x384</button>
+    <button class="download-btn" onclick="downloadIcon(512)">Download 512x512</button>
+    <button class="download-btn" onclick="downloadAllSizes()" style="grid-column: 1 / -1; background: #007bff;">Download All Sizes (ZIP)</button>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
