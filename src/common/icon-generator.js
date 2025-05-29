@@ -1,26 +1,26 @@
 /**
- * 이모지 기반 아이콘 생성기
- * Canvas API를 사용하여 PWA 아이콘과 파비콘을 동적으로 생성
+ * Emoji-based icon generator
+ * Dynamically generates PWA icons and favicons using Canvas API
  */
 
 class IconGenerator {
   constructor() {
-    this.emoji = '🛠️'; // 기본 이모지 (도구)
+    this.emoji = '🛠️'; // Default emoji (tools)
     this.backgroundColor = '#333333';
     this.cache = new Map();
   }
 
   /**
-   * 지정된 크기의 아이콘을 생성합니다
-   * @param {number} size - 아이콘 크기 (픽셀)
-   * @param {string} emoji - 사용할 이모지 (선택사항)
-   * @param {string} bgColor - 배경색 (선택사항)
-   * @returns {string} Base64 데이터 URL
+   * Generate icon of specified size
+   * @param {number} size - Icon size (pixels)
+   * @param {string} emoji - Emoji to use (optional)
+   * @param {string} bgColor - Background color (optional)
+   * @returns {string} Base64 data URL
    */
   generateIcon(size, emoji = this.emoji, bgColor = this.backgroundColor) {
     const cacheKey = `${size}-${emoji}-${bgColor}`;
 
-    // 캐시된 아이콘이 있으면 반환
+    // Return cached icon if available
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey);
     }
@@ -31,41 +31,41 @@ class IconGenerator {
     canvas.width = size;
     canvas.height = size;
 
-    // 배경 그리기
+    // Draw background
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, size, size);
 
-    // 둥근 모서리 (PWA 스타일)
-    const radius = size * 0.2; // 20% 둥근 모서리
+    // Rounded corners (PWA style)
+    const radius = size * 0.2; // 20% rounded corners
     ctx.globalCompositeOperation = 'destination-in';
     ctx.beginPath();
     ctx.roundRect(0, 0, size, size, radius);
     ctx.fill();
     ctx.globalCompositeOperation = 'source-over';
 
-    // 이모지 그리기
-    const fontSize = size * 0.6; // 아이콘 크기의 60%
+    // Draw emoji
+    const fontSize = size * 0.6; // 60% of icon size
     ctx.font = `${fontSize}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // 이모지를 중앙에 배치
+    // Center the emoji
     ctx.fillText(emoji, size / 2, size / 2);
 
     const dataUrl = canvas.toDataURL('image/png');
 
-    // 캐시에 저장
+    // Save to cache
     this.cache.set(cacheKey, dataUrl);
 
     return dataUrl;
   }
 
   /**
-   * SVG 기반 아이콘 생성 (더 작은 파일 크기)
-   * @param {number} size - 아이콘 크기
-   * @param {string} emoji - 사용할 이모지
-   * @param {string} bgColor - 배경색
-   * @returns {string} Base64 인코딩된 SVG 데이터 URL
+   * SVG-based icon generation (smaller file size)
+   * @param {number} size - Icon size
+   * @param {string} emoji - Emoji to use
+   * @param {string} bgColor - Background color
+   * @returns {string} Base64 encoded SVG data URL
    */
   generateSVGIcon(size, emoji = this.emoji, bgColor = this.backgroundColor) {
     const cacheKey = `svg-${size}-${emoji}-${bgColor}`;
@@ -93,9 +93,9 @@ class IconGenerator {
   }
 
   /**
-   * PWA에 필요한 모든 아이콘 크기를 생성합니다
-   * @param {string} emoji - 사용할 이모지
-   * @returns {Object} 아이콘 정보 객체
+   * Generate all icon sizes needed for PWA
+   * @param {string} emoji - Emoji to use
+   * @returns {Object} Icon information object
    */
   generatePWAIcons(emoji = this.emoji) {
     const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
@@ -115,23 +115,23 @@ class IconGenerator {
   }
 
   /**
-   * 파비콘 생성 (여러 크기)
-   * @param {string} emoji - 사용할 이모지
-   * @returns {Object} 파비콘 정보
+   * Generate favicons (multiple sizes)
+   * @param {string} emoji - Emoji to use
+   * @returns {Object} Favicon information
    */
   generateFavicons(emoji = this.emoji) {
     return {
-      ico: this.generateIcon(32, emoji), // 기본 파비콘
-      svg: this.generateSVGIcon(32, emoji), // SVG 파비콘
+      ico: this.generateIcon(32, emoji), // Default favicon
+      svg: this.generateSVGIcon(32, emoji), // SVG favicon
       apple: this.generateIcon(180, emoji), // Apple Touch Icon
-      manifest: this.generateIcon(192, emoji) // 매니페스트용
+      manifest: this.generateIcon(192, emoji) // For manifest
     };
   }
 
   /**
-   * 도구별 맞춤 이모지 반환
-   * @param {string} toolName - 도구 이름
-   * @returns {string} 해당 도구의 이모지
+   * Return custom emoji for each tool
+   * @param {string} toolName - Tool name
+   * @returns {string} Emoji for the tool
    */
   getToolEmoji(toolName) {
     const toolEmojis = {
@@ -168,34 +168,34 @@ class IconGenerator {
   }
 
   /**
-   * 실시간으로 아이콘을 생성하고 DOM에 적용
-   * @param {string} toolName - 도구 이름 (선택사항)
+   * Generate and apply icons to DOM in real-time
+   * @param {string} toolName - Tool name (optional)
    */
   applyDynamicIcons(toolName = null) {
     const emoji = toolName ? this.getToolEmoji(toolName) : this.emoji;
 
-    // 파비콘 업데이트
+    // Update favicon
     this.updateFavicon(emoji);
 
-    // Apple Touch Icon 업데이트
+    // Update Apple Touch Icon
     this.updateAppleTouchIcon(emoji);
 
-    // 매니페스트 아이콘 업데이트 (동적으로는 어려우므로 로그만)
+    // Update manifest icons (difficult to do dynamically, so just log)
     console.log(`PWA: Generated icons for ${toolName || 'home'} with emoji ${emoji}`);
   }
 
   /**
-   * 파비콘 동적 업데이트
-   * @param {string} emoji - 사용할 이모지
+   * Dynamic favicon update
+   * @param {string} emoji - Emoji to use
    */
   updateFavicon(emoji) {
-    // 기존 파비콘 제거
+    // Remove existing favicon
     const existingFavicon = document.querySelector('link[rel="icon"]');
     if (existingFavicon) {
       existingFavicon.remove();
     }
 
-    // 새 파비콘 생성 및 적용
+    // Generate and apply new favicon
     const favicon = document.createElement('link');
     favicon.rel = 'icon';
     favicon.type = 'image/svg+xml';
@@ -205,17 +205,17 @@ class IconGenerator {
   }
 
   /**
-   * Apple Touch Icon 동적 업데이트
-   * @param {string} emoji - 사용할 이모지
+   * Apple Touch Icon dynamic update
+   * @param {string} emoji - Emoji to use
    */
   updateAppleTouchIcon(emoji) {
-    // 기존 Apple Touch Icon 제거
+    // Remove existing Apple Touch Icon
     const existingAppleIcon = document.querySelector('link[rel="apple-touch-icon"]');
     if (existingAppleIcon) {
       existingAppleIcon.remove();
     }
 
-    // 새 Apple Touch Icon 생성 및 적용
+    // Generate and apply new Apple Touch Icon
     const appleIcon = document.createElement('link');
     appleIcon.rel = 'apple-touch-icon';
     appleIcon.href = this.generateIcon(180, emoji);
@@ -224,17 +224,17 @@ class IconGenerator {
   }
 
   /**
-   * 캐시 클리어
+   * Clear cache
    */
   clearCache() {
     this.cache.clear();
   }
 
   /**
-   * 아이콘 다운로드 기능
-   * @param {number} size - 아이콘 크기
-   * @param {string} emoji - 이모지
-   * @param {string} filename - 파일명
+   * Icon download feature
+   * @param {number} size - Icon size
+   * @param {string} emoji - Emoji
+   * @param {string} filename - File name
    */
   downloadIcon(size, emoji = this.emoji, filename = `icon-${size}x${size}.png`) {
     const canvas = document.createElement('canvas');
@@ -243,15 +243,15 @@ class IconGenerator {
     canvas.width = size;
     canvas.height = size;
 
-    // 고품질 렌더링 설정
+    // High quality rendering settings
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    // 배경 그리기
+    // Draw background
     ctx.fillStyle = this.backgroundColor;
     ctx.fillRect(0, 0, size, size);
 
-    // 둥근 모서리
+    // Rounded corners
     const radius = size * 0.2;
     ctx.globalCompositeOperation = 'destination-in';
     ctx.beginPath();
@@ -259,14 +259,14 @@ class IconGenerator {
     ctx.fill();
     ctx.globalCompositeOperation = 'source-over';
 
-    // 이모지 그리기
+    // Draw emoji
     const fontSize = size * 0.6;
     ctx.font = `${fontSize}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(emoji, size / 2, size / 2);
 
-    // 다운로드
+    // Download
     canvas.toBlob((blob) => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -280,10 +280,10 @@ class IconGenerator {
   }
 }
 
-// 전역 아이콘 생성기 인스턴스
+// Global icon generator instance
 const iconGenerator = new IconGenerator();
 
-// Canvas roundRect polyfill (구형 브라우저 지원)
+// Canvas roundRect polyfill (old browser support)
 if (!CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
     this.beginPath();

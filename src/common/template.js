@@ -10,7 +10,7 @@ import { getToolScript } from './script-bundle.js';
 export function processTemplate(htmlTemplate, toolName) {
   let processedHtml = htmlTemplate;
 
-  // PWA 메타 태그 주입 - <head> 태그 안에 추가
+  // PWA Meta Tags injection - add to <head> tag
   const pwaMetaTags = `
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#333333">
@@ -31,18 +31,18 @@ export function processTemplate(htmlTemplate, toolName) {
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNiIgZmlsbD0iIzMzMzMzMyIvPgo8dGV4dCB4PSIxNiIgeT0iMTYiIGZvbnQtZmFtaWx5PSJBcHBsZSBDb2xvciBFbW9qaSwgU2Vnb2UgVUkgRW1vamksIE5vdG8gQ29sb3IgRW1vamksIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIj7wn5ug8J+PtzwvdGV4dD4KPC9zdmc+Cg==">
   `;
 
-  // <head> 태그 뒤에 PWA 메타 태그 삽입
+  // <head> tag after PWA Meta Tags
   processedHtml = processedHtml.replace(
     /<head>/i,
     `<head>${pwaMetaTags}`
   );
 
-  // 스타일 주입
+  // Style injection
   processedHtml = processedHtml.replace('/* {{COMMON_STYLES}} */', commonStyles);
 
-  // PWA 기능을 위한 기본 스크립트 추가
+  // PWA basic script addition
   const pwaScript = `
-    // 아이콘 생성기 클래스
+    // Icon generator class
     class IconGenerator {
       constructor() {
         this.emoji = '🛠️';
@@ -112,26 +112,26 @@ export function processTemplate(htmlTemplate, toolName) {
       }
     }
 
-    // PWA 기본 기능
+    // PWA basic functionality
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', async () => {
         try {
           const registration = await navigator.serviceWorker.register('/sw.js');
           console.log('PWA: Service worker registered for ${toolName}');
 
-          // 업데이트 확인
+          // Update check
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // 새 버전 알림
+                // New version notification
                 const notification = document.createElement('div');
                 notification.innerHTML = \`
-                  <div style="margin-bottom: 8px;">새 버전이 사용 가능합니다</div>
+                  <div style="margin-bottom: 8px;">New version is available</div>
                   <button onclick="window.location.reload()" style="
                     background: white; color: #2196F3; border: none;
                     padding: 4px 8px; border-radius: 3px; font-size: 12px; cursor: pointer;
-                  ">업데이트</button>
+                  ">Update</button>
                 \`;
                 notification.style.cssText = \`
                   position: fixed; top: 20px; right: 20px; background: #2196F3; color: white;
@@ -148,13 +148,13 @@ export function processTemplate(htmlTemplate, toolName) {
       });
     }
 
-    // 아이콘 생성기 초기화 및 적용
+    // Icon generator initialization and application
     const iconGenerator = new IconGenerator();
     iconGenerator.applyDynamicIcons('${toolName}');
 
-    // 개별 페이지 저장 버튼 추가
+    // Add individual page save button
     function addSavePageButton() {
-      // 이미 버튼이 있으면 추가하지 않음
+      // Don't add if button already exists
       if (document.getElementById('savePageBtn')) return;
 
       const saveBtn = document.createElement('button');
@@ -175,11 +175,11 @@ export function processTemplate(htmlTemplate, toolName) {
 
         let instructions = '';
         if (isIOS) {
-          instructions = '📱 Safari에서: 공유 버튼 → "홈 화면에 추가"를 선택하세요';
+          instructions = '📱 Safari: Tap Share button → Select "Add to Home Screen"';
         } else if (isAndroid) {
-          instructions = '📱 Chrome에서: 메뉴(⋮) → "홈 화면에 추가"를 선택하세요';
+          instructions = '📱 Chrome: Tap Menu (⋮) → Select "Add to Home Screen"';
         } else {
-          instructions = '💻 브라우저 주소창 옆의 설치 아이콘을 클릭하거나 메뉴에서 "앱 설치"를 선택하세요';
+          instructions = '💻 Click the install icon next to the address bar or select "Install App" from the menu';
         }
 
         showNotification(instructions, 'info', 8000);
@@ -188,7 +188,7 @@ export function processTemplate(htmlTemplate, toolName) {
       document.body.appendChild(saveBtn);
     }
 
-    // 알림 표시 함수
+    // Notification display function
     function showNotification(message, type = 'info', duration = 5000) {
       const notification = document.createElement('div');
       notification.textContent = message;
@@ -204,7 +204,7 @@ export function processTemplate(htmlTemplate, toolName) {
       setTimeout(() => notification.remove(), duration);
     }
 
-    // 온라인/오프라인 상태 표시
+    // Online/offline status display
     let statusTimeout;
     const showNetworkStatus = (isOnline) => {
       clearTimeout(statusTimeout);
@@ -222,7 +222,7 @@ export function processTemplate(htmlTemplate, toolName) {
       }
 
       if (isOnline) {
-        statusEl.textContent = '🟢 온라인';
+        statusEl.textContent = '🟢 Online';
         statusEl.style.background = 'rgba(76, 175, 80, 0.9)';
         statusEl.style.color = 'white';
         statusEl.style.display = 'block';
@@ -231,7 +231,7 @@ export function processTemplate(htmlTemplate, toolName) {
           statusEl.style.display = 'none';
         }, 3000);
       } else {
-        statusEl.textContent = '🔴 오프라인';
+        statusEl.textContent = '🔴 Offline';
         statusEl.style.background = 'rgba(244, 67, 54, 0.9)';
         statusEl.style.color = 'white';
         statusEl.style.display = 'block';
@@ -241,7 +241,7 @@ export function processTemplate(htmlTemplate, toolName) {
     window.addEventListener('online', () => showNetworkStatus(true));
     window.addEventListener('offline', () => showNetworkStatus(false));
 
-    // DOM 로드 후 저장 버튼 추가
+    // DOM load after save button addition
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', addSavePageButton);
     } else {
@@ -249,7 +249,7 @@ export function processTemplate(htmlTemplate, toolName) {
     }
   `;
 
-  // 스크립트 주입 - <script src="./script.js"></script>를 실제 스크립트로 교체
+  // Script injection - replace <script src="./script.js"></script> with actual script
   const toolScript = getToolScript(toolName);
   if (toolScript) {
     processedHtml = processedHtml.replace(
@@ -257,7 +257,7 @@ export function processTemplate(htmlTemplate, toolName) {
       `<script>${pwaScript}</script><script>${toolScript}</script>`
     );
   } else {
-    // 도구 스크립트가 없어도 PWA 스크립트는 추가
+    // PWA script addition even if tool script is missing
     processedHtml = processedHtml.replace(
       /<\/body>/i,
       `<script>${pwaScript}</script></body>`
@@ -281,7 +281,7 @@ export function createHtmlResponse(htmlContent, toolName) {
 }
 
 /**
- * 레거시 지원: 스타일만 주입 (하위 호환성)
+ * Legacy support: inject styles only (backward compatibility)
  * @param {string} htmlTemplate - {{COMMON_STYLES}} 플레이스홀더가 포함된 HTML 템플릿
  * @returns {string} 스타일이 주입된 HTML
  */

@@ -65,8 +65,8 @@ function cloudflareWorkersPlugin() {
       }
     },
     resolveId(id) {
-      // Node.js built-in 모듈 차단
-      if (id.startsWith('node:') || ['fs', 'path', 'os', 'crypto'].includes(id)) {
+      // Block Node.js built-in modules
+      if (builtinModules.includes(id)) {
         throw new Error(`Node.js built-in module "${id}" is not available in Cloudflare Workers`);
       }
     }
@@ -95,7 +95,7 @@ export default defineConfig(({ command, mode }) => {
 
       // Rollup 옵션
       rollupOptions: {
-        // 외부 의존성 (필요한 경우)
+        // External dependencies (if needed)
         external: [],
 
         output: {
@@ -120,7 +120,7 @@ export default defineConfig(({ command, mode }) => {
     // 개발 서버 설정 (필요시)
     server: {
       port: 3000,
-      open: false, // Workers는 브라우저에서 직접 실행되지 않음
+      open: false, // Workers don't run directly in browser
     },
 
     // 환경 변수 정의

@@ -280,18 +280,18 @@ function handleHome() {
         </ul>
       </div>
 
-      <!-- PWA 상태 표시 -->
+      <!-- PWA status display -->
       <div id="pwaStatus" class="pwa-status"></div>
 
       <script>
-        // 아이콘 생성기 임포트 (인라인)
+        // Icon generator import (inline)
         ${getIconGeneratorScript()}
 
-        // PWA 기능 초기화
+        // PWA functionality initialization
         class SimplePWAManager {
           constructor() {
             this.iconGenerator = new IconGenerator();
-            this.currentVersion = '${APP_CONFIG.version}'; // 중앙 설정에서 버전 가져오기
+            this.currentVersion = '${APP_CONFIG.version}'; // Get version from central config
             this.updateCheckInterval = null;
             this.init();
           }
@@ -314,26 +314,26 @@ function handleHome() {
               this.hideSavePageButton();
               console.log('PWA: App is already installed');
 
-              // 설치된 앱에서만 자동 업데이트 확인 시작
+              // Start auto update check only for installed apps
               this.startAutoUpdateCheck();
             }
           }
 
           startAutoUpdateCheck() {
-            // 즉시 한 번 확인
+            // Check immediately once
             this.checkForUpdates();
 
-            // 5분마다 업데이트 확인
+            // Check for updates every 5 minutes
             this.updateCheckInterval = setInterval(() => {
               this.checkForUpdates();
-            }, 5 * 60 * 1000); // 5분
+            }, 5 * 60 * 1000); // 5 minutes
 
-            // 앱이 포커스를 받을 때도 업데이트 확인
+            // Also check for updates when app gains focus
             window.addEventListener('focus', () => {
               this.checkForUpdates();
             });
 
-            // 페이지 언로드 시 인터벌 정리
+            // Clean up interval on page unload
             window.addEventListener('beforeunload', () => {
               this.stopAutoUpdateCheck();
             });
@@ -359,30 +359,30 @@ function handleHome() {
               const serverVersion = data.version;
               const serverHash = data.contentHash;
 
-              // 로컬 스토리지에서 마지막 확인한 해시 가져오기
+              // Get last checked hash from local storage
               const lastKnownHash = localStorage.getItem('app-content-hash');
 
               console.log(\`PWA: Current version: \${this.currentVersion}, Server version: \${serverVersion}\`);
               console.log(\`PWA: Last known hash: \${lastKnownHash}, Server hash: \${serverHash}\`);
 
-              // 버전이 다르거나 콘텐츠 해시가 다르면 업데이트
+              // Update if version is different or content hash is different
               if ((serverVersion && serverVersion !== this.currentVersion) ||
                   (serverHash && serverHash !== lastKnownHash)) {
 
                 console.log('PWA: Update available, refreshing...');
                 this.showUpdateNotification('New version available! Updating...', true);
 
-                // 새 해시를 저장
+                // Save new hash
                 if (serverHash) {
                   localStorage.setItem('app-content-hash', serverHash);
                 }
 
-                // 2초 후 새로고침 (사용자가 알림을 볼 수 있도록)
+                // Refresh after 2 seconds (so user can see the notification)
                 setTimeout(() => {
                   window.location.reload();
                 }, 2000);
               } else {
-                // 해시가 같으면 로컬 스토리지에 저장
+                // Save hash to local storage if same
                 if (serverHash && !lastKnownHash) {
                   localStorage.setItem('app-content-hash', serverHash);
                 }
@@ -401,7 +401,7 @@ function handleHome() {
           }
 
           applyDynamicIcons() {
-            // 홈페이지용 동적 아이콘 적용
+            // Apply dynamic icons for homepage
             this.iconGenerator.applyDynamicIcons();
           }
 
@@ -416,7 +416,7 @@ function handleHome() {
                   newWorker.addEventListener('statechange', () => {
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                       console.log('PWA: New service worker installed, update available');
-                      // Service Worker 업데이트가 있을 때도 새로고침
+                      // Refresh when Service Worker update is available
                       this.showUpdateNotification('Service worker updated! Refreshing...', true);
                       setTimeout(() => {
                         window.location.reload();
@@ -425,7 +425,7 @@ function handleHome() {
                   });
                 });
 
-                // 기존 Service Worker가 업데이트되었을 때 처리
+                // Handle when existing Service Worker is updated
                 if (registration.waiting) {
                   console.log('PWA: Service worker update waiting');
                   this.showUpdateNotification('Update ready! Refreshing...', true);
@@ -457,16 +457,16 @@ function handleHome() {
           }
 
           saveCurrentPage() {
-            // 현재 페이지를 개별 PWA로 저장하는 기능
+            // Feature to save current page as individual PWA
             if ('serviceWorker' in navigator) {
-              // 브라우저의 설치 프롬프트 트리거
+              // Trigger browser's install prompt
               if (this.deferredPrompt) {
                 this.deferredPrompt.prompt();
               } else {
                 this.showManualInstallInstructions();
               }
             } else {
-              this.showNotification('이 브라우저는 PWA를 지원하지 않습니다', 'error');
+              this.showNotification('This browser does not support PWA', 'error');
             }
           }
 
@@ -476,11 +476,11 @@ function handleHome() {
 
             let instructions = '';
             if (isIOS) {
-              instructions = '📱 Safari에서: 공유 버튼 → "홈 화면에 추가"를 선택하세요';
+              instructions = '📱 Safari: Tap Share button → Select "Add to Home Screen"';
             } else if (isAndroid) {
-              instructions = '📱 Chrome에서: 메뉴(⋮) → "홈 화면에 추가"를 선택하세요';
+              instructions = '📱 Chrome: Tap Menu (⋮) → Select "Add to Home Screen"';
             } else {
-              instructions = '💻 브라우저 주소창 옆의 설치 아이콘을 클릭하거나 메뉴에서 "앱 설치"를 선택하세요';
+              instructions = '💻 Click the install icon next to the address bar or select "Install App" from the menu';
             }
 
             this.showNotification(instructions, 'info', 8000);
@@ -513,10 +513,10 @@ function handleHome() {
 
             const updateStatus = () => {
               if (navigator.onLine) {
-                statusEl.textContent = '🟢 온라인';
+                statusEl.textContent = '🟢 Online';
                 statusEl.className = 'pwa-status online';
               } else {
-                statusEl.textContent = '🔴 오프라인';
+                statusEl.textContent = '🔴 Offline';
                 statusEl.className = 'pwa-status offline';
               }
               statusEl.style.display = 'block';
@@ -537,7 +537,7 @@ function handleHome() {
 
             const button = document.createElement('button');
             button.id = 'installBtn';
-            button.innerHTML = '📱 앱 설치';
+            button.innerHTML = '📱 Install App';
             button.style.cssText = \`
               position: fixed;
               bottom: 20px;
@@ -621,10 +621,10 @@ function handleHome() {
           }
         }
 
-        // PWA 매니저 초기화
+        // PWA manager initialization
         new SimplePWAManager();
 
-        // 검색 기능
+        // Search functionality
         const searchInput = document.getElementById('searchInput');
         const toolItems = document.querySelectorAll('.tool-item');
         const categories = document.querySelectorAll('.category');
@@ -633,7 +633,7 @@ function handleHome() {
           const query = this.value.toLowerCase();
 
           if (!query) {
-            // 검색어가 없으면 모든 항목 표시
+            // If no search term, show all items
             toolItems.forEach(item => item.classList.remove('hidden'));
             categories.forEach(category => category.classList.remove('hidden'));
             return;
@@ -648,7 +648,7 @@ function handleHome() {
 
             item.classList.toggle('hidden', !matches);
 
-            // 카테고리별 가시성 추적
+            // Track visibility by category
             const category = item.closest('.category');
             const categoryName = category.dataset.category;
             if (matches) {
@@ -656,7 +656,7 @@ function handleHome() {
             }
           });
 
-          // 빈 카테고리 숨기기
+          // Hide empty categories
           categories.forEach(category => {
             const categoryName = category.dataset.category;
             category.classList.toggle('hidden', !hasVisibleItems[categoryName]);
@@ -822,7 +822,7 @@ const CDN_RESOURCES = [
   'https://cdnjs.cloudflare.com'
 ];
 
-// 설치 이벤트 - 정적 리소스 캐시
+// Install event - cache static resources
 self.addEventListener('install', event => {
   console.log('Service Worker: Installing...');
 
@@ -842,7 +842,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// 활성화 이벤트 - 오래된 캐시 정리
+// Activate event - clean up old caches
 self.addEventListener('activate', event => {
   console.log('Service Worker: Activating...');
 
@@ -865,7 +865,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch 이벤트 - 네트워크 요청 인터셉트
+// Fetch event - intercept network requests
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
@@ -884,7 +884,7 @@ self.addEventListener('fetch', event => {
   event.respondWith(handleRequest(request));
 });
 
-// 메인 요청 처리
+// Main request handler
 async function handleRequest(request) {
   try {
     const cachedResponse = await caches.match(request);
@@ -913,7 +913,7 @@ async function handleRequest(request) {
     }
 
     return new Response(
-      '<!DOCTYPE html><html><head><title>오프라인</title></head><body><h1>오프라인 모드</h1><p>인터넷 연결을 확인해주세요.</p></body></html>',
+      '<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>Offline Mode</h1><p>Please check your internet connection.</p></body></html>',
       { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } }
     );
   }
@@ -938,7 +938,7 @@ async function handleCDNRequest(request) {
   }
 }
 
-// 백그라운드 캐시 업데이트
+// Background cache update
 async function updateCache(request) {
   try {
     const networkResponse = await fetch(request);
@@ -947,7 +947,7 @@ async function updateCache(request) {
       await cache.put(request, networkResponse);
     }
   } catch (error) {
-    // 백그라운드 업데이트 실패는 무시
+    // Ignore background update failures
   }
 }
 
@@ -957,7 +957,7 @@ console.log('Service Worker: Loaded');
   return new Response(swCode, {
     headers: {
       'Content-Type': 'application/javascript',
-      'Cache-Control': 'public, max-age=0' // Service Worker는 캐시하지 않음
+      'Cache-Control': 'public, max-age=0' // Don't cache Service Worker
     }
   });
 }
@@ -969,7 +969,7 @@ function getIconGeneratorScript() {
   return `
     class IconGenerator {
       constructor() {
-        this.emoji = '🛠️'; // 기본 이모지 (도구)
+        this.emoji = '🛠️'; // Default emoji (tools)
         this.backgroundColor = '#333333';
         this.cache = new Map();
       }

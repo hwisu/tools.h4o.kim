@@ -327,7 +327,7 @@ function calculateStrength(password) {
     }
   }
 
-  // UI 업데이트
+  // UI update
   strengthFill.className = `strength-fill ${color}`;
   strengthFill.style.width = `${percentage}%`;
   strengthText.innerHTML = `Strength: ${strength} <small>(Entropy: ${Math.round(entropy)} bits)</small>`;

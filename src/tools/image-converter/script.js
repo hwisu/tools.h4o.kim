@@ -469,48 +469,48 @@ async function processImageWithJSquash(file, options) {
             effort: 10, // 최대 노력 (가장 느리지만 최고 압축)
             // 🎨 색상 최적화
             palette: true, // 팔레트 최적화 시도
-            // 🔍 필터 최적화
-            filters: [0, 1, 2, 3, 4], // 모든 필터 시도하여 최적 선택
+            // 🔍 Filter optimization
+            filters: [0, 1, 2, 3, 4], // Try all filters to select optimal one
           };
 
           console.log('PNG encoding with maximum quality options:', pngOptions);
           encodedData = await jSquashModules.png.encode(imageData, pngOptions);
         } catch (error) {
           console.warn('Advanced PNG encoding failed, using basic settings:', error);
-          // 기본 설정으로 폴백
+          // Fallback to basic settings
           encodedData = await jSquashModules.png.encode(imageData);
         }
         break;
 
       case 'webp':
         try {
-          // 🔥 WebP 최고 품질 설정 (속도 희생)
+          // 🔥 WebP highest quality settings (sacrificing speed)
           const webpOptions = {
             quality,
-            // 🎯 최고 품질을 위한 고급 설정들
-            method: 6, // 최고 압축 방법 (0-6, 6이 가장 느리지만 최고 품질)
-            // 🎨 색상 및 디테일 보존
-            autoFilter: true, // 자동 필터 선택
-            filterStrength: 60, // 필터 강도 (0-100)
-            filterSharpness: 0, // 샤프니스 (0-7, 0이 가장 샤프)
-            filterType: 1, // 필터 타입 (0=simple, 1=strong)
-            // 🔧 고급 최적화
-            partitions: 3, // 파티션 수 (0-3, 3이 최고 품질)
-            segments: 4, // 세그먼트 수 (1-4, 4가 최고 품질)
-            pass: 10, // 패스 수 (1-10, 10이 최고 품질)
-            showCompressed: 0, // 압축 정보 표시 안함
-            preprocessing: 2, // 전처리 (0=none, 1=segment-smooth, 2=pseudo-random dithering)
-            partitionLimit: 100, // 파티션 한계 (0-100)
-            // 🎭 알파 채널 최적화
-            alphaCompression: 1, // 알파 압축 활성화
-            alphaFiltering: 2, // 알파 필터링 (0=none, 1=fast, 2=best)
-            alphaQuality: Math.max(quality * 100, 90), // 알파 품질 (최소 90)
-            // 🌈 색상 공간 최적화
-            exact: true, // 정확한 색상 보존
-            // 🔍 세부 설정
-            sns: 100, // Spatial Noise Shaping (0-100, 100이 최고)
-            f: 100, // 필터링 강도 (0-100, 100이 최고)
-            sharpYuv: true, // Sharp YUV 변환 (색상 정확도 향상)
+            // 🎯 Advanced settings for highest quality
+            method: 6, // Best compression method (0-6, 6 is slowest but best quality)
+            // 🎨 Color and detail preservation
+            autoFilter: true, // Automatic filter selection
+            filterStrength: 60, // Filter strength (0-100)
+            filterSharpness: 0, // Sharpness (0-7, 0 is sharpest)
+            filterType: 1, // Filter type (0=simple, 1=strong)
+            // 🔧 Advanced optimization
+            partitions: 3, // Number of partitions (0-3, 3 is best quality)
+            segments: 4, // Number of segments (1-4, 4 is best quality)
+            pass: 10, // Number of passes (1-10, 10 is best quality)
+            showCompressed: 0, // Don't show compression info
+            preprocessing: 2, // Preprocessing (0=none, 1=segment-smooth, 2=pseudo-random dithering)
+            partitionLimit: 100, // Partition limit (0-100)
+            // 🎭 Alpha channel optimization
+            alphaCompression: 1, // Enable alpha compression
+            alphaFiltering: 2, // Alpha filtering (0=none, 1=fast, 2=best)
+            alphaQuality: Math.max(quality * 100, 90), // Alpha quality (minimum 90)
+            // 🌈 Color space optimization
+            exact: true, // Preserve exact colors
+            // 🔍 Detail settings
+            sns: 100, // Spatial Noise Shaping (0-100, 100 is best)
+            f: 100, // Filtering strength (0-100, 100 is best)
+            sharpYuv: true, // Sharp YUV conversion (improves color accuracy)
           };
 
           console.log('WebP encoding with maximum quality options:', webpOptions);
@@ -518,7 +518,7 @@ async function processImageWithJSquash(file, options) {
         } catch (error) {
           console.warn('Advanced WebP encoding failed, trying fallback:', error);
 
-          // 📉 폴백: 기본 고품질 설정
+          // 📉 Fallback: basic high quality settings
           const fallbackOptions = {
             quality,
             method: 6,
@@ -532,18 +532,18 @@ async function processImageWithJSquash(file, options) {
           } catch (fallbackError) {
             console.warn('jSquash WebP encoding failed, using Canvas fallback:', fallbackError);
 
-            // Canvas API 폴백 (WebP 지원 확인)
+            // Canvas API fallback (check WebP support)
             const canvas = document.createElement('canvas');
             canvas.width = imageData.width;
             canvas.height = imageData.height;
             const ctx = canvas.getContext('2d');
 
-            // 🎨 최고 품질 렌더링 설정
+            // 🎨 Highest quality rendering settings
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
             ctx.putImageData(imageData, 0, 0);
 
-            // WebP 지원 확인
+            // Check WebP support
             const testDataURL = canvas.toDataURL('image/webp');
             if (!testDataURL.startsWith('data:image/webp')) {
               throw new Error('WebP format is not supported in this browser');
@@ -581,51 +581,51 @@ async function processImageWithCanvas(file, options) {
       canvas.width = img.width;
       canvas.height = img.height;
 
-      // 🎨 최고 품질 렌더링 설정 (속도 희생)
+      // 🎨 Highest quality rendering settings (sacrificing speed)
       ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high'; // 최고 품질 스무딩
+      ctx.imageSmoothingQuality = 'high'; // Highest quality smoothing
 
-      // 🔧 고급 컨텍스트 설정들
+      // 🔧 Advanced context settings
       ctx.globalCompositeOperation = 'source-over';
       ctx.globalAlpha = 1.0;
 
-      // 🎯 픽셀 완벽 렌더링을 위한 설정
-      ctx.translate(0.5, 0.5); // 서브픽셀 렌더링 방지
+      // 🎯 Pixel perfect rendering settings
+      ctx.translate(0.5, 0.5); // Prevent sub-pixel rendering
       ctx.drawImage(img, -0.5, -0.5, img.width, img.height);
       ctx.translate(-0.5, -0.5);
 
-      // 🔍 고품질 최적화 적용 (속도 희생)
+      // 🔍 High quality optimization (sacrificing speed)
       if (options.optimize) {
         console.log('Applying maximum quality optimizations to Canvas...');
 
-        // 🎨 고급 이미지 처리 (대형 이미지용)
+        // 🎨 Advanced image processing (for large images)
         if (img.width > 2000 || img.height > 2000) {
-          // 🔧 대형 이미지 최적화 - 세밀한 처리
+          // 🔧 Large image optimization - detailed processing
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           const data = imageData.data;
 
-          // 🌈 색상 정확도 향상 (매우 세밀한 조정)
+          // 🌈 Color accuracy enhancement (very fine adjustment)
           for (let i = 0; i < data.length; i += 4) {
-            // 🎯 색상 정확도 미세 조정 (거의 무손실 수준)
-            data[i] = Math.min(255, Math.max(0, data[i] * 1.001));     // Red - 극미세 조정
+            // 🎯 Fine color accuracy adjustment (near lossless level)
+            data[i] = Math.min(255, Math.max(0, data[i] * 1.001));     // Red - micro adjustment
             data[i + 1] = Math.min(255, Math.max(0, data[i + 1] * 1.001)); // Green
             data[i + 2] = Math.min(255, Math.max(0, data[i + 2] * 1.001)); // Blue
-            // Alpha는 그대로 유지
+            // Keep Alpha as is
           }
 
           ctx.putImageData(imageData, 0, 0);
         }
 
-        // 🔍 중간 크기 이미지 최적화
+        // 🔍 Medium size image optimization
         else if (img.width > 800 || img.height > 800) {
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           const data = imageData.data;
 
-          // 🎨 색상 선명도 극미세 향상
+          // 🎨 Color sharpness micro enhancement
           for (let i = 0; i < data.length; i += 4) {
-            // 매우 보수적인 선명도 향상 (품질 손실 최소화)
+            // Very conservative sharpness enhancement (minimize quality loss)
             const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
-            const factor = brightness > 128 ? 1.002 : 0.999; // 극미세 조정
+            const factor = brightness > 128 ? 1.002 : 0.999; // Micro adjustment
 
             data[i] = Math.min(255, Math.max(0, data[i] * factor));
             data[i + 1] = Math.min(255, Math.max(0, data[i + 1] * factor));
@@ -636,7 +636,7 @@ async function processImageWithCanvas(file, options) {
         }
       }
 
-      // 🎯 최고 품질 변환 설정
+      // 🎯 Highest quality conversion settings
       const quality = options.quality / 100;
       let mimeType = `image/${options.format}`;
 
@@ -644,9 +644,9 @@ async function processImageWithCanvas(file, options) {
         mimeType = 'image/jpeg';
       }
 
-      // 🔍 브라우저 지원 확인 (WebP)
+      // 🔍 Browser support check (WebP)
       if (options.format === 'webp') {
-        // WebP 지원 테스트 (더 정확한 방법)
+        // WebP support test (more accurate method)
         const testCanvas = document.createElement('canvas');
         testCanvas.width = 1;
         testCanvas.height = 1;
@@ -661,7 +661,7 @@ async function processImageWithCanvas(file, options) {
         }
       }
 
-      // 🎨 최고 품질로 변환 (속도 희생)
+      // 🎨 Convert with highest quality (sacrificing speed)
       console.log(`Converting with Canvas API at maximum quality: ${(quality * 100).toFixed(1)}%`);
 
       canvas.toBlob((blob) => {
