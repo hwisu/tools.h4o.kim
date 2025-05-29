@@ -78,8 +78,7 @@ export function processTemplate(htmlTemplate, toolName) {
         const toolEmojis = {
           'json': '📋', 'tcount': '🔢', 'url': '🔗', 'diff': '📝',
           'base64': '🔐', 'sql': '🗃️', 'hash': '#️⃣', 'qr': '📱',
-          'tz': '🌍', 'image': '🖼️', 'pwd': '🔑', 'unit': '📏', 'cron': '⏰',
-          'icons': '🎨'
+          'tz': '🌍', 'image': '🖼️', 'pwd': '🔑', 'unit': '📏', 'cron': '⏰'
         };
         return toolEmojis[toolName] || this.emoji;
       }

@@ -162,7 +162,6 @@ class IconGenerator {
       'cron-builder': '⏰',
       'cron': '⏰',
       'icon-generator': '🎨',
-      'icons': '🎨'
     };
 
     return toolEmojis[toolName] || this.emoji;

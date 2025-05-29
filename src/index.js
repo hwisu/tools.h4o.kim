@@ -273,10 +273,6 @@ function handleHome() {
             <a href="/cron" class="tool-link">Cron Builder</a>
             <span class="tool-description"> : Build and validate cron expressions with visual interface</span>
           </li>
-          <li class="tool-item" data-keywords="icon generator emoji pwa favicon">
-            <a href="/icons" class="tool-link">Icon Generator</a>
-            <span class="tool-description"> : Create custom PWA icons and favicons using emojis</span>
-          </li>
         </ul>
       </div>
 
@@ -885,7 +881,6 @@ function getIconGeneratorScript() {
           'pwd': '🔑',
           'unit': '📏',
           'cron': '⏰',
-          'icons': '🎨'
         };
 
         return toolEmojis[toolName] || this.emoji;
