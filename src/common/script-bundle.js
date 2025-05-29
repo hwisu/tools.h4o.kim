@@ -2,7 +2,7 @@
 import textCounterScript from '../tools/text-counter/script.js?raw';
 import urlEncoderScript from '../tools/url-encoder/script.js?raw';
 import jsonFormatterScript from '../tools/json-formatter/script.js?raw';
-import base64ConverterScript from '../tools/base64-converter/script.js?raw';
+import baseConverterScript from '../tools/base-converter/script.js?raw';
 import qrGeneratorScript from '../tools/qr-generator/script.js?raw';
 import sqlFormatterScript from '../tools/sql-formatter/script.js?raw';
 
@@ -19,7 +19,7 @@ const TOOL_SCRIPTS = {
   'text-counter': textCounterScript,
   'url-encoder': urlEncoderScript,
   'json-formatter': jsonFormatterScript,
-  'base64-converter': base64ConverterScript,
+  'base-converter': baseConverterScript,
   'qr-generator': qrGeneratorScript,
   'sql-formatter': sqlFormatterScript,
 

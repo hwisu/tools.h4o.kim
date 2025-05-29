@@ -4,7 +4,7 @@ import { createHtmlResponse } from './template.js';
 import textCounterHtml from '../tools/text-counter/index.html?inline';
 import urlEncoderHtml from '../tools/url-encoder/index.html?inline';
 import jsonFormatterHtml from '../tools/json-formatter/index.html?inline';
-import base64ConverterHtml from '../tools/base64-converter/index.html?inline';
+import baseConverterHtml from '../tools/base-converter/index.html?inline';
 import qrGeneratorHtml from '../tools/qr-generator/index.html?inline';
 import sqlFormatterHtml from '../tools/sql-formatter/index.html?inline';
 import textDiffHtml from '../tools/text-diff/index.html?inline';
@@ -17,7 +17,8 @@ import cronBuilderHtml from '../tools/cron-builder/index.html?inline';
 
 // URL 단축 매핑 - 짧은 URL을 실제 도구 이름으로 매핑
 const URL_MAPPING = {
-  'base64': 'base64-converter',
+  'base64': 'base-converter',
+  'base': 'base-converter',
   'cron': 'cron-builder',
   'hash': 'hash-generator',
   'image': 'image-converter',
@@ -46,9 +47,9 @@ const TOOLS_CONFIG = {
     html: jsonFormatterHtml,
     title: 'JSON Formatter'
   },
-  'base64-converter': {
-    html: base64ConverterHtml,
-    title: 'Base64 Converter'
+  'base-converter': {
+    html: baseConverterHtml,
+    title: 'Base Converter'
   },
   'qr-generator': {
     html: qrGeneratorHtml,
@@ -93,7 +94,7 @@ const ALL_HTML_IMPORTS = {
   textCounterHtml,
   urlEncoderHtml,
   jsonFormatterHtml,
-  base64ConverterHtml,
+  baseConverterHtml,
   qrGeneratorHtml,
   sqlFormatterHtml,
   textDiffHtml,

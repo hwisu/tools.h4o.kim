@@ -112,12 +112,34 @@ function handleHome() {
           font-size: 1rem;
           border: 1px solid #ccc;
           border-radius: 3px;
-          font-family: inherit;
+          font-family: 'Monaco', 'Menlo', monospace;
+          background: #fafafa;
+          color: #333;
         }
         .search-input:focus {
           outline: none;
-          border-color: #666;
-          box-shadow: 0 0 3px rgba(0,0,0,0.1);
+          border-color: #2196F3;
+          box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+          background: #fff;
+        }
+        .search-hints {
+          margin-top: 0.5rem;
+          text-align: center;
+          color: #666;
+          font-size: 0.85rem;
+        }
+        .search-hints strong {
+          color: #333;
+        }
+        .search-hints kbd {
+          background: #f5f5f5;
+          border: 1px solid #ccc;
+          border-radius: 3px;
+          padding: 0.1rem 0.3rem;
+          font-family: 'Monaco', 'Menlo', monospace;
+          font-size: 0.8rem;
+          color: #333;
+          box-shadow: 0 1px 1px rgba(0,0,0,0.1);
         }
         .category {
           margin-bottom: 2rem;
@@ -138,16 +160,22 @@ function handleHome() {
         .tool-item {
           margin-bottom: 0.5rem;
           padding-left: 1rem;
+          position: relative;
+          transition: all 0.2s ease;
         }
         .tool-item::before {
           content: "- ";
           margin-left: -1rem;
           color: #666;
+          font-family: 'Monaco', 'Menlo', monospace;
+          transition: all 0.2s ease;
         }
         .tool-link {
           color: #333;
           text-decoration: none;
           font-weight: 500;
+          position: relative;
+          transition: all 0.2s ease;
         }
         .tool-link:hover {
           text-decoration: underline;
@@ -194,6 +222,29 @@ function handleHome() {
         .save-page-btn:hover {
           background: #555;
         }
+
+        /* Terminal-style keyboard navigation selection */
+        .tool-item.selected::before {
+          content: "+ ";
+          color: #2196F3;
+          font-weight: bold;
+          animation: blink 1.5s infinite;
+        }
+        .tool-item.selected .tool-link {
+          color: #1976D2;
+          text-decoration: underline;
+          text-decoration-color: #2196F3;
+          text-decoration-thickness: 2px;
+          text-underline-offset: 2px;
+        }
+        .tool-item.selected .tool-description {
+          color: #555;
+        }
+
+        @keyframes blink {
+          0%, 50% { opacity: 1; }
+          51%, 100% { opacity: 0.3; }
+        }
       </style>
     </head>
     <body>
@@ -207,6 +258,9 @@ function handleHome() {
 
       <div class="search-container">
         <input type="text" id="searchInput" class="search-input" placeholder="Search tools..." autofocus>
+        <div class="search-hints">
+          <small>💡 <kbd>↑↓</kbd> Navigate • <kbd>Enter</kbd> Select • <kbd>Esc</kbd> Clear</small>
+        </div>
       </div>
 
       <div class="category" data-category="text">
@@ -234,9 +288,9 @@ function handleHome() {
             <a href="/json" class="tool-link">JSON Formatter</a>
             <span class="tool-description"> : Format, validate, and minify JSON</span>
           </li>
-          <li class="tool-item" data-keywords="base64 encoder decoder encode decode">
-            <a href="/base64" class="tool-link">Base64 Converter</a>
-            <span class="tool-description"> : Encode and decode Base64 strings</span>
+          <li class="tool-item" data-keywords="base64 base converter hex binary decimal encode decode">
+            <a href="/base64" class="tool-link">Base Converter</a>
+            <span class="tool-description"> : Convert between Base64, Hex, Binary, and Decimal formats</span>
           </li>
           <li class="tool-item" data-keywords="sql formatter prettify query">
             <a href="/sql" class="tool-link">SQL Formatter</a>
@@ -624,18 +678,50 @@ function handleHome() {
         // PWA manager initialization
         new SimplePWAManager();
 
-        // Search functionality
+        // Search functionality with keyboard navigation
         const searchInput = document.getElementById('searchInput');
         const toolItems = document.querySelectorAll('.tool-item');
         const categories = document.querySelectorAll('.category');
+        let selectedIndex = -1;
+        let visibleItems = [];
 
+        function updateVisibleItems() {
+          visibleItems = Array.from(toolItems).filter(item => !item.classList.contains('hidden'));
+        }
+
+        function clearSelection() {
+          toolItems.forEach(item => item.classList.remove('selected'));
+          selectedIndex = -1;
+        }
+
+        function selectItem(index) {
+          clearSelection();
+          if (index >= 0 && index < visibleItems.length) {
+            selectedIndex = index;
+            visibleItems[index].classList.add('selected');
+            visibleItems[index].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }
+
+        function navigateToSelected() {
+          if (selectedIndex >= 0 && selectedIndex < visibleItems.length) {
+            const link = visibleItems[selectedIndex].querySelector('.tool-link');
+            if (link) {
+              window.location.href = link.href;
+            }
+          }
+        }
+
+        // Search input event listener
         searchInput.addEventListener('input', function() {
           const query = this.value.toLowerCase();
+          clearSelection();
 
           if (!query) {
             // If no search term, show all items
             toolItems.forEach(item => item.classList.remove('hidden'));
             categories.forEach(category => category.classList.remove('hidden'));
+            updateVisibleItems();
             return;
           }
 
@@ -661,7 +747,53 @@ function handleHome() {
             const categoryName = category.dataset.category;
             category.classList.toggle('hidden', !hasVisibleItems[categoryName]);
           });
+
+          updateVisibleItems();
+
+          // Auto-select first result if there are results
+          if (visibleItems.length > 0) {
+            selectItem(0);
+          }
         });
+
+        // Keyboard navigation
+        searchInput.addEventListener('keydown', function(e) {
+          if (visibleItems.length === 0) return;
+
+          switch (e.key) {
+            case 'ArrowDown':
+              e.preventDefault();
+              const nextIndex = selectedIndex < visibleItems.length - 1 ? selectedIndex + 1 : 0;
+              selectItem(nextIndex);
+              break;
+
+            case 'ArrowUp':
+              e.preventDefault();
+              const prevIndex = selectedIndex > 0 ? selectedIndex - 1 : visibleItems.length - 1;
+              selectItem(prevIndex);
+              break;
+
+            case 'Enter':
+              e.preventDefault();
+              if (selectedIndex >= 0) {
+                navigateToSelected();
+              } else if (visibleItems.length > 0) {
+                // If no item selected but there are results, select first one
+                selectItem(0);
+                navigateToSelected();
+              }
+              break;
+
+            case 'Escape':
+              e.preventDefault();
+              clearSelection();
+              this.blur();
+              break;
+          }
+        });
+
+        // Initialize visible items
+        updateVisibleItems();
       </script>
     </body>
     </html>
