@@ -28,31 +28,28 @@
   </style>
 </head>
 <body>
-  <div class="header">
-    <a href="/" class="back-link">← Back</a>
-    <h1>URL Encoder</h1>
-    <p>Encode and decode URLs and URI components</p>
-  </div>
+  <div class="container">
+    <h1>URL 인코더</h1>
+    <p>URL과 URL 구성요소를 인코딩/디코딩합니다</p>
 
-  <div class="tool-container">
     <div class="converter-grid">
       <div class="input-group">
-        <label for="input">Input Text</label>
-        <textarea id="input" placeholder="Enter text to encode/decode..." rows="10" autofocus></textarea>
+        <label for="input">입력 텍스트</label>
+        <textarea id="input" placeholder="인코딩/디코딩할 텍스트를 입력하세요..." rows="10" autofocus></textarea>
       </div>
       <div class="input-group">
-        <label for="output">Output</label>
-        <textarea id="output" placeholder="Result will appear here..." rows="10" readonly></textarea>
+        <label for="output">결과</label>
+        <textarea id="output" placeholder="결과가 여기에 나타납니다..." rows="10" readonly></textarea>
       </div>
     </div>
 
     <div class="controls">
-      <button onclick="encode()">Encode URL</button>
-      <button onclick="decode()">Decode URL</button>
-      <button onclick="encodeComponent()">Encode Component</button>
-      <button onclick="decodeComponent()">Decode Component</button>
-      <button onclick="swap()">Swap Input/Output</button>
-      <button onclick="clear()">Clear</button>
+      <button onclick="encode()">URL 인코딩</button>
+      <button onclick="decode()">URL 디코딩</button>
+      <button onclick="encodeComponent()">컴포넌트 인코딩</button>
+      <button onclick="decodeComponent()">컴포넌트 디코딩</button>
+      <button onclick="swap()">입력/출력 교환</button>
+      <button onclick="clear()">초기화</button>
     </div>
   </div>
 

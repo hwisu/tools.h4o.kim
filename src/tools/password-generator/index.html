@@ -8,163 +8,391 @@
     /* Common styles will be injected here */
     /* {{COMMON_STYLES}} */
 
-    .options {
-      margin: 1rem 0;
-      padding: 1rem;
-      border: 1px solid #ddd;
-      border-radius: 3px;
-      background: #f8f8f8;
+    /* Password generator specific styles */
+    .pwd-main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
     }
-    .options h3 {
-      margin: 0 0 1rem 0;
-      font-size: 1rem;
+
+    .generator-section {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-medium);
+      padding: 2rem;
+      box-shadow: var(--shadow);
     }
-    .option-group {
-      margin-bottom: 1rem;
+
+    .generator-section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.5rem;
     }
-    .option-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    .password-output {
-      background: #f9f9f9;
-      padding: 1rem;
-      border: 1px solid #ddd;
-      font-family: 'Monaco', 'Menlo', monospace;
+
+    .password-display {
+      background: var(--bg-secondary);
+      padding: 1.5rem;
+      border: 2px solid var(--border-medium);
+      font-family: 'Courier New', monospace;
       font-size: 1.2rem;
       word-break: break-all;
-      margin: 1rem 0;
+      margin: 1.5rem 0;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      min-height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
     }
-    .strength-meter {
-      margin: 1rem 0;
-      padding: 1rem;
-      border: 1px solid #ddd;
+
+    .password-display:hover {
+      border-color: var(--accent-color);
+      background: var(--bg-tertiary);
+    }
+
+    .password-display.copied {
+      background: var(--success-bg);
+      border-color: var(--success-border);
+      color: var(--success-text);
+    }
+
+    .password-placeholder {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .controls-section {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      gap: 1rem;
+    }
+
+    .control-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-label {
+      font-weight: 500;
+      color: var(--text-primary);
+      flex: 1;
+      font-size: 0.9rem;
+    }
+
+    .control-input {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    input[type="range"] {
+      width: 120px;
+      height: 6px;
+      background: var(--border-medium);
       border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
     }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--accent-color);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: var(--accent-color);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+    }
+
+    .value-display {
+      font-weight: 600;
+      color: var(--accent-color);
+      min-width: 35px;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--accent-color);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .info-section {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-medium);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .info-section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.5rem;
+    }
+
+    .strength-meter {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      border: 1px solid var(--border-light);
+      background: var(--bg-secondary);
+    }
+
+    .strength-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .strength-label {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .strength-score {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-family: 'Courier New', monospace;
+    }
+
     .strength-bar {
-      height: 10px;
-      background: #ddd;
-      border-radius: 5px;
+      height: 8px;
+      background: var(--bg-tertiary);
+      border-radius: 4px;
       overflow: hidden;
-      margin: 0.5rem 0;
+      margin-bottom: 0.75rem;
     }
+
     .strength-fill {
       height: 100%;
-      transition: width 0.3s ease;
+      transition: all 0.3s ease;
+      border-radius: 4px;
     }
-    .strength-weak { background: #dc3545; }
-    .strength-fair { background: #ffc107; }
-    .strength-good { background: #28a745; }
-    .strength-strong { background: #007bff; }
+
+    .strength-weak { background: var(--error-border); }
+    .strength-fair { background: var(--warning-border); }
+    .strength-good { background: var(--success-border); }
+    .strength-strong { background: var(--accent-color); }
+
+    .strength-tips {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .entropy-info {
+      margin: 1rem 0;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .entropy-value {
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .pwd-main {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .control-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+
+      .control-label {
+        text-align: center;
+      }
+
+      .password-display {
+        font-size: 1rem;
+        padding: 1rem;
+      }
+    }
   </style>
 </head>
 <body>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+    <svg class="theme-icon" viewBox="0 0 24 24">
+      <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+    </svg>
+  </button>
+
   <div class="header">
     <a href="/" class="back-link">← Back</a>
     <h1>Password Generator</h1>
-    <p>Generate secure passwords with customizable options</p>
+    <p>Create secure passwords with customizable options</p>
   </div>
 
   <div class="tool-container">
-    <div class="options">
-      <h3>Password Options</h3>
+    <div class="pwd-main">
+      <div class="generator-section">
+        <h2>Password Generator</h2>
 
-      <div class="option-group">
-        <label>
-          <input type="radio" name="passwordType" value="random" checked> Random Password
-        </label>
-      </div>
-      <div class="option-group">
-        <label>
-          <input type="radio" name="passwordType" value="passphrase"> Passphrase (recommended)
-        </label>
-      </div>
+        <div class="password-display" id="passwordDisplay" onclick="copyPassword()">
+          <span class="password-placeholder">Click "Generate" to create password</span>
+        </div>
 
-      <div id="randomOptions">
-        <div class="option-group">
-          <label for="length">Length: <span id="lengthValue">15</span></label>
-          <input type="range" id="length" min="8" max="128" value="15">
-        </div>
-        <div class="option-group">
-          <label>
-            <input type="checkbox" id="uppercase" checked> Include uppercase letters (A-Z)
-          </label>
-        </div>
-        <div class="option-group">
-          <label>
-            <input type="checkbox" id="lowercase" checked> Include lowercase letters (a-z)
-          </label>
-        </div>
-        <div class="option-group">
-          <label>
-            <input type="checkbox" id="numbers" checked> Include numbers (0-9)
-          </label>
-        </div>
-        <div class="option-group">
-          <label>
-            <input type="checkbox" id="symbols"> Include symbols (!@#$%^&*)
-          </label>
-        </div>
-        <div class="option-group">
-          <label>
-            <input type="checkbox" id="spaces"> Include spaces (for passphrases)
-          </label>
-        </div>
-        <div class="option-group">
-          <label>
-            <input type="checkbox" id="excludeSimilar"> Exclude similar characters (0, O, l, I)
-          </label>
-        </div>
-      </div>
+        <div class="controls-section">
+          <div class="control-row">
+            <label class="control-label">Password Length</label>
+            <div class="slider-container">
+              <input type="range" id="lengthSlider" min="4" max="128" value="16" oninput="updateLength()">
+              <span class="value-display" id="lengthValue">16</span>
+            </div>
+          </div>
 
-      <div id="passphraseOptions" style="display: none;">
-        <div class="option-group">
-          <label for="wordCount">Number of words: <span id="wordCountValue">4</span></label>
-          <input type="range" id="wordCount" min="3" max="8" value="4">
+          <div class="control-row">
+            <label class="control-label">Include Uppercase Letters (A-Z)</label>
+            <div class="checkbox-container">
+              <input type="checkbox" id="uppercase" checked onchange="updateOptions()">
+            </div>
+          </div>
+
+          <div class="control-row">
+            <label class="control-label">Include Lowercase Letters (a-z)</label>
+            <div class="checkbox-container">
+              <input type="checkbox" id="lowercase" checked onchange="updateOptions()">
+            </div>
+          </div>
+
+          <div class="control-row">
+            <label class="control-label">Include Numbers (0-9)</label>
+            <div class="checkbox-container">
+              <input type="checkbox" id="numbers" checked onchange="updateOptions()">
+            </div>
+          </div>
+
+          <div class="control-row">
+            <label class="control-label">Include Symbols (!@#$%^&*)</label>
+            <div class="checkbox-container">
+              <input type="checkbox" id="symbols" checked onchange="updateOptions()">
+            </div>
+          </div>
+
+          <div class="control-row">
+            <label class="control-label">Exclude Similar Characters (0,O,l,I)</label>
+            <div class="checkbox-container">
+              <input type="checkbox" id="excludeSimilar" onchange="updateOptions()">
+            </div>
+          </div>
         </div>
-        <div class="option-group">
-          <label>
-            <input type="checkbox" id="capitalizeWords" checked> Capitalize first letter of each word
-          </label>
-        </div>
-        <div class="option-group">
-          <label>
-            <input type="checkbox" id="addNumbers" checked> Add numbers
-          </label>
-        </div>
-        <div class="option-group">
-          <label>
-            <input type="checkbox" id="addSymbols"> Add symbols
-          </label>
-        </div>
-        <div class="option-group">
-          <label for="separator">Word separator:</label>
-          <select id="separator">
-            <option value=" ">Space</option>
-            <option value="-">Hyphen (-)</option>
-            <option value="_">Underscore (_)</option>
-            <option value=".">Period (.)</option>
-            <option value="">No separator</option>
-          </select>
+
+        <div class="button-group">
+          <button class="btn btn-primary" onclick="generatePassword()">Generate Password</button>
+          <button class="btn btn-secondary" onclick="copyPassword()">Copy to Clipboard</button>
         </div>
       </div>
-    </div>
 
-    <button onclick="generate()">Generate Password</button>
-    <button onclick="copyPassword()" id="copyBtn" disabled>Copy Password</button>
+      <div class="info-section">
+        <h2>Password Strength</h2>
 
-    <div id="passwordOutput" class="password-output" style="display:none;"></div>
+        <div class="strength-meter">
+          <div class="strength-header">
+            <span class="strength-label" id="strengthLabel">Not Generated</span>
+            <span class="strength-score" id="strengthScore">0/100</span>
+          </div>
+          <div class="strength-bar">
+            <div class="strength-fill" id="strengthFill" style="width: 0%;"></div>
+          </div>
+          <div class="strength-tips" id="strengthTips">
+            Generate a password to see strength analysis
+          </div>
+        </div>
 
-    <div id="strengthMeter" class="strength-meter" style="display:none;">
-      <h4>Password Strength</h4>
-      <div class="strength-bar">
-        <div id="strengthFill" class="strength-fill"></div>
+        <div class="entropy-info">
+          <strong>Entropy:</strong> <span class="entropy-value" id="entropyValue">0 bits</span><br>
+          <small>Higher entropy means stronger password security</small>
+        </div>
       </div>
-      <div id="strengthText"></div>
-      <div id="strengthDetails"></div>
     </div>
   </div>
 
+  <script>
+    // Theme toggle functionality
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+
+      updateThemeIcon(newTheme);
+    }
+
+    // Update theme icon
+    function updateThemeIcon(theme) {
+      const toggle = document.querySelector('.theme-toggle svg');
+      if (theme === 'dark') {
+        // Moon icon
+        toggle.innerHTML = '<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>';
+      } else {
+        // Sun icon
+        toggle.innerHTML = '<path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>';
+      }
+    }
+
+    // Initialize theme
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeIcon(savedTheme);
+    }
+
+    // Initialize theme on page load
+    initTheme();
+  </script>
   <script src="./script.js"></script>
 </body>
 </html>

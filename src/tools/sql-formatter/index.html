@@ -25,39 +25,6 @@
       margin: 1rem 0;
       flex-wrap: wrap;
     }
-    .options {
-      margin: 1rem 0;
-      padding: 1rem;
-      border: 1px solid #ddd;
-      border-radius: 3px;
-      background: #f8f8f8;
-    }
-    .options h3 {
-      margin: 0 0 1rem 0;
-      font-size: 1rem;
-    }
-    .options-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin: 1rem 0;
-    }
-    @media (max-width: 600px) {
-      .options-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    .slider-control {
-      margin-bottom: 1rem;
-    }
-    .slider-control label {
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    .slider-control input[type="range"] {
-      width: 100%;
-      margin-top: 0.5rem;
-    }
     .sql-output {
       font-family: 'Monaco', 'Menlo', monospace;
       font-size: 0.9rem;
@@ -67,76 +34,26 @@
   </style>
 </head>
 <body>
-  <div class="header">
-    <a href="/" class="back-link">← Back</a>
-    <h1>SQL Formatter</h1>
-    <p>Format and prettify SQL queries with advanced dialect support</p>
-  </div>
+  <div class="container">
+    <h1>SQL 포맷터</h1>
+    <p>SQL 쿼리를 포맷팅하고 정리합니다</p>
 
-  <div class="tool-container">
     <div class="formatter-grid">
       <div class="input-group">
-        <label for="input">Input SQL</label>
-        <textarea id="input" placeholder="Enter SQL query to format..." rows="15" autofocus></textarea>
+        <label for="input">SQL 입력</label>
+        <textarea id="input" placeholder="포맷할 SQL 쿼리를 입력하세요..." rows="15" autofocus></textarea>
       </div>
       <div class="input-group">
-        <label for="output">Formatted SQL</label>
-        <textarea id="output" placeholder="Formatted SQL will appear here..." rows="15" readonly></textarea>
-      </div>
-    </div>
-
-    <div class="options">
-      <h3>Formatting Options</h3>
-      <div class="options-grid">
-        <div class="input-group">
-          <label for="language">SQL Dialect</label>
-          <select id="language">
-            <option value="sql">Standard SQL</option>
-            <option value="bigquery">BigQuery</option>
-            <option value="db2">IBM DB2</option>
-            <option value="hive">Apache Hive</option>
-            <option value="mariadb">MariaDB</option>
-            <option value="mysql">MySQL</option>
-            <option value="n1ql">Couchbase N1QL</option>
-            <option value="plsql">Oracle PL/SQL</option>
-            <option value="postgresql">PostgreSQL</option>
-            <option value="redshift">Amazon Redshift</option>
-            <option value="singlestoredb">SingleStoreDB</option>
-            <option value="snowflake">Snowflake</option>
-            <option value="spark">Apache Spark</option>
-            <option value="sqlite">SQLite</option>
-            <option value="tidb">TiDB</option>
-            <option value="transactsql">SQL Server T-SQL</option>
-            <option value="trino">Trino/Presto</option>
-          </select>
-        </div>
-
-        <div class="input-group">
-          <label for="keywordCase">Keyword Case</label>
-          <select id="keywordCase">
-            <option value="preserve">Preserve</option>
-            <option value="upper">UPPERCASE</option>
-            <option value="lower">lowercase</option>
-          </select>
-        </div>
-
-        <div class="slider-control">
-          <label for="indentSize">Indent Size: <span id="indentSizeValue">2</span> spaces</label>
-          <input type="range" id="indentSize" min="1" max="8" value="2">
-        </div>
-
-        <div class="slider-control">
-          <label for="linesBetweenQueries">Lines Between Queries: <span id="linesBetweenQueriesValue">1</span></label>
-          <input type="range" id="linesBetweenQueries" min="0" max="5" value="1">
-        </div>
+        <label for="output">포맷된 SQL</label>
+        <textarea id="output" placeholder="포맷된 SQL이 여기에 나타납니다..." rows="15" readonly></textarea>
       </div>
     </div>
 
     <div class="controls">
-      <button onclick="format()">Format SQL</button>
-      <button onclick="minify()">Minify SQL</button>
-      <button onclick="swap()">Swap Input/Output</button>
-      <button onclick="clear()">Clear</button>
+      <button onclick="format()">SQL 포맷</button>
+      <button onclick="minify()">SQL 압축</button>
+      <button onclick="swap()">입력/출력 교환</button>
+      <button onclick="clear()">초기화</button>
     </div>
   </div>
 

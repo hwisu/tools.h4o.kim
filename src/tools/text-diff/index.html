@@ -29,169 +29,59 @@
       border: 1px solid #ddd;
       max-height: 400px;
       overflow-y: auto;
+      border-radius: 3px;
     }
     .added {
       background-color: #d4edda;
       color: #155724;
       padding: 0 2px;
+      border-radius: 2px;
     }
     .removed {
       background-color: #f8d7da;
       color: #721c24;
       padding: 0 2px;
+      border-radius: 2px;
     }
     .unchanged {
       color: #666;
-    }
-    .line-number {
-      color: #999;
-      margin-right: 1rem;
-      user-select: none;
     }
     .stats {
       margin: 1rem 0;
       padding: 1rem;
       background: #f9f9f9;
       border: 1px solid #ddd;
-      font-family: 'Monaco', 'Menlo', monospace;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
+      border-radius: 3px;
     }
     .controls {
       margin: 1rem 0;
-    }
-    .control-group {
-      margin-bottom: 0.5rem;
-    }
-    .control-group label {
-      display: inline;
-      margin-right: 1rem;
-    }
-    .diff-mode-selector {
-      margin: 1rem 0;
-      border: 1px solid #ddd;
-      padding: 1rem;
-      border-radius: 3px;
-      background: #f8f8f8;
-    }
-    .diff-mode-selector h3 {
-      margin: 0 0 1rem 0;
-      font-size: 1rem;
-      color: #333;
-    }
-    .mode-buttons {
       display: flex;
       gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .mode-btn {
-      padding: 0.5rem 1rem;
-      border: 1px solid #ccc;
-      background: white;
-      cursor: pointer;
-      border-radius: 3px;
-      font-size: 0.85rem;
-    }
-    .mode-btn.active {
-      background: #007bff;
-      color: white;
-      border-color: #007bff;
-    }
-    .mode-btn:hover {
-      background: #f0f0f0;
-    }
-    .mode-btn.active:hover {
-      background: #0056b3;
-    }
-    .engine-status {
-      margin: 0.5rem 0;
-      font-size: 0.85rem;
-      color: #666;
-    }
-    .engine-loading {
-      color: #ff9800;
-    }
-    .engine-ready {
-      color: #4caf50;
-    }
-    .engine-error {
-      color: #f44336;
-    }
-    .similarity-score {
-      margin: 0.5rem 0;
-      padding: 0.5rem;
-      background: #e7f3ff;
-      border: 1px solid #b3d9ff;
-      border-radius: 3px;
-      font-weight: bold;
-    }
-    .char-diff .added, .char-diff .removed {
-      display: inline;
-      border-radius: 2px;
-    }
-    .word-diff .added, .word-diff .removed {
-      display: inline;
-      border-radius: 2px;
-      margin: 0 1px;
-    }
-    .line-diff .added, .line-diff .removed {
-      display: block;
-      margin: 1px 0;
-      padding: 2px 4px;
-      border-radius: 2px;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <a href="/" class="back-link">← Back</a>
-    <h1>Text Diff</h1>
-    <p>Compare two text strings with character, word, or line-level precision</p>
-  </div>
+  <div class="container">
+    <h1>텍스트 비교</h1>
+    <p>두 텍스트의 차이점을 확인합니다</p>
 
-  <div class="tool-container">
     <div class="diff-container">
       <div class="input-group">
-        <label for="text1">Original Text</label>
-        <textarea id="text1" placeholder="Enter original text here..." rows="10" autofocus></textarea>
+        <label for="text1">원본 텍스트</label>
+        <textarea id="text1" placeholder="원본 텍스트를 입력하세요..." rows="10" autofocus></textarea>
       </div>
       <div class="input-group">
-        <label for="text2">Modified Text</label>
-        <textarea id="text2" placeholder="Enter modified text here..." rows="10"></textarea>
-      </div>
-    </div>
-
-    <div class="diff-mode-selector">
-      <h3>Diff Granularity</h3>
-      <div class="mode-buttons">
-        <button class="mode-btn" data-mode="chars">Character Level</button>
-        <button class="mode-btn active" data-mode="words">Word Level</button>
-        <button class="mode-btn" data-mode="lines">Line Level</button>
-        <button class="mode-btn" data-mode="sentences">Sentence Level</button>
+        <label for="text2">수정된 텍스트</label>
+        <textarea id="text2" placeholder="수정된 텍스트를 입력하세요..." rows="10"></textarea>
       </div>
     </div>
 
     <div class="controls">
-      <div class="control-group">
-        <label>
-          <input type="checkbox" id="ignoreWhitespace"> Ignore whitespace differences
-        </label>
-      </div>
-      <div class="control-group">
-        <label>
-          <input type="checkbox" id="ignoreCase"> Ignore case differences
-        </label>
-      </div>
-      <div class="control-group">
-        <label>
-          <input type="checkbox" id="showLineNumbers"> Show line numbers (line mode only)
-        </label>
-      </div>
-      <button onclick="compare()" id="compareBtn" disabled>Compare</button>
-      <button onclick="clear()">Clear</button>
+      <button onclick="compare()" id="compareBtn">비교하기</button>
+      <button onclick="clear()">초기화</button>
     </div>
 
-    <div id="similarityScore" class="similarity-score" style="display:none;"></div>
-    <div id="stats" class="stats" style="display:none;"></div>
     <div id="result" class="result" style="display:none;"></div>
   </div>
 

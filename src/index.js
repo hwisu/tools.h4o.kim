@@ -31,15 +31,6 @@ export default {
     }
 
     try {
-      // PWA 관련 파일 라우팅
-      if (url.pathname === '/manifest.json') {
-        return handleManifest();
-      }
-
-      if (url.pathname === '/sw.js') {
-        return handleServiceWorker();
-      }
-
       // 라우팅 - 동적 도구 처리
       if (url.pathname === '/') {
         return handleHome();
@@ -110,36 +101,33 @@ function handleHome() {
           width: 100%;
           padding: 0.75rem;
           font-size: 1rem;
-          border: 1px solid #ccc;
-          border-radius: 3px;
-          font-family: 'Monaco', 'Menlo', monospace;
-          background: #fafafa;
-          color: #333;
+          border: 1px solid var(--border-medium);
+          font-family: 'Courier New', monospace;
+          background: var(--bg-secondary);
+          color: var(--text-primary);
         }
         .search-input:focus {
           outline: none;
-          border-color: #2196F3;
-          box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
-          background: #fff;
+          border-color: var(--accent-color);
+          box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+          background: var(--bg-primary);
         }
         .search-hints {
           margin-top: 0.5rem;
           text-align: center;
-          color: #666;
+          color: var(--text-muted);
           font-size: 0.85rem;
         }
         .search-hints strong {
-          color: #333;
+          color: var(--text-secondary);
         }
         .search-hints kbd {
-          background: #f5f5f5;
-          border: 1px solid #ccc;
-          border-radius: 3px;
+          background: var(--bg-tertiary);
+          border: 1px solid var(--border-medium);
           padding: 0.1rem 0.3rem;
-          font-family: 'Monaco', 'Menlo', monospace;
+          font-family: 'Courier New', monospace;
           font-size: 0.8rem;
-          color: #333;
-          box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+          color: var(--text-primary);
         }
         .category {
           margin-bottom: 2rem;
@@ -148,8 +136,8 @@ function handleHome() {
           font-size: 1.3rem;
           font-weight: normal;
           margin-bottom: 1rem;
-          color: #333;
-          border-bottom: 1px solid #ddd;
+          color: var(--text-primary);
+          border-bottom: 1px solid var(--border-medium);
           padding-bottom: 0.5rem;
         }
         .tool-list {
@@ -166,12 +154,12 @@ function handleHome() {
         .tool-item::before {
           content: "- ";
           margin-left: -1rem;
-          color: #666;
-          font-family: 'Monaco', 'Menlo', monospace;
+          color: var(--text-muted);
+          font-family: 'Courier New', monospace;
           transition: all 0.2s ease;
         }
         .tool-link {
-          color: #333;
+          color: var(--text-primary);
           text-decoration: none;
           font-weight: 500;
           position: relative;
@@ -181,64 +169,29 @@ function handleHome() {
           text-decoration: underline;
         }
         .tool-description {
-          color: #666;
+          color: var(--text-muted);
           font-weight: normal;
         }
         .hidden {
           display: none;
         }
 
-        /* PWA 상태 표시 */
-        .pwa-status {
-          position: fixed;
-          bottom: 20px;
-          left: 20px;
-          background: rgba(0,0,0,0.8);
-          color: white;
-          padding: 8px 12px;
-          border-radius: 20px;
-          font-size: 12px;
-          z-index: 1000;
-          display: none;
-        }
-        .pwa-status.online { background: rgba(76, 175, 80, 0.9); }
-        .pwa-status.offline { background: rgba(244, 67, 54, 0.9); }
-
-        /* 개별 페이지 저장 버튼 */
-        .save-page-btn {
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background: #333;
-          color: white;
-          border: none;
-          padding: 8px 12px;
-          border-radius: 20px;
-          font-size: 12px;
-          cursor: pointer;
-          z-index: 1000;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        .save-page-btn:hover {
-          background: #555;
-        }
-
         /* Terminal-style keyboard navigation selection */
         .tool-item.selected::before {
           content: "+ ";
-          color: #2196F3;
+          color: var(--accent-color);
           font-weight: bold;
           animation: blink 1.5s infinite;
         }
         .tool-item.selected .tool-link {
-          color: #1976D2;
+          color: var(--accent-color);
           text-decoration: underline;
-          text-decoration-color: #2196F3;
+          text-decoration-color: var(--accent-color);
           text-decoration-thickness: 2px;
           text-underline-offset: 2px;
         }
         .tool-item.selected .tool-description {
-          color: #555;
+          color: var(--text-secondary);
         }
 
         @keyframes blink {
@@ -248,13 +201,16 @@ function handleHome() {
       </style>
     </head>
     <body>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+        <svg class="theme-icon" viewBox="0 0 24 24">
+          <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+        </svg>
+      </button>
+
       <div class="header">
         <h1>tools.h4o.kim</h1>
         <p>Miscellaneous web tools for daily use</p>
       </div>
-
-      <!-- 개별 페이지 저장 버튼 -->
-      <button id="savePageBtn" class="save-page-btn" title="Install this page as PWA">📱 Install</button>
 
       <div class="search-container">
         <input type="text" id="searchInput" class="search-input" placeholder="Search tools..." autofocus>
@@ -315,9 +271,9 @@ function handleHome() {
             <a href="/tz" class="tool-link">Universal Time Converter</a>
             <span class="tool-description"> : Convert between timezones, timestamps, and various time formats</span>
           </li>
-          <li class="tool-item" data-keywords="image converter format resize">
-            <a href="/image" class="tool-link">Image Converter</a>
-            <span class="tool-description"> : Convert image format and resize images</span>
+          <li class="tool-item" data-keywords="image converter format">
+            <a href="/image" class="tool-link">Image Format Converter</a>
+            <span class="tool-description"> : Convert between image formats with maximum quality</span>
           </li>
           <li class="tool-item" data-keywords="password generator secure">
             <a href="/pwd" class="tool-link">Password Generator</a>
@@ -334,349 +290,39 @@ function handleHome() {
         </ul>
       </div>
 
-      <!-- PWA status display -->
-      <div id="pwaStatus" class="pwa-status"></div>
-
       <script>
-        // Icon generator import (inline)
-        ${getIconGeneratorScript()}
+        // Theme toggle functionality
+        function toggleTheme() {
+          const currentTheme = document.documentElement.getAttribute('data-theme');
+          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
-        // PWA functionality initialization
-        class SimplePWAManager {
-          constructor() {
-            this.iconGenerator = new IconGenerator();
-            this.currentVersion = '${APP_CONFIG.version}'; // Get version from central config
-            this.updateCheckInterval = null;
-            this.init();
-          }
+          document.documentElement.setAttribute('data-theme', newTheme);
+          localStorage.setItem('theme', newTheme);
 
-          async init() {
-            await this.registerServiceWorker();
-            await this.checkInstallStatus();
-            this.setupInstallPrompt();
-            this.setupOnlineStatus();
-            this.setupPageSave();
-            this.applyDynamicIcons();
-          }
+          updateThemeIcon(newTheme);
+        }
 
-          async checkInstallStatus() {
-            // Check if app is already installed
-            if (window.matchMedia('(display-mode: standalone)').matches ||
-                window.navigator.standalone === true) {
-              // App is running in standalone mode (installed)
-              this.hideInstallButton();
-              this.hideSavePageButton();
-              console.log('PWA: App is already installed');
-
-              // Start auto update check only for installed apps
-              this.startAutoUpdateCheck();
-            }
-          }
-
-          startAutoUpdateCheck() {
-            // Check immediately once
-            this.checkForUpdates();
-
-            // Check for updates every 5 minutes
-            this.updateCheckInterval = setInterval(() => {
-              this.checkForUpdates();
-            }, 5 * 60 * 1000); // 5 minutes
-
-            // Also check for updates when app gains focus
-            window.addEventListener('focus', () => {
-              this.checkForUpdates();
-            });
-
-            // Clean up interval on page unload
-            window.addEventListener('beforeunload', () => {
-              this.stopAutoUpdateCheck();
-            });
-
-            console.log('PWA: Auto-update checking started');
-          }
-
-          async checkForUpdates() {
-            try {
-              const response = await fetch('/api/status', {
-                cache: 'no-cache',
-                headers: {
-                  'Cache-Control': 'no-cache'
-                }
-              });
-
-              if (!response.ok) {
-                console.log('PWA: Failed to check for updates');
-                return;
-              }
-
-              const data = await response.json();
-              const serverVersion = data.version;
-              const serverHash = data.contentHash;
-
-              // Get last checked hash from local storage
-              const lastKnownHash = localStorage.getItem('app-content-hash');
-
-              console.log(\`PWA: Current version: \${this.currentVersion}, Server version: \${serverVersion}\`);
-              console.log(\`PWA: Last known hash: \${lastKnownHash}, Server hash: \${serverHash}\`);
-
-              // Update if version is different or content hash is different
-              if ((serverVersion && serverVersion !== this.currentVersion) ||
-                  (serverHash && serverHash !== lastKnownHash)) {
-
-                console.log('PWA: Update available, refreshing...');
-                this.showUpdateNotification('New version available! Updating...', true);
-
-                // Save new hash
-                if (serverHash) {
-                  localStorage.setItem('app-content-hash', serverHash);
-                }
-
-                // Refresh after 2 seconds (so user can see the notification)
-                setTimeout(() => {
-                  window.location.reload();
-                }, 2000);
-              } else {
-                // Save hash to local storage if same
-                if (serverHash && !lastKnownHash) {
-                  localStorage.setItem('app-content-hash', serverHash);
-                }
-              }
-            } catch (error) {
-              console.error('PWA: Error checking for updates:', error);
-            }
-          }
-
-          stopAutoUpdateCheck() {
-            if (this.updateCheckInterval) {
-              clearInterval(this.updateCheckInterval);
-              this.updateCheckInterval = null;
-              console.log('PWA: Auto-update checking stopped');
-            }
-          }
-
-          applyDynamicIcons() {
-            // Apply dynamic icons for homepage
-            this.iconGenerator.applyDynamicIcons();
-          }
-
-          async registerServiceWorker() {
-            if ('serviceWorker' in navigator) {
-              try {
-                const registration = await navigator.serviceWorker.register('/sw.js');
-                console.log('PWA: Service worker registered');
-
-                registration.addEventListener('updatefound', () => {
-                  const newWorker = registration.installing;
-                  newWorker.addEventListener('statechange', () => {
-                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                      console.log('PWA: New service worker installed, update available');
-                      // Refresh when Service Worker update is available
-                      this.showUpdateNotification('Service worker updated! Refreshing...', true);
-                      setTimeout(() => {
-                        window.location.reload();
-                      }, 2000);
-                    }
-                  });
-                });
-
-                // Handle when existing Service Worker is updated
-                if (registration.waiting) {
-                  console.log('PWA: Service worker update waiting');
-                  this.showUpdateNotification('Update ready! Refreshing...', true);
-                  setTimeout(() => {
-                    window.location.reload();
-                  }, 2000);
-                }
-
-              } catch (error) {
-                console.error('PWA: Service worker registration failed:', error);
-              }
-            }
-          }
-
-          setupPageSave() {
-            const saveBtn = document.getElementById('savePageBtn');
-            if (saveBtn) {
-              saveBtn.addEventListener('click', () => {
-                this.saveCurrentPage();
-              });
-            }
-          }
-
-          hideSavePageButton() {
-            const saveBtn = document.getElementById('savePageBtn');
-            if (saveBtn) {
-              saveBtn.style.display = 'none';
-            }
-          }
-
-          saveCurrentPage() {
-            // Feature to save current page as individual PWA
-            if ('serviceWorker' in navigator) {
-              // Trigger browser's install prompt
-              if (this.deferredPrompt) {
-                this.deferredPrompt.prompt();
-              } else {
-                this.showManualInstallInstructions();
-              }
-            } else {
-              this.showNotification('This browser does not support PWA', 'error');
-            }
-          }
-
-          showManualInstallInstructions() {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            const isAndroid = /Android/.test(navigator.userAgent);
-
-            let instructions = '';
-            if (isIOS) {
-              instructions = '📱 Safari: Tap Share button → Select "Add to Home Screen"';
-            } else if (isAndroid) {
-              instructions = '📱 Chrome: Tap Menu (⋮) → Select "Add to Home Screen"';
-            } else {
-              instructions = '💻 Click the install icon next to the address bar or select "Install App" from the menu';
-            }
-
-            this.showNotification(instructions, 'info', 8000);
-          }
-
-          setupInstallPrompt() {
-            let deferredPrompt;
-
-            window.addEventListener('beforeinstallprompt', (e) => {
-              e.preventDefault();
-              deferredPrompt = e;
-              this.deferredPrompt = deferredPrompt;
-
-              // Only show install button if not already installed
-              if (!window.matchMedia('(display-mode: standalone)').matches &&
-                  window.navigator.standalone !== true) {
-                this.showInstallButton(deferredPrompt);
-              }
-            });
-
-            window.addEventListener('appinstalled', () => {
-              this.hideInstallButton();
-              this.hideSavePageButton();
-              this.showNotification('App installed successfully! 🎉', 'success');
-            });
-          }
-
-          setupOnlineStatus() {
-            const statusEl = document.getElementById('pwaStatus');
-
-            const updateStatus = () => {
-              if (navigator.onLine) {
-                statusEl.textContent = '🟢 Online';
-                statusEl.className = 'pwa-status online';
-              } else {
-                statusEl.textContent = '🔴 Offline';
-                statusEl.className = 'pwa-status offline';
-              }
-              statusEl.style.display = 'block';
-
-              setTimeout(() => {
-                if (navigator.onLine) {
-                  statusEl.style.display = 'none';
-                }
-              }, 3000);
-            };
-
-            window.addEventListener('online', updateStatus);
-            window.addEventListener('offline', updateStatus);
-          }
-
-          showInstallButton(deferredPrompt) {
-            if (document.getElementById('installBtn')) return;
-
-            const button = document.createElement('button');
-            button.id = 'installBtn';
-            button.innerHTML = '📱 Install App';
-            button.style.cssText = \`
-              position: fixed;
-              bottom: 20px;
-              right: 20px;
-              background: #333;
-              color: white;
-              border: none;
-              padding: 12px 16px;
-              border-radius: 25px;
-              font-size: 14px;
-              cursor: pointer;
-              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-              z-index: 1000;
-            \`;
-
-            button.onclick = async () => {
-              if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log('Install prompt result:', outcome);
-                deferredPrompt = null;
-              }
-            };
-
-            document.body.appendChild(button);
-          }
-
-          hideInstallButton() {
-            const button = document.getElementById('installBtn');
-            if (button) button.remove();
-          }
-
-          showUpdateNotification(message = 'New version available! Updating...', isUpdate = false) {
-            const notification = document.createElement('div');
-            notification.textContent = message;
-            notification.style.cssText = \`
-              position: fixed;
-              top: 20px;
-              right: 20px;
-              background: \${isUpdate ? '#2196F3' : '#4CAF50'};
-              color: white;
-              padding: 12px 16px;
-              border-radius: 4px;
-              font-size: 14px;
-              z-index: 1001;
-              max-width: 300px;
-              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-              line-height: 1.4;
-            \`;
-
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-              notification.remove();
-            }, 5000);
-          }
-
-          showNotification(message, type = 'info', duration = 5000) {
-            const notification = document.createElement('div');
-            notification.textContent = message;
-            notification.style.cssText = \`
-              position: fixed;
-              top: 20px;
-              right: 20px;
-              background: \${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
-              color: white;
-              padding: 12px 16px;
-              border-radius: 4px;
-              font-size: 14px;
-              z-index: 1001;
-              max-width: 300px;
-              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-              line-height: 1.4;
-            \`;
-
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-              notification.remove();
-            }, duration);
+        // Update theme icon
+        function updateThemeIcon(theme) {
+          const toggle = document.querySelector('.theme-toggle svg');
+          if (theme === 'dark') {
+            // Moon icon
+            toggle.innerHTML = '<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>';
+          } else {
+            // Sun icon
+            toggle.innerHTML = '<path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>';
           }
         }
 
-        // PWA manager initialization
-        new SimplePWAManager();
+        // Initialize theme
+        function initTheme() {
+          const savedTheme = localStorage.getItem('theme') || 'light';
+          document.documentElement.setAttribute('data-theme', savedTheme);
+          updateThemeIcon(savedTheme);
+        }
+
+        // Initialize theme on page load
+        initTheme();
 
         // Search functionality with keyboard navigation
         const searchInput = document.getElementById('searchInput');
@@ -826,366 +472,8 @@ function handleStatus() {
   });
 }
 
-/**
- * PWA Manifest 파일 제공
- */
-function handleManifest() {
-  const manifest = {
-    "name": APP_CONFIG.name,
-    "short_name": "tools",
-    "description": APP_CONFIG.description,
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#333333",
-    "orientation": "portrait-primary",
-    "scope": "/",
-    "lang": "ko",
-    "categories": ["productivity", "utilities", "developer"],
-    "icons": [
-      {
-        "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzIiIGhlaWdodD0iNzIiIHZpZXdCb3g9IjAgMCA3MiA3MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjcyIiBoZWlnaHQ9IjcyIiByeD0iMTQiIGZpbGw9IiMzMzMzMzMiLz4KPHRleHQgeD0iMzYiIHk9IjM2IiBmb250LWZhbWlseT0iQXBwbGUgQ29sb3IgRW1vamksIFNlZ29lIFVJIEVtb2ppLCBOb3RvIENvbG9yIEVtb2ppLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCI+8J+boPCfj7c8L3RleHQ+Cjwvc3ZnPgo=",
-        "sizes": "72x72",
-        "type": "image/svg+xml",
-        "purpose": "any maskable"
-      },
-      {
-        "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMzgiIGZpbGw9IiMzMzMzMzMiLz4KPHRleHQgeD0iOTYiIHk9Ijk2IiBmb250LWZhbWlseT0iQXBwbGUgQ29sb3IgRW1vamksIFNlZ29lIFVJIEVtb2ppLCBOb3RvIENvbG9yIEVtb2ppLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjExNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiPvCfm6Dwn4+3PC90ZXh0Pgo8L3N2Zz4K",
-        "sizes": "192x192",
-        "type": "image/svg+xml",
-        "purpose": "any maskable"
-      },
-      {
-        "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTAyIiBmaWxsPSIjMzMzMzMzIi8+Cjx0ZXh0IHg9IjI1NiIgeT0iMjU2IiBmb250LWZhbWlseT0iQXBwbGUgQ29sb3IgRW1vamksIFNlZ29lIFVJIEVtb2ppLCBOb3RvIENvbG9yIEVtb2ppLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiPvCfm6Dwn4+3PC90ZXh0Pgo8L3N2Zz4K",
-        "sizes": "512x512",
-        "type": "image/svg+xml",
-        "purpose": "any maskable"
-      }
-    ],
-    "shortcuts": [
-      {
-        "name": "JSON Formatter",
-        "short_name": "JSON",
-        "description": "Format and validate JSON",
-        "url": "/json",
-        "icons": [
-          {
-            "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMTkiIGZpbGw9IiMzMzMzMzMiLz4KPHRleHQgeD0iNDgiIHk9IjQ4IiBmb250LWZhbWlseT0iQXBwbGUgQ29sb3IgRW1vamksIFNlZ29lIFVJIEVtb2ppLCBOb3RvIENvbG9yIEVtb2ppLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjU4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCI+8J+RizwvdGV4dD4KPC9zdmc+Cg==",
-            "sizes": "96x96",
-            "type": "image/svg+xml"
-          }
-        ]
-      },
-      {
-        "name": "Text Counter",
-        "short_name": "Counter",
-        "description": "Count characters and words",
-        "url": "/tcount",
-        "icons": [
-          {
-            "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMTkiIGZpbGw9IiMzMzMzMzMiLz4KPHRleHQgeD0iNDgiIHk9IjQ4IiBmb250LWZhbWlseT0iQXBwbGUgQ29sb3IgRW1vamksIFNlZ29lIFVJIEVtb2ppLCBOb3RvIENvbG9yIEVtb2ppLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjU4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCI+8J+UojwvdGV4dD4KPC9zdmc+Cg==",
-            "sizes": "96x96",
-            "type": "image/svg+xml"
-          }
-        ]
-      },
-      {
-        "name": "Image Converter",
-        "short_name": "Image",
-        "description": "Convert image formats",
-        "url": "/image",
-        "icons": [
-          {
-            "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMTkiIGZpbGw9IiMzMzMzMzMiLz4KPHRleHQgeD0iNDgiIHk9IjQ4IiBmb250LWZhbWlseT0iQXBwbGUgQ29sb3IgRW1vamksIFNlZ29lIFVJIEVtb2ppLCBOb3RvIENvbG9yIEVtb2ppLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjU4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCI+8J+WvO+4jzwvdGV4dD4KPC9zdmc+Cg==",
-            "sizes": "96x96",
-            "type": "image/svg+xml"
-          }
-        ]
-      },
-      {
-        "name": "QR Generator",
-        "short_name": "QR",
-        "description": "Generate QR codes",
-        "url": "/qr",
-        "icons": [
-          {
-            "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMTkiIGZpbGw9IiMzMzMzMzMiLz4KPHRleHQgeD0iNDgiIHk9IjQ4IiBmb250LWZhbWlseT0iQXBwbGUgQ29sb3IgRW1vamksIFNlZ29lIFVJIEVtb2ppLCBOb3RvIENvbG9yIEVtb2ppLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjU4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCI+8J+TsTwvdGV4dD4KPC9zdmc+Cg==",
-            "sizes": "96x96",
-            "type": "image/svg+xml"
-          }
-        ]
-      }
-    ],
-    "related_applications": [],
-    "prefer_related_applications": false
-  };
 
-  return new Response(JSON.stringify(manifest, null, 2), {
-    headers: {
-      'Content-Type': 'application/manifest+json',
-      'Cache-Control': 'public, max-age=86400'
-    }
-  });
-}
 
-/**
- * Service Worker 파일 제공
- */
-async function handleServiceWorker() {
-  // Service Worker 코드를 여기에 인라인으로 포함
-  const swCode = `
-// Service Worker for Tools Platform PWA
-const CACHE_NAME = 'tools-platform-v${APP_CONFIG.version}';
-const STATIC_CACHE_NAME = 'tools-static-v${APP_CONFIG.version}';
 
-// 캐시할 정적 리소스들
-const STATIC_ASSETS = [
-  '/',
-  '/manifest.json',
-  // 각 도구 페이지들
-  '/json', '/tcount', '/url', '/diff', '/base64', '/sql', '/hash',
-  '/qr', '/tz', '/image', '/pwd', '/cron', '/unit'
-];
 
-// CDN 리소스들 (캐시하되 네트워크 우선)
-const CDN_RESOURCES = [
-  'https://cdn.jsdelivr.net',
-  'https://unpkg.com',
-  'https://cdnjs.cloudflare.com'
-];
 
-// Install event - cache static resources
-self.addEventListener('install', event => {
-  console.log('Service Worker: Installing...');
-
-  event.waitUntil(
-    caches.open(STATIC_CACHE_NAME)
-      .then(cache => {
-        console.log('Service Worker: Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
-      })
-      .then(() => {
-        console.log('Service Worker: Static assets cached');
-        return self.skipWaiting();
-      })
-      .catch(error => {
-        console.error('Service Worker: Failed to cache static assets', error);
-      })
-  );
-});
-
-// Activate event - clean up old caches
-self.addEventListener('activate', event => {
-  console.log('Service Worker: Activating...');
-
-  event.waitUntil(
-    caches.keys()
-      .then(cacheNames => {
-        return Promise.all(
-          cacheNames.map(cacheName => {
-            if (cacheName !== CACHE_NAME && cacheName !== STATIC_CACHE_NAME) {
-              console.log('Service Worker: Deleting old cache', cacheName);
-              return caches.delete(cacheName);
-            }
-          })
-        );
-      })
-      .then(() => {
-        console.log('Service Worker: Activated');
-        return self.clients.claim();
-      })
-  );
-});
-
-// Fetch event - intercept network requests
-self.addEventListener('fetch', event => {
-  const { request } = event;
-  const url = new URL(request.url);
-
-  if (url.origin !== location.origin) {
-    if (CDN_RESOURCES.some(cdn => url.href.startsWith(cdn))) {
-      event.respondWith(handleCDNRequest(request));
-    }
-    return;
-  }
-
-  if (request.method !== 'GET') {
-    return;
-  }
-
-  event.respondWith(handleRequest(request));
-});
-
-// Main request handler
-async function handleRequest(request) {
-  try {
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) {
-      console.log('Service Worker: Serving from cache', request.url);
-      updateCache(request);
-      return cachedResponse;
-    }
-
-    console.log('Service Worker: Fetching from network', request.url);
-    const networkResponse = await fetch(request);
-
-    if (networkResponse.ok) {
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(request, networkResponse.clone());
-    }
-
-    return networkResponse;
-
-  } catch (error) {
-    console.error('Service Worker: Network error', error);
-
-    const fallbackResponse = await caches.match('/');
-    if (fallbackResponse) {
-      return fallbackResponse;
-    }
-
-    return new Response(
-      '<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>Offline Mode</h1><p>Please check your internet connection.</p></body></html>',
-      { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } }
-    );
-  }
-}
-
-// CDN 리소스 처리
-async function handleCDNRequest(request) {
-  try {
-    const networkResponse = await fetch(request);
-    if (networkResponse.ok) {
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(request, networkResponse.clone());
-      return networkResponse;
-    }
-    throw new Error('Network response not ok');
-  } catch (error) {
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-    throw error;
-  }
-}
-
-// Background cache update
-async function updateCache(request) {
-  try {
-    const networkResponse = await fetch(request);
-    if (networkResponse.ok) {
-      const cache = await caches.open(CACHE_NAME);
-      await cache.put(request, networkResponse);
-    }
-  } catch (error) {
-    // Ignore background update failures
-  }
-}
-
-console.log('Service Worker: Loaded');
-`;
-
-  return new Response(swCode, {
-    headers: {
-      'Content-Type': 'application/javascript',
-      'Cache-Control': 'public, max-age=0' // Don't cache Service Worker
-    }
-  });
-}
-
-/**
- * 아이콘 생성기 스크립트를 인라인으로 반환
- */
-function getIconGeneratorScript() {
-  return `
-    class IconGenerator {
-      constructor() {
-        this.emoji = '🛠️'; // Default emoji (tools)
-        this.backgroundColor = '#333333';
-        this.cache = new Map();
-      }
-
-      generateSVGIcon(size, emoji = this.emoji, bgColor = this.backgroundColor) {
-        const cacheKey = \`svg-\${size}-\${emoji}-\${bgColor}\`;
-
-        if (this.cache.has(cacheKey)) {
-          return this.cache.get(cacheKey);
-        }
-
-        const radius = size * 0.2;
-        const fontSize = size * 0.6;
-
-        const svg = \`
-          <svg width="\${size}" height="\${size}" viewBox="0 0 \${size} \${size}" xmlns="http://www.w3.org/2000/svg">
-            <rect width="\${size}" height="\${size}" rx="\${radius}" fill="\${bgColor}"/>
-            <text x="\${size/2}" y="\${size/2}" font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif"
-                  font-size="\${fontSize}" text-anchor="middle" dominant-baseline="central">\${emoji}</text>
-          </svg>
-        \`;
-
-        const dataUrl = \`data:image/svg+xml;base64,\${btoa(unescape(encodeURIComponent(svg)))}\`;
-
-        this.cache.set(cacheKey, dataUrl);
-
-        return dataUrl;
-      }
-
-      getToolEmoji(toolName) {
-        const toolEmojis = {
-          'json': '📋',
-          'tcount': '🔢',
-          'url': '🔗',
-          'diff': '📝',
-          'base64': '🔐',
-          'sql': '🗃️',
-          'hash': '#️⃣',
-          'qr': '📱',
-          'tz': '🌍',
-          'image': '🖼️',
-          'pwd': '🔑',
-          'unit': '📏',
-          'cron': '⏰',
-        };
-
-        return toolEmojis[toolName] || this.emoji;
-      }
-
-      applyDynamicIcons(toolName = null) {
-        const emoji = toolName ? this.getToolEmoji(toolName) : this.emoji;
-
-        this.updateFavicon(emoji);
-        this.updateAppleTouchIcon(emoji);
-
-        console.log(\`PWA: Generated icons for \${toolName || 'home'} with emoji \${emoji}\`);
-      }
-
-      updateFavicon(emoji) {
-        const existingFavicon = document.querySelector('link[rel="icon"]');
-        if (existingFavicon) {
-          existingFavicon.remove();
-        }
-
-        const favicon = document.createElement('link');
-        favicon.rel = 'icon';
-        favicon.type = 'image/svg+xml';
-        favicon.href = this.generateSVGIcon(32, emoji);
-
-        document.head.appendChild(favicon);
-      }
-
-      updateAppleTouchIcon(emoji) {
-        const existingAppleIcon = document.querySelector('link[rel="apple-touch-icon"]');
-        if (existingAppleIcon) {
-          existingAppleIcon.remove();
-        }
-
-        const appleIcon = document.createElement('link');
-        appleIcon.rel = 'apple-touch-icon';
-        appleIcon.href = this.generateSVGIcon(180, emoji);
-
-        document.head.appendChild(appleIcon);
-      }
-    }
-  `;
-}

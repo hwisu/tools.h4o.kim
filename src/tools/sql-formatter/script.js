@@ -1,69 +1,36 @@
 const input = document.getElementById('input');
 const output = document.getElementById('output');
-const languageSelect = document.getElementById('language');
-const keywordCaseSelect = document.getElementById('keywordCase');
-const indentSizeInput = document.getElementById('indentSize');
-const indentSizeValue = document.getElementById('indentSizeValue');
-const linesBetweenQueriesInput = document.getElementById('linesBetweenQueries');
-const linesBetweenQueriesValue = document.getElementById('linesBetweenQueriesValue');
 let sqlFormatter = null;
 
 // Load SQL Formatter library
 async function loadSQLFormatter() {
   try {
-    // Try multiple CDN sources for better reliability
-    const cdnSources = [
-      'https://cdn.jsdelivr.net/npm/sql-formatter@15.6.2/dist/sql-formatter.min.js',
-      'https://unpkg.com/sql-formatter@15.6.2/dist/sql-formatter.min.js'
-    ];
-
-    for (const cdnUrl of cdnSources) {
-      try {
-        await loadScriptFromCDN(cdnUrl);
-        if (window.sqlFormatter) {
-          sqlFormatter = window.sqlFormatter;
-          break;
-        }
-      } catch (error) {
-        console.warn(`Failed to load SQL formatter from ${cdnUrl}:`, error);
-        continue;
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/sql-formatter@15.6.2/dist/sql-formatter.min.js';
+    script.onload = () => {
+      sqlFormatter = window.sqlFormatter;
+      if (input.value.trim()) {
+        format();
       }
-    }
-
-    if (!sqlFormatter) {
-      throw new Error('All CDN sources failed');
-    }
-
-    // Auto-format if there's content
-    if (input.value.trim()) {
-      format();
-    }
+    };
+    script.onerror = () => {
+      sqlFormatter = createBasicFormatter();
+    };
+    document.head.appendChild(script);
   } catch (error) {
     console.error('Failed to load SQL formatter:', error);
     sqlFormatter = createBasicFormatter();
   }
 }
 
-// Load script from CDN using script tag
-function loadScriptFromCDN(url) {
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = url;
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
-}
-
 // Basic fallback formatter
 function createBasicFormatter() {
   return {
-    format: function(sql, options = {}) {
-      // Very basic SQL formatting
+    format: function(sql) {
       return sql
         .replace(/\s+/g, ' ')
         .replace(/\s*,\s*/g, ',\n  ')
-        .replace(/\s*(SELECT|FROM|WHERE|JOIN|ORDER BY|GROUP BY|HAVING)\s+/gi, '\n$1\n  ')
+        .replace(/\s*(SELECT|FROM|WHERE|JOIN|ORDER BY|GROUP BY|HAVING|INSERT|UPDATE|DELETE)\s+/gi, '\n$1\n  ')
         .replace(/^\s+|\s+$/g, '')
         .trim();
     }
@@ -73,22 +40,13 @@ function createBasicFormatter() {
 // Initialize
 loadSQLFormatter();
 
-// Update slider values
-indentSizeInput.addEventListener('input', function() {
-  indentSizeValue.textContent = this.value;
-  if (input.value.trim()) format();
-});
-
-linesBetweenQueriesInput.addEventListener('input', function() {
-  linesBetweenQueriesValue.textContent = this.value;
-  if (input.value.trim()) format();
-});
-
-// Auto-format on language or case change
-[languageSelect, keywordCaseSelect].forEach(element => {
-  element.addEventListener('change', function() {
-    if (input.value.trim()) format();
-  });
+// Real-time formatting
+input.addEventListener('input', function() {
+  if (this.value.trim() && sqlFormatter) {
+    format();
+  } else {
+    output.value = '';
+  }
 });
 
 function format() {
@@ -98,30 +56,20 @@ function format() {
   }
 
   if (!sqlFormatter) {
-    output.value = 'SQL formatter not loaded. Please wait or refresh the page.';
+    output.value = 'SQL 포맷터 로딩 중...';
     return;
   }
 
   try {
-    const options = {
-      language: languageSelect.value,
-      keywordCase: keywordCaseSelect.value,
-      tabWidth: parseInt(indentSizeInput.value),
-      linesBetweenQueries: parseInt(linesBetweenQueriesInput.value)
-    };
-
-    const formatted = sqlFormatter.format(input.value, options);
+    const formatted = sqlFormatter.format(input.value, {
+      language: 'sql',
+      keywordCase: 'upper',
+      tabWidth: 2,
+      linesBetweenQueries: 1
+    });
     output.value = formatted;
   } catch (error) {
-    // Provide more helpful error messages
-    let errorMessage = error.message;
-
-    if (errorMessage.includes('Unsupported SQL dialect') || errorMessage.includes('dialect')) {
-      errorMessage = `${errorMessage}\n\nSupported dialects: sql, bigquery, db2, hive, mariadb, mysql, n1ql, plsql, postgresql, redshift, singlestoredb, snowflake, spark, sqlite, tidb, transactsql, trino`;
-    }
-
-    output.value = `Error formatting SQL: ${errorMessage}`;
-    console.error('SQL formatting error:', error);
+    output.value = `❌ SQL 포맷 오류!\n\n오류: ${error.message}`;
   }
 }
 
@@ -132,15 +80,13 @@ function minify() {
   }
 
   try {
-    // Simple minification - remove extra whitespace and line breaks
     const minified = input.value
       .replace(/\s+/g, ' ')
       .replace(/\s*([(),;])\s*/g, '$1')
       .trim();
-
     output.value = minified;
   } catch (error) {
-    output.value = `Error minifying SQL: ${error.message}`;
+    output.value = `❌ SQL 압축 오류!\n\n오류: ${error.message}`;
   }
 }
 
@@ -151,35 +97,10 @@ function swap() {
 }
 
 function clear() {
-  // Clear any pending timeouts first
-  clearTimeout(timeout);
-
-  // Clear both input and output
   input.value = '';
   output.value = '';
-
-  // Focus back to input for better UX
   input.focus();
 }
-
-// Real-time formatting (debounced)
-let timeout;
-input.addEventListener('input', function() {
-  clearTimeout(timeout);
-
-  // If input is empty, immediately clear output
-  if (!this.value.trim()) {
-    output.value = '';
-    return;
-  }
-
-  // Debounced formatting for non-empty input
-  timeout = setTimeout(() => {
-    if (this.value.trim() && sqlFormatter) {
-      format();
-    }
-  }, 500);
-});
 
 // Make functions global for onclick handlers
 window.format = format;

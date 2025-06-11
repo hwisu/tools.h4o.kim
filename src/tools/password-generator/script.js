@@ -1,4 +1,4 @@
-let generatedPassword = '';
+let currentPassword = '';
 
 // Character sets
 const charSets = {
@@ -6,93 +6,43 @@ const charSets = {
   lowercase: 'abcdefghijklmnopqrstuvwxyz',
   numbers: '0123456789',
   symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?',
-  spaces: ' ',
   similar: '0Ol1I'
 };
 
-// Common words for passphrase generation
-const commonWords = [
-  'apple', 'beach', 'chair', 'dance', 'eagle', 'flame', 'grape', 'house', 'island', 'jungle',
-  'knife', 'lemon', 'mouse', 'night', 'ocean', 'piano', 'queen', 'river', 'stone', 'tiger',
-  'uncle', 'voice', 'water', 'youth', 'zebra', 'bread', 'cloud', 'dream', 'earth', 'field',
-  'glass', 'heart', 'image', 'light', 'magic', 'north', 'paper', 'quiet', 'smile', 'table',
-  'urban', 'value', 'world', 'young', 'brave', 'clean', 'fresh', 'green', 'happy', 'lucky',
-  'peace', 'quick', 'smart', 'sweet', 'trust', 'unity', 'vital', 'warm', 'bright', 'calm',
-  'deep', 'easy', 'fair', 'good', 'high', 'kind', 'long', 'nice', 'open', 'pure',
-  'rich', 'safe', 'true', 'wise', 'bold', 'cool', 'fast', 'free', 'glad', 'hope',
-  'jazz', 'keen', 'live', 'mild', 'neat', 'oval', 'pink', 'rare', 'soft', 'tall'
-];
-
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
-  const lengthSlider = document.getElementById('length');
+  const lengthSlider = document.getElementById('lengthSlider');
   const lengthValue = document.getElementById('lengthValue');
-  const wordCountSlider = document.getElementById('wordCount');
-  const wordCountValue = document.getElementById('wordCountValue');
-  const passwordTypeRadios = document.querySelectorAll('input[name="passwordType"]');
+  const includeNumbers = document.getElementById('includeNumbers');
+  const includeSymbols = document.getElementById('includeSymbols');
+  const excludeSimilar = document.getElementById('excludeSimilar');
 
+  // Update length value display
   lengthSlider.addEventListener('input', function() {
     lengthValue.textContent = this.value;
+    generatePassword();
   });
 
-  wordCountSlider.addEventListener('input', function() {
-    wordCountValue.textContent = this.value;
-  });
-
-  // Handle password type switching
-  passwordTypeRadios.forEach(radio => {
-    radio.addEventListener('change', function() {
-      const randomOptions = document.getElementById('randomOptions');
-      const passphraseOptions = document.getElementById('passphraseOptions');
-
-      if (this.value === 'passphrase') {
-        randomOptions.style.display = 'none';
-        passphraseOptions.style.display = 'block';
-      } else {
-        randomOptions.style.display = 'block';
-        passphraseOptions.style.display = 'none';
-      }
-
-      // Regenerate password when type changes
-      generate();
-    });
-  });
+  // Auto-generate when options change
+  includeNumbers.addEventListener('change', generatePassword);
+  includeSymbols.addEventListener('change', generatePassword);
+  excludeSimilar.addEventListener('change', generatePassword);
 
   // Generate initial password
-  generate();
+  generatePassword();
 });
 
-function generate() {
-  const passwordType = document.querySelector('input[name="passwordType"]:checked').value;
-
-  if (passwordType === 'passphrase') {
-    generatePassphrase();
-  } else {
-    generateRandomPassword();
-  }
-}
-
-function generateRandomPassword() {
-  const length = parseInt(document.getElementById('length').value);
-  const includeUppercase = document.getElementById('uppercase').checked;
-  const includeLowercase = document.getElementById('lowercase').checked;
-  const includeNumbers = document.getElementById('numbers').checked;
-  const includeSymbols = document.getElementById('symbols').checked;
-  const includeSpaces = document.getElementById('spaces').checked;
+function generatePassword() {
+  const length = parseInt(document.getElementById('lengthSlider').value);
+  const includeNumbers = document.getElementById('includeNumbers').checked;
+  const includeSymbols = document.getElementById('includeSymbols').checked;
   const excludeSimilar = document.getElementById('excludeSimilar').checked;
 
-  // Build character set
-  let charset = '';
-  if (includeUppercase) charset += charSets.uppercase;
-  if (includeLowercase) charset += charSets.lowercase;
+  // Always include uppercase and lowercase
+  let charset = charSets.uppercase + charSets.lowercase;
+
   if (includeNumbers) charset += charSets.numbers;
   if (includeSymbols) charset += charSets.symbols;
-  if (includeSpaces) charset += charSets.spaces;
-
-  if (!charset) {
-    alert('Please select at least one character type');
-    return;
-  }
 
   // Remove similar characters if requested
   if (excludeSimilar) {
@@ -102,236 +52,159 @@ function generateRandomPassword() {
   }
 
   // Generate password
-  generatedPassword = '';
+  currentPassword = '';
   for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * charset.length);
-    generatedPassword += charset[randomIndex];
+    currentPassword += charset[randomIndex];
   }
 
   displayPassword();
-}
-
-function generatePassphrase() {
-  const wordCount = parseInt(document.getElementById('wordCount').value);
-  const capitalizeWords = document.getElementById('capitalizeWords').checked;
-  const addNumbers = document.getElementById('addNumbers').checked;
-  const addSymbols = document.getElementById('addSymbols').checked;
-  const separator = document.getElementById('separator').value;
-
-  // Select random words
-  const selectedWords = [];
-  for (let i = 0; i < wordCount; i++) {
-    const randomIndex = Math.floor(Math.random() * commonWords.length);
-    let word = commonWords[randomIndex];
-
-    if (capitalizeWords) {
-      word = word.charAt(0).toUpperCase() + word.slice(1);
-    }
-
-    selectedWords.push(word);
-  }
-
-  // Join words with separator
-  generatedPassword = selectedWords.join(separator);
-
-  // Add numbers if requested
-  if (addNumbers) {
-    const randomNumber = Math.floor(Math.random() * 9999) + 1;
-    generatedPassword += randomNumber;
-  }
-
-  // Add symbols if requested
-  if (addSymbols) {
-    const symbols = '!@#$%^&*';
-    const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-    generatedPassword += randomSymbol;
-  }
-
-  displayPassword();
+  calculateStrength();
 }
 
 function displayPassword() {
-  // Display password
-  const outputDiv = document.getElementById('passwordOutput');
-  outputDiv.textContent = generatedPassword;
-  outputDiv.style.display = 'block';
-
-  // Enable copy button
-  document.getElementById('copyBtn').disabled = false;
-
-  // Calculate and display strength
-  calculateStrength(generatedPassword);
+  const passwordDisplay = document.getElementById('passwordDisplay');
+  passwordDisplay.textContent = currentPassword;
+  passwordDisplay.classList.remove('copied');
 }
 
 function copyPassword() {
-  if (!generatedPassword) return;
+  if (!currentPassword) {
+    generatePassword();
+    return;
+  }
 
-  navigator.clipboard.writeText(generatedPassword).then(() => {
-    const copyBtn = document.getElementById('copyBtn');
-    const originalText = copyBtn.textContent;
-    copyBtn.textContent = 'Copied!';
-    copyBtn.style.background = '#28a745';
+  navigator.clipboard.writeText(currentPassword).then(() => {
+    const passwordDisplay = document.getElementById('passwordDisplay');
+    passwordDisplay.classList.add('copied');
 
     setTimeout(() => {
-      copyBtn.textContent = originalText;
-      copyBtn.style.background = '';
+      passwordDisplay.classList.remove('copied');
     }, 2000);
   }).catch(err => {
     console.error('Failed to copy: ', err);
-    alert('Failed to copy to clipboard');
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = currentPassword;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      const passwordDisplay = document.getElementById('passwordDisplay');
+      passwordDisplay.classList.add('copied');
+      setTimeout(() => {
+        passwordDisplay.classList.remove('copied');
+      }, 2000);
+    } catch (err) {
+      console.error('Copy failed:', err);
+    }
+    document.body.removeChild(textArea);
   });
 }
 
-function calculateStrength(password) {
+function calculateStrength() {
   const strengthMeter = document.getElementById('strengthMeter');
   const strengthFill = document.getElementById('strengthFill');
-  const strengthText = document.getElementById('strengthText');
-  const strengthDetails = document.getElementById('strengthDetails');
+  const strengthLabel = document.getElementById('strengthLabel');
+  const strengthScore = document.getElementById('strengthScore');
+  const strengthTips = document.getElementById('strengthTips');
 
   let score = 0;
-  let feedback = [];
+  let tips = [];
   let entropy = 0;
 
-  // NIST 2024 기준: 길이가 가장 중요한 요소
-  const length = password.length;
+  const length = currentPassword.length;
 
-  // 길이 기반 점수 (NIST 권장: 최소 15자, 이상적으로는 20자 이상)
+  // Length scoring (most important factor)
   if (length >= 8) score += 1;
   if (length >= 12) score += 2;
-  if (length >= 15) score += 3; // NIST 2024 권장 최소 길이
-  if (length >= 20) score += 2; // 추가 보너스
-  if (length >= 25) score += 1; // 최고 길이 보너스
+  if (length >= 16) score += 2;
+  if (length >= 20) score += 1;
 
-  // 엔트로피 계산 (문자 집합 크기 기반)
+  // Character variety
   let charsetSize = 0;
-  let hasLower = /[a-z]/.test(password);
-  let hasUpper = /[A-Z]/.test(password);
-  let hasNumbers = /[0-9]/.test(password);
-  let hasSymbols = /[^a-zA-Z0-9]/.test(password);
-  let hasSpaces = /\s/.test(password);
+  let hasLower = /[a-z]/.test(currentPassword);
+  let hasUpper = /[A-Z]/.test(currentPassword);
+  let hasNumbers = /[0-9]/.test(currentPassword);
+  let hasSymbols = /[^a-zA-Z0-9]/.test(currentPassword);
 
   if (hasLower) charsetSize += 26;
   if (hasUpper) charsetSize += 26;
   if (hasNumbers) charsetSize += 10;
-  if (hasSymbols) charsetSize += 32; // 일반적인 특수문자 수
-  if (hasSpaces) charsetSize += 1;
+  if (hasSymbols) charsetSize += 32;
 
-  // 엔트로피 = log2(charsetSize^length)
+  // Entropy calculation
   if (charsetSize > 0) {
     entropy = length * Math.log2(charsetSize);
   }
 
-  // 엔트로피 기반 점수 (NIST 권장: 최소 112비트)
+  // Entropy scoring
   if (entropy >= 50) score += 1;
   if (entropy >= 80) score += 1;
-  if (entropy >= 112) score += 2; // NIST 2024 권장 최소 엔트로피
-  if (entropy >= 150) score += 1;
+  if (entropy >= 112) score += 2;
 
-  // 패턴 감지 및 감점
-  let patternPenalty = 0;
-
-  // 반복 패턴 감지
-  const repeatingPattern = /(.{2,})\1{2,}/.test(password);
-  if (repeatingPattern) {
-    patternPenalty += 2;
-    feedback.push('Repeating patterns detected');
+  // Pattern detection (penalties)
+  const repeating = /(.{2,})\1{2,}/.test(currentPassword);
+  if (repeating) {
+    score -= 2;
+    tips.push('Avoid repeating patterns');
   }
 
-  // 순차적 문자 감지 (abc, 123 등)
-  const sequential = /(abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|012|123|234|345|456|567|678|789)/i.test(password);
+  const sequential = /(abc|bcd|cde|123|234|345)/i.test(currentPassword);
   if (sequential) {
-    patternPenalty += 1;
-    feedback.push('Sequential characters detected');
+    score -= 1;
+    tips.push('Avoid sequential characters');
   }
 
-  // 키보드 패턴 감지
-  const keyboardPattern = /(qwer|asdf|zxcv|qaz|wsx|edc|rfv|tgb|yhn|ujm|ik|ol|p)/i.test(password);
-  if (keyboardPattern) {
-    patternPenalty += 1;
-    feedback.push('Keyboard patterns detected');
-  }
+  // Ensure minimum score
+  score = Math.max(0, score);
 
-  // 일반적인 약한 패스워드 패턴
-  const commonWeak = /(password|123456|qwerty|admin|login|welcome|letmein|monkey|dragon|master)/i.test(password);
-  if (commonWeak) {
-    patternPenalty += 3;
-    feedback.push('Common weak password patterns detected');
-  }
-
-  // 패턴 감점 적용
-  score = Math.max(0, score - patternPenalty);
-
-  // 다양성 보너스 (하지만 길이만큼 중요하지 않음)
-  let diversityBonus = 0;
-  if (hasLower && hasUpper) diversityBonus += 0.5;
-  if ((hasLower || hasUpper) && hasNumbers) diversityBonus += 0.5;
-  if ((hasLower || hasUpper || hasNumbers) && hasSymbols) diversityBonus += 0.5;
-  if (hasSpaces) diversityBonus += 0.5; // NIST는 공백 사용을 권장
-
-  score += diversityBonus;
-
-  // 최종 강도 결정 (NIST 2024 기준 반영)
-  let strength, color, percentage;
+  // Determine strength level
+  let strength, className, percentage;
 
   if (score < 3 || length < 8) {
-    strength = 'Very Weak';
-    color = 'strength-weak';
-    percentage = 15;
-    feedback.unshift('Very weak: Use at least 8 characters');
-  } else if (score < 5 || length < 12) {
     strength = 'Weak';
-    color = 'strength-weak';
-    percentage = 30;
-    feedback.unshift('Weak: 12+ characters recommended');
-  } else if (score < 7 || length < 15) {
+    className = 'strength-weak';
+    percentage = 25;
+    tips.unshift('Use at least 8 characters');
+  } else if (score < 5 || length < 12) {
     strength = 'Fair';
-    color = 'strength-fair';
+    className = 'strength-fair';
     percentage = 50;
-    feedback.unshift('Fair: Consider NIST recommended minimum of 15+ characters');
-  } else if (score < 9 || entropy < 112) {
+    tips.unshift('Consider 12+ characters');
+  } else if (score < 7 || entropy < 80) {
     strength = 'Good';
-    color = 'strength-good';
+    className = 'strength-good';
     percentage = 75;
-    feedback.unshift('Good: Meets security standards');
+    tips.unshift('Good password strength');
   } else {
-    strength = 'Excellent';
-    color = 'strength-strong';
+    strength = 'Strong';
+    className = 'strength-strong';
     percentage = 100;
-    feedback.unshift('Excellent: Very strong password');
+    tips.unshift('Excellent password strength');
   }
 
-  // 추가 권장사항
-  if (length < 15) {
-    feedback.push('NIST 2024 recommendation: Use 15+ characters');
+  // Add recommendations
+  if (length < 16) {
+    tips.push('16+ characters recommended');
   }
-  if (length >= 15 && length < 20) {
-    feedback.push('Consider 20+ characters for stronger security');
+  if (!hasNumbers) {
+    tips.push('Include numbers for better security');
   }
-
-  // Check if this is a passphrase (contains spaces or common separators)
-  const isPassphrase = /[\s\-_\.]/.test(password) && password.length > 10;
-
-  if (!isPassphrase && !hasSpaces && length >= 15) {
-    feedback.push('Consider using a passphrase with spaces for better memorability');
+  if (!hasSymbols) {
+    tips.push('Include symbols for maximum security');
   }
 
-  if (entropy < 112) {
-    feedback.push('Use more character types to increase entropy');
-  }
-
-  // Passphrase-specific recommendations
-  if (isPassphrase) {
-    feedback.push('Good choice using a passphrase format!');
-    if (!/\d/.test(password)) {
-      feedback.push('Consider adding numbers for extra security');
-    }
-  }
-
-  // UI update
-  strengthFill.className = `strength-fill ${color}`;
+  // Update UI
+  strengthFill.className = `strength-fill ${className}`;
   strengthFill.style.width = `${percentage}%`;
-  strengthText.innerHTML = `Strength: ${strength} <small>(Entropy: ${Math.round(entropy)} bits)</small>`;
-  strengthDetails.innerHTML = feedback.map(f => `• ${f}`).join('<br>');
+  strengthLabel.textContent = `Password Strength: ${strength}`;
+  strengthScore.textContent = `${Math.round(entropy)} bits entropy`;
+  strengthTips.innerHTML = tips.slice(0, 3).map(tip => `• ${tip}`).join('<br>');
 
   strengthMeter.style.display = 'block';
 }
+
+// Make functions global
+window.generatePassword = generatePassword;
+window.copyPassword = copyPassword;

@@ -1,9 +1,13 @@
-const inputValue = document.getElementById('inputValue');
-const inputUnit = document.getElementById('inputUnit');
-const conversionResults = document.getElementById('conversionResults');
+const input1 = document.getElementById('input1');
+const input2 = document.getElementById('input2');
+const unit1 = document.getElementById('unit1');
+const unit2 = document.getElementById('unit2');
+const formulaDisplay = document.getElementById('formulaDisplay');
+const commonConversions = document.getElementById('commonConversions');
 const tabButtons = document.querySelectorAll('.tab-btn');
 
 let currentCategory = 'length';
+let isUpdating = false; // Prevent infinite loops
 
 // Unit definitions with conversion factors to base unit
 const units = {
@@ -108,11 +112,59 @@ const units = {
   }
 };
 
+// Common conversion pairs for each category
+const commonConversionPairs = {
+  length: [
+    ['meter', 'foot'],
+    ['kilometer', 'mile'],
+    ['centimeter', 'inch'],
+    ['yard', 'meter']
+  ],
+  weight: [
+    ['kilogram', 'pound'],
+    ['gram', 'ounce'],
+    ['ton', 'pound'],
+    ['stone', 'kilogram']
+  ],
+  temperature: [
+    ['celsius', 'fahrenheit'],
+    ['celsius', 'kelvin'],
+    ['fahrenheit', 'kelvin']
+  ],
+  area: [
+    ['square_meter', 'square_foot'],
+    ['hectare', 'acre'],
+    ['square_kilometer', 'square_mile']
+  ],
+  volume: [
+    ['liter', 'gallon'],
+    ['milliliter', 'fluid_ounce'],
+    ['cubic_meter', 'liter']
+  ],
+  speed: [
+    ['kilometer_per_hour', 'mile_per_hour'],
+    ['meter_per_second', 'foot_per_second'],
+    ['knot', 'kilometer_per_hour']
+  ],
+  energy: [
+    ['kilocalorie', 'kilojoule'],
+    ['kilowatt_hour', 'joule'],
+    ['btu', 'joule']
+  ],
+  pressure: [
+    ['bar', 'psi'],
+    ['atmosphere', 'pascal'],
+    ['torr', 'pascal']
+  ]
+};
+
 // Initialize
 function init() {
   setupTabs();
   loadUnits(currentCategory);
   setupEventListeners();
+  setDefaultValues();
+  updateCommonConversions();
 }
 
 function setupTabs() {
@@ -122,7 +174,8 @@ function setupTabs() {
       button.classList.add('active');
       currentCategory = button.dataset.category;
       loadUnits(currentCategory);
-      clear();
+      setDefaultValues();
+      updateCommonConversions();
     });
   });
 }
@@ -132,86 +185,116 @@ function loadUnits(category) {
   if (!categoryData) return;
 
   // Clear existing options
-  inputUnit.innerHTML = '';
+  unit1.innerHTML = '';
+  unit2.innerHTML = '';
 
-  // Add units to select element
+  // Add units to select elements
   Object.keys(categoryData.units).forEach(unitKey => {
     const unit = categoryData.units[unitKey];
-    const option = new Option(`${unit.name} (${unit.symbol})`, unitKey);
-    inputUnit.appendChild(option);
+    const option1 = new Option(`${unit.symbol} (${unit.name})`, unitKey);
+    const option2 = new Option(`${unit.symbol} (${unit.name})`, unitKey);
+    unit1.appendChild(option1);
+    unit2.appendChild(option2);
   });
 
-  // Set default selection to first unit
+  // Set default units (first two different units)
   const unitKeys = Object.keys(categoryData.units);
-  if (unitKeys.length > 0) {
-    inputUnit.value = unitKeys[0];
+  if (unitKeys.length >= 2) {
+    unit1.value = unitKeys[0];
+    unit2.value = unitKeys[1];
   }
+}
+
+function setDefaultValues() {
+  input1.value = '1';
+  input2.value = '';
+  convertFromFirst();
 }
 
 function setupEventListeners() {
-  inputValue.addEventListener('input', convertAll);
-  inputUnit.addEventListener('change', convertAll);
-
-  // Allow conversion by pressing Enter
-  inputValue.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      convertAll();
+  input1.addEventListener('input', () => {
+    if (!isUpdating) {
+      convertFromFirst();
     }
+  });
+
+  input2.addEventListener('input', () => {
+    if (!isUpdating) {
+      convertFromSecond();
+    }
+  });
+
+  unit1.addEventListener('change', () => {
+    if (input1.value) {
+      convertFromFirst();
+    }
+    updateCommonConversions();
+  });
+
+  unit2.addEventListener('change', () => {
+    if (input2.value) {
+      convertFromSecond();
+    }
+    updateCommonConversions();
   });
 }
 
-function convertAll() {
-  const value = parseFloat(inputValue.value);
+function convertFromFirst() {
+  const value = parseFloat(input1.value);
   if (isNaN(value) || value === '') {
-    showEmptyState();
+    isUpdating = true;
+    input2.value = '';
+    formulaDisplay.textContent = '';
+    isUpdating = false;
     return;
   }
 
-  const fromUnitKey = inputUnit.value;
-  const categoryData = units[currentCategory];
+  const fromUnit = unit1.value;
+  const toUnit = unit2.value;
 
-  if (!fromUnitKey || !categoryData) return;
+  if (!fromUnit || !toUnit) return;
 
-  showAllConversions(value, fromUnitKey, categoryData);
+  const result = convertValue(value, fromUnit, toUnit, currentCategory);
+
+  isUpdating = true;
+  input2.value = formatNumber(result);
+  isUpdating = false;
+
+  updateFormula(value, fromUnit, result, toUnit);
 }
 
-function showAllConversions(value, fromUnitKey, categoryData) {
-  let html = '';
+function convertFromSecond() {
+  const value = parseFloat(input2.value);
+  if (isNaN(value) || value === '') {
+    isUpdating = true;
+    input1.value = '';
+    formulaDisplay.textContent = '';
+    isUpdating = false;
+    return;
+  }
 
-  Object.keys(categoryData.units).forEach(unitKey => {
-    if (unitKey === fromUnitKey) return; // Skip same unit
+  const fromUnit = unit2.value;
+  const toUnit = unit1.value;
 
-    let result;
-    if (currentCategory === 'temperature') {
-      result = convertTemperature(value, fromUnitKey, unitKey);
-    } else {
-      result = convertStandard(value, fromUnitKey, unitKey, categoryData);
-    }
+  if (!fromUnit || !toUnit) return;
 
-    const unit = categoryData.units[unitKey];
-    const formattedResult = formatNumber(result);
+  const result = convertValue(value, fromUnit, toUnit, currentCategory);
 
-    html += `
-      <div class="result-item">
-        <div class="result-info">
-          <div class="result-value">${formattedResult}</div>
-          <div class="result-unit">${unit.symbol} (${unit.name})</div>
-        </div>
-        <button class="copy-btn" onclick="copyToClipboard('${formattedResult}', this)">Copy</button>
-      </div>
-    `;
-  });
+  isUpdating = true;
+  input1.value = formatNumber(result);
+  isUpdating = false;
 
-  conversionResults.innerHTML = html;
+  updateFormula(result, toUnit, value, fromUnit);
 }
 
-function showEmptyState() {
-  conversionResults.innerHTML = `
-    <div class="empty-state">
-      <div class="empty-state-icon">🔄</div>
-      <div>Enter a value and select a unit to see all conversion results</div>
-    </div>
-  `;
+function convertValue(value, fromUnitKey, toUnitKey, category) {
+  if (fromUnitKey === toUnitKey) return value;
+
+  if (category === 'temperature') {
+    return convertTemperature(value, fromUnitKey, toUnitKey);
+  } else {
+    return convertStandard(value, fromUnitKey, toUnitKey, units[category]);
+  }
 }
 
 function convertStandard(value, fromUnitKey, toUnitKey, categoryData) {
@@ -259,49 +342,48 @@ function formatNumber(num) {
   }
 }
 
-function copyToClipboard(text, button) {
-  navigator.clipboard.writeText(text).then(() => {
-    // Show success feedback
-    const originalText = button.textContent;
-    button.textContent = 'Copied!';
-    button.classList.add('copied');
+function updateFormula(value1, unit1Key, value2, unit2Key) {
+  const categoryData = units[currentCategory];
+  const unit1Data = categoryData.units[unit1Key];
+  const unit2Data = categoryData.units[unit2Key];
 
-    setTimeout(() => {
-      button.textContent = originalText;
-      button.classList.remove('copied');
-    }, 2000);
-  }).catch(err => {
-    console.error('Copy failed:', err);
-    // Fallback for older browsers
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    document.body.appendChild(textArea);
-    textArea.select();
-    try {
-      document.execCommand('copy');
-      const originalText = button.textContent;
-      button.textContent = 'Copied!';
-      button.classList.add('copied');
+  const formula = `${formatNumber(value1)} ${unit1Data.symbol} = ${formatNumber(value2)} ${unit2Data.symbol}`;
+  formulaDisplay.textContent = formula;
+}
 
-      setTimeout(() => {
-        button.textContent = originalText;
-        button.classList.remove('copied');
-      }, 2000);
-    } catch (err) {
-      console.error('Copy failed:', err);
+function updateCommonConversions() {
+  const pairs = commonConversionPairs[currentCategory] || [];
+  let html = '';
+
+  pairs.forEach(pair => {
+    const [unit1Key, unit2Key] = pair;
+    const unit1Data = units[currentCategory].units[unit1Key];
+    const unit2Data = units[currentCategory].units[unit2Key];
+
+    if (unit1Data && unit2Data) {
+      const converted = convertValue(1, unit1Key, unit2Key, currentCategory);
+
+      html += `
+        <div class="conversion-item" onclick="setConversion('${unit1Key}', '${unit2Key}')">
+          <div class="conversion-label">1 ${unit1Data.symbol} =</div>
+          <div class="conversion-value">${formatNumber(converted)} ${unit2Data.symbol}</div>
+        </div>
+      `;
     }
-    document.body.removeChild(textArea);
   });
+
+  commonConversions.innerHTML = html;
 }
 
-function clear() {
-  inputValue.value = '';
-  showEmptyState();
+function setConversion(fromUnit, toUnit) {
+  unit1.value = fromUnit;
+  unit2.value = toUnit;
+  input1.value = '1';
+  convertFromFirst();
 }
 
-// Make functions global for onclick handlers
-window.copyToClipboard = copyToClipboard;
-window.clear = clear;
+// Make setConversion global for onclick handlers
+window.setConversion = setConversion;
 
 // Initialize when page loads
 init();

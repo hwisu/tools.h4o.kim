@@ -5,19 +5,8 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "dev": "npm run build:config && npx wrangler dev",
-    "deploy": "npm run build && npm test && npx wrangler deploy",
-    "predeploy": "echo '🚀 배포 전 테스트를 실행합니다...'",
-    "build": "npm run build:config && vite build",
-    "build:config": "node scripts/build-config.cjs",
-    "build:dev": "npm run build:config && vite build --mode development",
-    "build:watch": "npm run build:config && vite build --watch",
-    "test": "echo '🧪 테스트를 실행합니다...' && node tests/tools.test.js && node -c dist/index.js && echo '✅ 모든 테스트가 통과했습니다!'",
-    "pretest": "echo '🔧 테스트 준비 중...'",
-    "test:tools": "node tests/tools.test.js",
-    "lint": "echo '🔍 코드 스타일을 검사합니다...' && echo '✅ 린팅이 완료되었습니다!'",
-    "serve": "npm run build:config && npx wrangler dev --local",
-    "publish": "npm run build && npx wrangler deploy"
+    "dev": "vite build && npx wrangler dev",
+    "publish": "vite build && npx wrangler deploy"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20231025.0",

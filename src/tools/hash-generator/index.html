@@ -31,66 +31,31 @@
       border: 1px solid #ccc;
       border-radius: 3px;
       margin-bottom: 0.5rem;
-    }
-    .copy-btn {
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 0.25rem 0.5rem;
-      border-radius: 3px;
       cursor: pointer;
-      font-size: 0.8rem;
-      margin-left: 0.5rem;
     }
-    .copy-btn:hover {
-      background: #0056b3;
+    .hash-value:hover {
+      background: #f0f0f0;
     }
     .copy-success {
-      background: #28a745 !important;
-    }
-    .file-input-wrapper {
-      margin: 1rem 0;
-      padding: 1rem;
-      border: 1px solid #ddd;
-      border-radius: 3px;
-      background: #f8f8f8;
-    }
-    .file-input-wrapper h3 {
-      margin: 0 0 1rem 0;
-      font-size: 1rem;
-    }
-    .file-input-wrapper input[type="file"] {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      background: white;
+      background: #d4edda !important;
+      border-color: #c3e6cb !important;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <a href="/" class="back-link">← Back</a>
-    <h1>Hash Generator</h1>
-    <p>Generate various hash values with advanced cryptographic algorithms</p>
-  </div>
+  <div class="container">
+    <h1>해시 생성기</h1>
+    <p>텍스트의 해시값을 생성합니다</p>
 
-  <div class="tool-container">
     <div class="input-group">
-      <label for="input">Input Text</label>
-      <textarea id="input" placeholder="Enter text to hash..." rows="5" autofocus></textarea>
+      <label for="input">입력 텍스트</label>
+      <textarea id="input" placeholder="해시할 텍스트를 입력하세요..." rows="5" autofocus></textarea>
     </div>
 
-    <div class="file-input-wrapper">
-      <h3>Or Upload File</h3>
-      <input type="file" id="fileInput" accept=".txt,.json,.xml,.csv,.log">
-      <div style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">
-        Supports text files up to reasonable size for browser processing
-      </div>
+    <div class="controls">
+      <button onclick="generateHashes()">해시 생성</button>
+      <button onclick="clear()">초기화</button>
     </div>
-
-    <button onclick="generateHashes()">Generate Hashes</button>
-    <button onclick="clear()">Clear</button>
 
     <div id="hashResults" class="hash-results" style="display:none;"></div>
   </div>
