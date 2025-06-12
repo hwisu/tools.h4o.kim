@@ -5,6 +5,7 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
+    "build": "vite build",
     "dev": "vite build && npx wrangler dev",
     "publish": "vite build && npx wrangler deploy"
   },
