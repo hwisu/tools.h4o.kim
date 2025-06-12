@@ -24,6 +24,11 @@ export const commonStyles = `
   --warning-border: #ffc107;
   --warning-text: #856404;
   --shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+  /* 통일된 폰트 정의 */
+  --font-body: 'Times New Roman', 'Georgia', serif;
+  --font-code: 'Monaco', 'Menlo', 'Courier New', monospace;
+  --font-ui: system-ui, -apple-system, sans-serif;
 }
 
 [data-theme="dark"] {
@@ -95,7 +100,7 @@ export const commonStyles = `
 }
 
 body {
-  font-family: 'Times New Roman', 'Georgia', serif;
+  font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.6;
   color: var(--text-primary);
@@ -108,7 +113,7 @@ body {
 
 /* Typography - Newspaper style */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Times New Roman', serif;
+  font-family: var(--font-body);
   font-weight: bold;
   color: var(--text-primary);
   margin-bottom: 1rem;
@@ -168,7 +173,7 @@ p {
   color: var(--text-muted);
   text-decoration: none;
   font-size: 0.9rem;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-ui);
   padding: 0.25rem 0.5rem;
   border: 1px solid var(--border-light);
   border-radius: 3px;
@@ -199,7 +204,7 @@ label {
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.025em;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-ui);
 }
 
 textarea,
@@ -213,7 +218,7 @@ select {
   border: 1px solid var(--border-medium);
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-code);
   font-size: 0.9rem;
   border-radius: 0;
 }
@@ -232,7 +237,7 @@ button {
   color: var(--bg-primary);
   border: 1px solid var(--accent-color);
   padding: 0.75rem 1.5rem;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.9rem;
   font-weight: bold;
   text-transform: uppercase;
@@ -254,6 +259,25 @@ button:disabled {
   color: var(--text-muted);
   border-color: var(--border-light);
   cursor: not-allowed;
+}
+
+/* Notification styles */
+.notification-success {
+  background: var(--success-bg) !important;
+  color: var(--success-text) !important;
+  border-color: var(--success-border) !important;
+}
+
+.notification-error {
+  background: var(--error-bg) !important;
+  color: var(--error-text) !important;
+  border-color: var(--error-border) !important;
+}
+
+.notification-warning {
+  background: var(--warning-bg) !important;
+  color: var(--warning-text) !important;
+  border-color: var(--warning-border) !important;
 }
 
 /* Mobile responsive improvements */
@@ -380,7 +404,7 @@ button:disabled {
 
 .result {
   border-left: 4px solid var(--accent-color);
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-code);
   font-size: 0.9rem;
 }
 
@@ -506,17 +530,48 @@ button:disabled {
 }
 
 /* Utility classes */
-.hidden { display: none; }
 .text-center { text-align: center; }
 .text-left { text-align: left; }
 .text-right { text-align: right; }
-.font-mono { font-family: 'Courier New', monospace; }
-.font-sans { font-family: system-ui, -apple-system, sans-serif; }
-.border-top { border-top: 1px solid var(--border-medium); }
-.border-bottom { border-bottom: 1px solid var(--border-medium); }
-.mt-1 { margin-top: 1rem; }
-.mb-1 { margin-bottom: 1rem; }
-.p-1 { padding: 1rem; }
+.text-muted { color: var(--text-muted); }
+.text-bold { font-weight: bold; }
+.hidden { display: none; }
+.visible { display: block; }
+
+/* Code blocks */
+pre, code {
+  font-family: var(--font-code);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  padding: 0.5rem;
+  border-radius: 3px;
+}
+
+pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Loading states */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--border-light);
+  border-radius: 50%;
+  border-top-color: var(--accent-color);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
 /* Print styles */
 @media print {

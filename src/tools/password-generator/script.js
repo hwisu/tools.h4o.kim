@@ -74,32 +74,23 @@ function copyPassword() {
     return;
   }
 
-  navigator.clipboard.writeText(currentPassword).then(() => {
-    const passwordDisplay = document.getElementById('passwordDisplay');
-    passwordDisplay.classList.add('copied');
+  const passwordDisplay = document.getElementById('passwordDisplay');
 
-    setTimeout(() => {
-      passwordDisplay.classList.remove('copied');
-    }, 2000);
-  }).catch(err => {
-    console.error('Failed to copy: ', err);
-    // Fallback for older browsers
-    const textArea = document.createElement('textarea');
-    textArea.value = currentPassword;
-    document.body.appendChild(textArea);
-    textArea.select();
-    try {
-      document.execCommand('copy');
-      const passwordDisplay = document.getElementById('passwordDisplay');
+  // 공통 utils.js의 copyToClipboard 함수 사용
+  copyToClipboard(
+    currentPassword,
+    () => {
+      // 성공 시
       passwordDisplay.classList.add('copied');
       setTimeout(() => {
         passwordDisplay.classList.remove('copied');
       }, 2000);
-    } catch (err) {
-      console.error('Copy failed:', err);
+    },
+    (error) => {
+      // 실패 시
+      handleError(error, 'Failed to copy password');
     }
-    document.body.removeChild(textArea);
-  });
+  );
 }
 
 function calculateStrength() {

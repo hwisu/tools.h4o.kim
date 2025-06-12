@@ -111,7 +111,7 @@ function handleHome() {
           padding: 0.75rem;
           font-size: 1rem;
           border: 1px solid var(--border-medium);
-          font-family: 'Courier New', monospace;
+          font-family: var(--font-code);
           background: var(--bg-secondary);
           color: var(--text-primary);
         }
@@ -134,7 +134,7 @@ function handleHome() {
           background: var(--bg-tertiary);
           border: 1px solid var(--border-medium);
           padding: 0.1rem 0.3rem;
-          font-family: 'Courier New', monospace;
+          font-family: var(--font-code);
           font-size: 0.8rem;
           color: var(--text-primary);
         }
@@ -164,7 +164,7 @@ function handleHome() {
           content: "- ";
           margin-left: -1rem;
           color: var(--text-muted);
-          font-family: 'Courier New', monospace;
+          font-family: var(--font-code);
           transition: all 0.2s ease;
         }
         .tool-link {

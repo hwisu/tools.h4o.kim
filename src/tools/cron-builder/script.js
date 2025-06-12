@@ -293,22 +293,23 @@ function copyExpression() {
   if (!cronExpression) return;
 
   const expression = cronExpression.textContent;
-  navigator.clipboard.writeText(expression).then(() => {
-    // Show temporary feedback
-    const originalText = cronExpression.textContent;
-    cronExpression.textContent = 'Copied!';
-    setTimeout(() => {
-      cronExpression.textContent = originalText;
-    }, 1000);
-  }).catch(() => {
-    // Fallback for older browsers
-    const textArea = document.createElement('textarea');
-    textArea.value = expression;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-  });
+
+  // 공통 utils.js의 copyToClipboard 함수 사용
+  copyToClipboard(
+    expression,
+    () => {
+      // 성공 시 - 임시 피드백 표시
+      const originalText = cronExpression.textContent;
+      cronExpression.textContent = 'Copied!';
+      setTimeout(() => {
+        cronExpression.textContent = originalText;
+      }, 1000);
+    },
+    (error) => {
+      // 실패 시
+      handleError(error, 'Failed to copy cron expression');
+    }
+  );
 }
 
 function clear() {

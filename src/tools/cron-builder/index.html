@@ -79,7 +79,7 @@
       border-radius: 4px;
       background: var(--bg-primary);
       color: var(--text-primary);
-      font-family: 'Monaco', 'Menlo', monospace;
+      font-family: var(--font-code);
       font-size: 0.9rem;
     }
     .cron-field select:focus,
@@ -104,7 +104,7 @@
       background: var(--accent-color);
       color: var(--bg-primary);
       padding: 1rem;
-      font-family: 'Monaco', 'Menlo', monospace;
+      font-family: var(--font-code);
       font-size: 1.2rem;
       text-align: center;
       word-break: break-all;
@@ -136,7 +136,7 @@
       background: var(--bg-secondary);
       border: 1px solid var(--border-medium);
       border-radius: 3px;
-      font-family: 'Monaco', 'Menlo', monospace;
+      font-family: var(--font-code);
       font-size: 0.85rem;
       color: var(--text-secondary);
       text-align: center;
@@ -207,6 +207,7 @@
             <option value="1">1st day</option>
             <option value="15">15th day</option>
             <option value="*/2">Every 2 days</option>
+            <option value="1-15">1st to 15th</option>
           </select>
           <input type="text" id="dayCustom" placeholder="Custom input" onchange="updateCron()">
         </div>
@@ -218,18 +219,19 @@
             <option value="1">January</option>
             <option value="6">June</option>
             <option value="12">December</option>
+            <option value="*/3">Every 3 months</option>
           </select>
           <input type="text" id="monthCustom" placeholder="Custom input" onchange="updateCron()">
         </div>
 
         <div class="cron-field">
-          <h4>Day of Week (0-7)</h4>
+          <h4>Weekday (0-6)</h4>
           <select id="weekday" onchange="updateCron()">
-            <option value="*">Every day (*)</option>
+            <option value="*">Every weekday (*)</option>
             <option value="0">Sunday</option>
             <option value="1">Monday</option>
-            <option value="1-5">Weekdays</option>
-            <option value="6,0">Weekends</option>
+            <option value="1-5">Monday to Friday</option>
+            <option value="6,0">Saturday and Sunday</option>
           </select>
           <input type="text" id="weekdayCustom" placeholder="Custom input" onchange="updateCron()">
         </div>
@@ -238,61 +240,28 @@
 
     <div class="result-section">
       <h3>Generated Expression</h3>
-      <div id="cronExpression" class="cron-expression">* * * * *</div>
-      <div id="cronDescription" class="cron-description">Runs every minute</div>
+      <div class="cron-expression" id="cronExpression" onclick="copyExpression()">
+        * * * * *
+      </div>
+      <div class="cron-description" id="cronDescription">
+        Runs every minute
+      </div>
 
-      <h4>Next 10 Runs:</h4>
-      <div id="nextRuns" class="next-runs-list"></div>
+      <h4>Next 10 Runs</h4>
+      <div class="next-runs-list" id="nextRuns">
+        <!-- Next run times will be populated here -->
+      </div>
 
-      <div class="button-group">
+      <div style="margin-top: 1rem; text-align: center;">
         <button onclick="copyExpression()">Copy Expression</button>
         <button onclick="clear()">Clear All</button>
       </div>
     </div>
   </div>
 
-  <script>
-    // Theme toggle functionality
-    function toggleTheme() {
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-
-      updateThemeIcon(newTheme);
-    }
-
-    // Update theme icon
-    function updateThemeIcon(theme) {
-      const toggle = document.querySelector('.theme-toggle svg');
-      if (theme === 'dark') {
-        // Moon icon
-        toggle.innerHTML = '<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>';
-      } else {
-        // Sun icon
-        toggle.innerHTML = '<path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>';
-      }
-    }
-
-    // Initialize theme
-    function initTheme() {
-      const savedTheme = localStorage.getItem('theme') || 'light';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      updateThemeIcon(savedTheme);
-    }
-
-    // Initialize theme on page load
-    initTheme();
-
-    // Initialize cron builder
-    function updateCron() {
-      // This will be handled by the script.js file
-      if (typeof window.updateCronExpression === 'function') {
-        window.updateCronExpression();
-      }
-    }
-  </script>
+  <!-- 공통 스크립트들 -->
+  <script src="../common/theme-handler.js"></script>
+  <script src="../common/utils.js"></script>
   <script src="./script.js"></script>
 </body>
 </html>

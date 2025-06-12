@@ -35,7 +35,7 @@
       background: var(--bg-secondary);
       padding: 1.5rem;
       border: 2px solid var(--border-medium);
-      font-family: 'Courier New', monospace;
+      font-family: var(--font-code);
       font-size: 1.2rem;
       word-break: break-all;
       margin: 1.5rem 0;
@@ -136,7 +136,7 @@
       color: var(--accent-color);
       min-width: 35px;
       text-align: center;
-      font-family: 'Courier New', monospace;
+      font-family: var(--font-code);
     }
 
     .checkbox-container {
@@ -195,15 +195,16 @@
     .strength-score {
       font-size: 0.9rem;
       color: var(--text-secondary);
-      font-family: 'Courier New', monospace;
+      font-family: var(--font-code);
     }
 
     .strength-bar {
+      width: 100%;
       height: 8px;
       background: var(--bg-tertiary);
       border-radius: 4px;
       overflow: hidden;
-      margin-bottom: 0.75rem;
+      margin-bottom: 1rem;
     }
 
     .strength-fill {
@@ -212,33 +213,17 @@
       border-radius: 4px;
     }
 
-    .strength-weak { background: var(--error-border); }
-    .strength-fair { background: var(--warning-border); }
-    .strength-good { background: var(--success-border); }
-    .strength-strong { background: var(--accent-color); }
+    .strength-weak { background: #dc3545; }
+    .strength-fair { background: #ffc107; }
+    .strength-good { background: #17a2b8; }
+    .strength-strong { background: #28a745; }
 
     .strength-tips {
       font-size: 0.85rem;
-      color: var(--text-secondary);
-      line-height: 1.4;
-    }
-
-    .entropy-info {
-      margin: 1rem 0;
-      padding: 1rem;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-light);
-      font-size: 0.9rem;
+      line-height: 1.5;
       color: var(--text-secondary);
     }
 
-    .entropy-value {
-      font-family: 'Courier New', monospace;
-      font-weight: bold;
-      color: var(--accent-color);
-    }
-
-    /* Responsive design */
     @media (max-width: 768px) {
       .pwd-main {
         grid-template-columns: 1fr;
@@ -247,17 +232,22 @@
 
       .control-row {
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-start;
         gap: 0.5rem;
       }
 
-      .control-label {
-        text-align: center;
+      .slider-container {
+        width: 100%;
+        justify-content: space-between;
       }
 
-      .password-display {
-        font-size: 1rem;
-        padding: 1rem;
+      input[type="range"] {
+        flex: 1;
+        max-width: 200px;
+      }
+
+      .button-group {
+        flex-direction: column;
       }
     }
   </style>
@@ -272,127 +262,88 @@
   <div class="header">
     <a href="/" class="back-link">← Back</a>
     <h1>Password Generator</h1>
-    <p>Create secure passwords with customizable options</p>
+    <p>Generate secure passwords with customizable options and strength analysis</p>
   </div>
 
-  <div class="tool-container">
-    <div class="pwd-main">
-      <div class="generator-section">
-        <h2>Password Generator</h2>
+  <div class="pwd-main">
+    <div class="generator-section">
+      <h2>Password Generator</h2>
 
-        <div class="password-display" id="passwordDisplay" onclick="copyPassword()">
-          <span class="password-placeholder">Click "Generate" to create password</span>
-        </div>
+      <div class="password-display" id="passwordDisplay" onclick="copyPassword()">
+        <span class="password-placeholder">Click Generate to create password</span>
+      </div>
 
-        <div class="controls-section">
-          <div class="control-row">
-            <label class="control-label">Password Length</label>
-            <div class="slider-container">
-              <input type="range" id="lengthSlider" min="4" max="128" value="16" oninput="updateLength()">
-              <span class="value-display" id="lengthValue">16</span>
-            </div>
-          </div>
-
-          <div class="control-row">
-            <label class="control-label">Include Uppercase Letters (A-Z)</label>
-            <div class="checkbox-container">
-              <input type="checkbox" id="uppercase" checked onchange="updateOptions()">
-            </div>
-          </div>
-
-          <div class="control-row">
-            <label class="control-label">Include Lowercase Letters (a-z)</label>
-            <div class="checkbox-container">
-              <input type="checkbox" id="lowercase" checked onchange="updateOptions()">
-            </div>
-          </div>
-
-          <div class="control-row">
-            <label class="control-label">Include Numbers (0-9)</label>
-            <div class="checkbox-container">
-              <input type="checkbox" id="numbers" checked onchange="updateOptions()">
-            </div>
-          </div>
-
-          <div class="control-row">
-            <label class="control-label">Include Symbols (!@#$%^&*)</label>
-            <div class="checkbox-container">
-              <input type="checkbox" id="symbols" checked onchange="updateOptions()">
-            </div>
-          </div>
-
-          <div class="control-row">
-            <label class="control-label">Exclude Similar Characters (0,O,l,I)</label>
-            <div class="checkbox-container">
-              <input type="checkbox" id="excludeSimilar" onchange="updateOptions()">
-            </div>
+      <div class="controls-section">
+        <div class="control-row">
+          <label class="control-label">Password Length</label>
+          <div class="control-input slider-container">
+            <input type="range" id="lengthSlider" min="4" max="128" value="16">
+            <span class="value-display" id="lengthValue">16</span>
           </div>
         </div>
 
-        <div class="button-group">
-          <button class="btn btn-primary" onclick="generatePassword()">Generate Password</button>
-          <button class="btn btn-secondary" onclick="copyPassword()">Copy to Clipboard</button>
+        <div class="control-row">
+          <label class="control-label">Include Numbers (0-9)</label>
+          <div class="control-input checkbox-container">
+            <input type="checkbox" id="includeNumbers" checked>
+          </div>
+        </div>
+
+        <div class="control-row">
+          <label class="control-label">Include Symbols (!@#$%^&*)</label>
+          <div class="control-input checkbox-container">
+            <input type="checkbox" id="includeSymbols" checked>
+          </div>
+        </div>
+
+        <div class="control-row">
+          <label class="control-label">Exclude Similar Characters (0,O,l,1,I)</label>
+          <div class="control-input checkbox-container">
+            <input type="checkbox" id="excludeSimilar">
+          </div>
         </div>
       </div>
 
-      <div class="info-section">
-        <h2>Password Strength</h2>
+      <div class="button-group">
+        <button onclick="generatePassword()">Generate New Password</button>
+        <button onclick="copyPassword()">Copy Password</button>
+      </div>
+    </div>
 
-        <div class="strength-meter">
-          <div class="strength-header">
-            <span class="strength-label" id="strengthLabel">Not Generated</span>
-            <span class="strength-score" id="strengthScore">0/100</span>
-          </div>
-          <div class="strength-bar">
-            <div class="strength-fill" id="strengthFill" style="width: 0%;"></div>
-          </div>
-          <div class="strength-tips" id="strengthTips">
-            Generate a password to see strength analysis
-          </div>
+    <div class="info-section">
+      <h2>Password Strength</h2>
+
+      <div class="strength-meter" id="strengthMeter" style="display: none;">
+        <div class="strength-header">
+          <span class="strength-label" id="strengthLabel">Password Strength: -</span>
+          <span class="strength-score" id="strengthScore">- bits entropy</span>
         </div>
 
-        <div class="entropy-info">
-          <strong>Entropy:</strong> <span class="entropy-value" id="entropyValue">0 bits</span><br>
-          <small>Higher entropy means stronger password security</small>
+        <div class="strength-bar">
+          <div class="strength-fill" id="strengthFill" style="width: 0%;"></div>
         </div>
+
+        <div class="strength-tips" id="strengthTips">
+          Generate a password to see strength analysis
+        </div>
+      </div>
+
+      <div class="info-text">
+        <h3>Password Security Tips</h3>
+        <ul>
+          <li>Use at least 12 characters for good security</li>
+          <li>Include uppercase, lowercase, numbers, and symbols</li>
+          <li>Avoid using dictionary words or personal information</li>
+          <li>Use unique passwords for each account</li>
+          <li>Consider using a password manager</li>
+        </ul>
       </div>
     </div>
   </div>
 
-  <script>
-    // Theme toggle functionality
-    function toggleTheme() {
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-
-      updateThemeIcon(newTheme);
-    }
-
-    // Update theme icon
-    function updateThemeIcon(theme) {
-      const toggle = document.querySelector('.theme-toggle svg');
-      if (theme === 'dark') {
-        // Moon icon
-        toggle.innerHTML = '<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>';
-      } else {
-        // Sun icon
-        toggle.innerHTML = '<path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>';
-      }
-    }
-
-    // Initialize theme
-    function initTheme() {
-      const savedTheme = localStorage.getItem('theme') || 'light';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      updateThemeIcon(savedTheme);
-    }
-
-    // Initialize theme on page load
-    initTheme();
-  </script>
+  <!-- 공통 스크립트들 -->
+  <script src="../common/theme-handler.js"></script>
+  <script src="../common/utils.js"></script>
   <script src="./script.js"></script>
 </body>
 </html>
