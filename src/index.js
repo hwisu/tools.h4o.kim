@@ -1,28 +1,28 @@
 /**
- * Tools Platform - 유용한 웹 도구 모음
- * 모든 처리는 클라이언트 사이드에서 수행 (Workers 무료 티어 CPU 제한 고려)
+ * Tools Platform - Collection of useful web tools
+ * All processing is performed client-side (considering Workers free tier CPU limitations)
  */
 
-// 통합 도구 핸들러 임포트
+// Import unified tool handler
 import { handleTool } from './common/tool-handler.js';
 import { commonStyles } from './common/styles.js';
 import { APP_CONFIG } from './config.js';
 
-// 버전 정보를 콘솔에 출력 (디버깅용)
+// Output version information to console (for debugging)
 console.log(`App starting - Version: ${APP_CONFIG.version}, Build time: ${APP_CONFIG.buildTime}`);
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // CORS 헤더 설정
+    // CORS headers setup
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     };
 
-    // OPTIONS 요청 처리 (CORS preflight)
+    // Handle OPTIONS requests (CORS preflight)
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
@@ -31,7 +31,7 @@ export default {
     }
 
     try {
-      // 라우팅 - 동적 도구 처리
+      // Routing - Dynamic tool handling
       if (url.pathname === '/') {
         return handleHome();
       }
@@ -40,7 +40,16 @@ export default {
         return handleStatus();
       }
 
-      // 도구 라우팅 - /tools/{tool-name} 패턴
+      // PWA file handling
+      if (url.pathname === '/manifest.json') {
+        return handleManifest();
+      }
+
+      if (url.pathname === '/sw.js') {
+        return handleServiceWorker();
+      }
+
+      // Tool routing - /tools/{tool-name} pattern
       const toolMatch = url.pathname.match(/^\/([a-z0-9-]+)$/);
       if (toolMatch) {
         const toolName = toolMatch[1];
@@ -48,7 +57,7 @@ export default {
         return handleTool(toolName);
       }
 
-      // 404 처리
+      // 404 handling
       return new Response('Not Found', {
         status: 404,
         headers: corsHeaders
@@ -63,12 +72,12 @@ export default {
 };
 
 /**
- * 메인 홈페이지
+ * Main homepage
  */
 function handleHome() {
   const html = `
     <!DOCTYPE html>
-    <html lang="ko">
+    <html lang="en">
     <head>
       <title>tools.h4o.kim</title>
       <meta charset="utf-8">
@@ -224,15 +233,15 @@ function handleHome() {
         <ul class="tool-list">
           <li class="tool-item" data-keywords="text counter character word line count">
             <a href="/tcount" class="tool-link">Text Counter</a>
-            <span class="tool-description"> : Count characters, words, and lines in real-time</span>
+            <span class="tool-description"> : Count characters, words, lines</span>
           </li>
           <li class="tool-item" data-keywords="url encoder decoder encode decode uri">
             <a href="/url" class="tool-link">URL Encoder/Decoder</a>
-            <span class="tool-description"> : Safely encode and decode URLs</span>
+            <span class="tool-description"> : Encode and decode URLs</span>
           </li>
           <li class="tool-item" data-keywords="text diff compare difference">
             <a href="/diff" class="tool-link">Text Diff</a>
-            <span class="tool-description"> : Compare two text strings and highlight differences</span>
+            <span class="tool-description"> : Compare text differences</span>
           </li>
         </ul>
       </div>
@@ -242,20 +251,20 @@ function handleHome() {
         <ul class="tool-list">
           <li class="tool-item" data-keywords="json formatter pretty print validate minify">
             <a href="/json" class="tool-link">JSON Formatter</a>
-            <span class="tool-description"> : Format, validate, and minify JSON</span>
+            <span class="tool-description"> : Format and validate JSON</span>
           </li>
           <li class="tool-item" data-keywords="base64 base converter hex binary decimal encode decode">
             <a href="/base64" class="tool-link">Base Converter</a>
-            <span class="tool-description"> : Convert between Base64, Hex, Binary, and Decimal formats</span>
+            <span class="tool-description"> : Convert Base64, Hex, Binary, Decimal</span>
           </li>
           <li class="tool-item" data-keywords="sql formatter prettify query">
             <a href="/sql" class="tool-link">SQL Formatter</a>
-            <span class="tool-description"> : Format and prettify SQL queries</span>
+            <span class="tool-description"> : Format SQL queries</span>
           </li>
 
           <li class="tool-item" data-keywords="hash generator md5 sha1 sha256">
             <a href="/hash" class="tool-link">Hash Generator</a>
-            <span class="tool-description"> : Generate MD5, SHA1, SHA256 hashes from text or files</span>
+            <span class="tool-description"> : Generate MD5, SHA1, SHA256 hashes</span>
           </li>
         </ul>
       </div>
@@ -265,27 +274,27 @@ function handleHome() {
         <ul class="tool-list">
           <li class="tool-item" data-keywords="qr code generator qrcode">
             <a href="/qr" class="tool-link">QR Code Generator</a>
-            <span class="tool-description"> : Generate QR codes from text or URLs</span>
+            <span class="tool-description"> : Generate QR codes</span>
           </li>
           <li class="tool-item" data-keywords="timezone converter time zone timestamp unix universal">
             <a href="/tz" class="tool-link">Universal Time Converter</a>
-            <span class="tool-description"> : Convert between timezones, timestamps, and various time formats</span>
+            <span class="tool-description"> : Convert timezones and timestamps</span>
           </li>
           <li class="tool-item" data-keywords="image converter format">
             <a href="/image" class="tool-link">Image Format Converter</a>
-            <span class="tool-description"> : Convert between image formats with maximum quality</span>
+            <span class="tool-description"> : Convert image formats</span>
           </li>
           <li class="tool-item" data-keywords="password generator secure">
             <a href="/pwd" class="tool-link">Password Generator</a>
-            <span class="tool-description"> : Generate secure passwords with customizable options</span>
+            <span class="tool-description"> : Generate secure passwords</span>
           </li>
           <li class="tool-item" data-keywords="unit converter measurement length weight temperature">
             <a href="/unit" class="tool-link">Unit Converter</a>
-            <span class="tool-description"> : Convert between different units of measurement</span>
+            <span class="tool-description"> : Convert units of measurement</span>
           </li>
           <li class="tool-item" data-keywords="cron expression builder scheduler">
             <a href="/cron" class="tool-link">Cron Builder</a>
-            <span class="tool-description"> : Build and validate cron expressions with visual interface</span>
+            <span class="tool-description"> : Build cron expressions</span>
           </li>
         </ul>
       </div>
@@ -454,10 +463,10 @@ function handleHome() {
 }
 
 /**
- * 상태 확인 API
+ * Status check API
  */
 function handleStatus() {
-  // 간단한 콘텐츠 해시 생성 (실제로는 빌드 시 생성하는 것이 좋음)
+  // Simple content hash generation (should ideally be generated at build time)
   const contentHash = btoa(APP_CONFIG.version + APP_CONFIG.buildTime + (APP_CONFIG.gitHash || '')).slice(0, 8);
 
   return Response.json({
@@ -468,7 +477,84 @@ function handleStatus() {
     lastUpdated: APP_CONFIG.buildTime,
     buildTime: APP_CONFIG.buildTime,
     gitHash: APP_CONFIG.gitHash,
-    contentHash: contentHash // 콘텐츠 변경 감지용
+    contentHash: contentHash // For content change detection
+  });
+}
+
+/**
+ * PWA Manifest handling
+ */
+function handleManifest() {
+  const manifest = {
+    name: "tools.h4o.kim",
+    short_name: "Tools",
+    description: "Miscellaneous web tools for daily use",
+    start_url: "/",
+    display: "standalone",
+    theme_color: "#333333",
+    background_color: "#ffffff",
+    orientation: "portrait-primary",
+    icons: [
+      {
+        src: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIzOCIgZmlsbD0iIzMzMzMzMyIvPjx0ZXh0IHg9Ijk2IiB5PSI5NiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLCBTZWdvZSBVSSBFbW9qaSwgTm90byBDb2xvciBFbW9qaSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIj7wn5ug8J+PtzwvdGV4dD48L3N2Zz4K",
+        sizes: "192x192",
+        type: "image/svg+xml"
+      },
+      {
+        src: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMDIiIGZpbGw9IiMzMzMzMzMiLz48dGV4dCB4PSIyNTYiIHk9IjI1NiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLCBTZWdvZSBVSSBFbW9qaSwgTm90byBDb2xvciBFbW9qaSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIzMDYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIj7wn5ug8J+PtzwvdGV4dD48L3N2Zz4K",
+        sizes: "512x512",
+        type: "image/svg+xml"
+      }
+    ],
+    categories: ["utilities", "productivity"]
+  };
+
+  return Response.json(manifest, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'public, max-age=3600'
+    }
+  });
+}
+
+/**
+ * Service Worker handling
+ */
+function handleServiceWorker() {
+  const serviceWorkerCode = `
+// Service Worker for tools.h4o.kim
+const CACHE_NAME = 'tools-v${APP_CONFIG.version}';
+const urlsToCache = [
+  '/',
+  '/manifest.json'
+];
+
+self.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(function(cache) {
+        return cache.addAll(urlsToCache);
+      })
+  );
+});
+
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request)
+      .then(function(response) {
+        // Return cached version or fetch from network
+        return response || fetch(event.request);
+      }
+    )
+  );
+});
+`;
+
+  return new Response(serviceWorkerCode, {
+    headers: {
+      'Content-Type': 'application/javascript',
+      'Cache-Control': 'public, max-age=3600'
+    }
   });
 }
 

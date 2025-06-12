@@ -19,7 +19,7 @@ function encode() {
     }
     output.value = btoa(unescape(encodeURIComponent(text)));
   } catch (e) {
-    output.value = '❌ 인코딩 오류: ' + e.message;
+    output.value = '❌ Encoding Error: ' + e.message;
   }
 }
 
@@ -32,7 +32,7 @@ function decode() {
     }
     output.value = decodeURIComponent(escape(atob(text)));
   } catch (e) {
-    output.value = '❌ 잘못된 Base64 형식입니다';
+    output.value = '❌ Invalid Base64 format';
   }
 }
 

@@ -1,4 +1,4 @@
-// 모든 도구 스크립트를 모듈로 import
+// Import all tool scripts as modules
 import textCounterScript from '../tools/text-counter/script.js?raw';
 import urlEncoderScript from '../tools/url-encoder/script.js?raw';
 import jsonFormatterScript from '../tools/json-formatter/script.js?raw';
@@ -14,7 +14,7 @@ import passwordGeneratorScript from '../tools/password-generator/script.js?raw';
 import unitConverterScript from '../tools/unit-converter/script.js?raw';
 import cronBuilderScript from '../tools/cron-builder/script.js?raw';
 
-// 도구별 스크립트 맵
+// Tool-specific script map
 const TOOL_SCRIPTS = {
   'text-counter': textCounterScript,
   'url-encoder': urlEncoderScript,
@@ -33,17 +33,17 @@ const TOOL_SCRIPTS = {
 };
 
 /**
- * 특정 도구의 스크립트를 반환
- * @param {string} toolName - 도구 이름
- * @returns {string} 스크립트 내용
+ * Return script for a specific tool
+ * @param {string} toolName - Tool name
+ * @returns {string} Script content
  */
 export function getToolScript(toolName) {
   return TOOL_SCRIPTS[toolName] || '';
 }
 
 /**
- * 모든 스크립트를 하나의 번들로 반환
- * @returns {string} 번들된 스크립트
+ * Return all scripts as a single bundle
+ * @returns {string} Bundled script
  */
 export function getAllScripts() {
   return Object.values(TOOL_SCRIPTS).join('\n\n');

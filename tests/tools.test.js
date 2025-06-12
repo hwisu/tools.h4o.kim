@@ -89,7 +89,7 @@ class TextCounterTests {
   }
 }
 
-// URL 인코더/디코더 테스트
+    // URL Encoder/Decoder test
 class URLEncoderTests {
   static testBasicEncoding() {
     const text = "Hello World!";
@@ -308,7 +308,7 @@ class TimestampConverterTests {
   }
 }
 
-// 텍스트 비교 테스트
+    // Text Diff test
 class TextDiffTests {
   static testSimpleDiff() {
     const text1 = "Hello World";
@@ -411,7 +411,7 @@ class PasswordGeneratorTests {
   }
 }
 
-// 해시 생성기 테스트 (간단한 해시 함수로 테스트)
+    // Hash Generator test (simple hash function test)
 class HashGeneratorTests {
   static testHashConsistency() {
     const text = "Hello World";

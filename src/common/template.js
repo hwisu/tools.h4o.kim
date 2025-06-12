@@ -2,10 +2,10 @@ import { commonStyles } from './styles.js';
 import { getToolScript } from './script-bundle.js';
 
 /**
- * HTML 템플릿에 공통 스타일과 스크립트를 주입합니다
- * @param {string} htmlTemplate - 플레이스홀더가 포함된 HTML 템플릿
- * @param {string} toolName - 도구 이름 (스크립트 주입용)
- * @returns {string} 처리된 HTML
+ * Injects common styles and scripts into HTML templates
+ * @param {string} htmlTemplate - HTML template containing placeholders
+ * @param {string} toolName - Tool name (for script injection)
+ * @returns {string} Processed HTML
  */
 export function processTemplate(htmlTemplate, toolName) {
   let processedHtml = htmlTemplate;
@@ -152,41 +152,7 @@ export function processTemplate(htmlTemplate, toolName) {
     const iconGenerator = new IconGenerator();
     iconGenerator.applyDynamicIcons('${toolName}');
 
-    // Add individual page save button
-    function addSavePageButton() {
-      // Don't add if button already exists
-      if (document.getElementById('savePageBtn')) return;
-
-      const saveBtn = document.createElement('button');
-      saveBtn.id = 'savePageBtn';
-      saveBtn.innerHTML = '📱 Install';
-      saveBtn.title = 'Install this page as PWA';
-      saveBtn.style.cssText = \`
-        position: fixed; top: 20px; right: 20px; background: #333; color: white;
-        border: none; padding: 8px 12px; border-radius: 20px; font-size: 12px;
-        cursor: pointer; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      \`;
-      saveBtn.addEventListener('mouseover', () => saveBtn.style.background = '#555');
-      saveBtn.addEventListener('mouseout', () => saveBtn.style.background = '#333');
-
-      saveBtn.addEventListener('click', () => {
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const isAndroid = /Android/.test(navigator.userAgent);
-
-        let instructions = '';
-        if (isIOS) {
-          instructions = '📱 Safari: Tap Share button → Select "Add to Home Screen"';
-        } else if (isAndroid) {
-          instructions = '📱 Chrome: Tap Menu (⋮) → Select "Add to Home Screen"';
-        } else {
-          instructions = '💻 Click the install icon next to the address bar or select "Install App" from the menu';
-        }
-
-        showNotification(instructions, 'info', 8000);
-      });
-
-      document.body.appendChild(saveBtn);
-    }
+    // PWA install button removed per user requirements
 
     // Notification display function
     function showNotification(message, type = 'info', duration = 5000) {
@@ -241,12 +207,7 @@ export function processTemplate(htmlTemplate, toolName) {
     window.addEventListener('online', () => showNetworkStatus(true));
     window.addEventListener('offline', () => showNetworkStatus(false));
 
-    // DOM load after save button addition
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', addSavePageButton);
-    } else {
-      addSavePageButton();
-    }
+    // Install button functionality removed per user requirements
   `;
 
   // Script injection - replace <script src="./script.js"></script> with actual script
@@ -268,10 +229,10 @@ export function processTemplate(htmlTemplate, toolName) {
 }
 
 /**
- * HTML 파일을 읽어서 스타일과 스크립트를 주입하고 Response를 반환합니다
- * @param {string} htmlContent - HTML 파일 내용
- * @param {string} toolName - 도구 이름
- * @returns {Response} 처리된 HTML Response
+ * Reads HTML file, injects styles and scripts, and returns a Response
+ * @param {string} htmlContent - HTML file content
+ * @param {string} toolName - Tool name
+ * @returns {Response} Processed HTML Response
  */
 export function createHtmlResponse(htmlContent, toolName) {
   const processedHtml = processTemplate(htmlContent, toolName);
@@ -282,8 +243,8 @@ export function createHtmlResponse(htmlContent, toolName) {
 
 /**
  * Legacy support: inject styles only (backward compatibility)
- * @param {string} htmlTemplate - {{COMMON_STYLES}} 플레이스홀더가 포함된 HTML 템플릿
- * @returns {string} 스타일이 주입된 HTML
+ * @param {string} htmlTemplate - HTML template containing {{COMMON_STYLES}} placeholder
+ * @returns {string} HTML with injected styles
  */
 export function injectStyles(htmlTemplate) {
   return htmlTemplate.replace('{{COMMON_STYLES}}', commonStyles);

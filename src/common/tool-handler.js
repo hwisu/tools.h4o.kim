@@ -1,6 +1,6 @@
 import { createHtmlResponse } from './template.js';
 
-// 빌드 시점에 모든 HTML 파일을 정적으로 import
+// Statically import all HTML files at build time
 import textCounterHtml from '../tools/text-counter/index.html?inline';
 import urlEncoderHtml from '../tools/url-encoder/index.html?inline';
 import jsonFormatterHtml from '../tools/json-formatter/index.html?inline';
@@ -15,7 +15,7 @@ import passwordGeneratorHtml from '../tools/password-generator/index.html?inline
 import unitConverterHtml from '../tools/unit-converter/index.html?inline';
 import cronBuilderHtml from '../tools/cron-builder/index.html?inline';
 
-// URL 단축 매핑 - 짧은 URL을 실제 도구 이름으로 매핑
+// URL shortening mapping - Map short URLs to actual tool names
 const URL_MAPPING = {
   'base64': 'base-converter',
   'base': 'base-converter',
@@ -33,7 +33,7 @@ const URL_MAPPING = {
   'url': 'url-encoder'
 };
 
-// 도구 설정 맵 - 빌드 시점에 HTML 내용이 포함됨
+// Tool configuration map - HTML content included at build time
 const TOOLS_CONFIG = {
   'text-counter': {
     html: textCounterHtml,
@@ -89,7 +89,7 @@ const TOOLS_CONFIG = {
   }
 };
 
-// 모든 HTML 파일이 번들에 포함되도록 강제로 참조
+// Force reference to ensure all HTML files are included in bundle
 const ALL_HTML_IMPORTS = {
   textCounterHtml,
   urlEncoderHtml,
@@ -106,20 +106,20 @@ const ALL_HTML_IMPORTS = {
   cronBuilderHtml
 };
 
-// 개발 모드에서 import 확인용 (tree-shaking 방지)
+// For import verification in dev mode (prevent tree-shaking)
 if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
   console.log('Loaded HTML imports:', Object.keys(ALL_HTML_IMPORTS).length);
 }
 
 /**
- * 정적으로 번들된 HTML을 반환하는 통합 핸들러
- * @param {string} toolName - 도구 이름 (예: 'text-counter' 또는 'tcount')
- * @returns {Response} 처리된 HTML Response
+ * Unified handler that returns statically bundled HTML
+ * @param {string} toolName - Tool name (e.g., 'text-counter' or 'tcount')
+ * @returns {Response} Processed HTML Response
  */
 export function handleTool(toolName) {
   console.log('handleTool called with:', toolName);
 
-  // URL 매핑 확인 - 짧은 URL이면 실제 도구 이름으로 변환
+  // Check URL mapping - Convert short URL to actual tool name if needed
   const actualToolName = URL_MAPPING[toolName] || toolName;
   console.log('Mapped tool name:', actualToolName);
   console.log('Available tools:', Object.keys(TOOLS_CONFIG));
@@ -137,17 +137,17 @@ export function handleTool(toolName) {
 }
 
 /**
- * 사용 가능한 모든 도구 목록 반환 (단축 URL 포함)
- * @returns {Array} 도구 설정 배열
+ * Return list of all available tools (including short URLs)
+ * @returns {Array} Array of tool configurations
  */
 export function getAvailableTools() {
   return Object.entries(TOOLS_CONFIG).map(([name, config]) => {
-    // 단축 URL 찾기
+    // Find short URL
     const shortUrl = Object.keys(URL_MAPPING).find(key => URL_MAPPING[key] === name);
     return {
       name,
       title: config.title,
-      path: `/${shortUrl || name}`, // 단축 URL이 있으면 사용, 없으면 원래 이름
+      path: `/${shortUrl || name}`, // Use short URL if available, otherwise original name
       shortPath: shortUrl ? `/${shortUrl}` : null,
       fullPath: `/${name}`
     };

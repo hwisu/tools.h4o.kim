@@ -56,7 +56,7 @@ function format() {
   }
 
   if (!sqlFormatter) {
-    output.value = 'SQL 포맷터 로딩 중...';
+    output.value = 'Loading SQL formatter...';
     return;
   }
 
@@ -69,7 +69,7 @@ function format() {
     });
     output.value = formatted;
   } catch (error) {
-    output.value = `❌ SQL 포맷 오류!\n\n오류: ${error.message}`;
+    output.value = `❌ SQL Format Error!\n\nError: ${error.message}`;
   }
 }
 
@@ -86,7 +86,7 @@ function minify() {
       .trim();
     output.value = minified;
   } catch (error) {
-    output.value = `❌ SQL 압축 오류!\n\n오류: ${error.message}`;
+    output.value = `❌ SQL Minify Error!\n\nError: ${error.message}`;
   }
 }
 

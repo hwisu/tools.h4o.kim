@@ -1,5 +1,5 @@
 /**
- * 공통 스타일 - 신문지 스타일 정돈된 격자 레이아웃 + 다크모드
+ * Common styles - Clean newspaper-style grid layout + dark mode
  */
 export const commonStyles = `
 :root {
@@ -106,7 +106,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Typography - 신문지 스타일 */
+/* Typography - Newspaper style */
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Times New Roman', serif;
   font-weight: bold;
@@ -136,7 +136,7 @@ p {
   text-align: justify;
 }
 
-/* Header - 신문 헤더 스타일 */
+/* Header - Newspaper header style */
 .header {
   border-bottom: 3px double var(--border-dark);
   margin-bottom: 2rem;
@@ -179,14 +179,14 @@ p {
   border-color: var(--border-medium);
 }
 
-/* Container - 신문 컬럼 레이아웃 */
+/* Container - Newspaper column layout */
 .tool-container {
   display: grid;
   gap: 2rem;
   margin-bottom: 2rem;
 }
 
-/* Form elements - 깔끔한 격자 */
+/* Form elements - Clean grid */
 .input-group {
   margin-bottom: 1.5rem;
 }
@@ -226,7 +226,7 @@ select:focus {
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
 
-/* Buttons - 신문 스타일 */
+/* Buttons - Newspaper style */
 button {
   background: var(--accent-color);
   color: var(--bg-primary);
@@ -256,7 +256,82 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Tabs - 신문 섹션 탭 */
+/* Mobile responsive improvements */
+@media (max-width: 768px) {
+  body {
+    padding: 0.75rem;
+    font-size: 14px;
+  }
+
+  .container {
+    max-width: 100%;
+    padding: 0.75rem;
+  }
+
+  .header {
+    padding: 1rem 0;
+    margin-bottom: 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .header p {
+    font-size: 0.9rem;
+  }
+
+  .tool-description {
+    font-size: 0.8rem;
+  }
+
+  .tool-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem;
+    padding: 0.75rem;
+  }
+
+  .tool-link {
+    flex-shrink: 0;
+    font-size: 0.9rem;
+  }
+
+  .tool-description {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Input elements mobile improvements */
+  input, textarea, select {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 0.75rem;
+  }
+
+  button {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    min-height: 44px; /* Touch target size */
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .controls button {
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
+/* Tabs - Newspaper section tabs */
 .tabs, .category-tabs {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -294,7 +369,7 @@ button:disabled {
   color: var(--bg-primary);
 }
 
-/* Cards and content areas - 신문 기사 박스 */
+/* Cards and content areas - Newspaper article boxes */
 .card, .result {
   background: var(--bg-primary);
   border: 1px solid var(--border-medium);
@@ -327,7 +402,7 @@ button:disabled {
   color: var(--warning-text);
 }
 
-/* Grid layouts - 신문 컬럼 */
+/* Grid layouts - Newspaper columns */
 .two-column {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -375,6 +450,19 @@ button:disabled {
 }
 
 @media (max-width: 480px) {
+  body {
+    padding: 0.5rem;
+    font-size: 13px;
+  }
+
+  .container {
+    padding: 0.5rem;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+  }
+
   .tabs, .category-tabs {
     grid-template-columns: 1fr;
   }
@@ -382,10 +470,38 @@ button:disabled {
   .tab-btn {
     border-right: none;
     border-bottom: 1px solid var(--border-light);
+    padding: 0.6rem;
+    font-size: 0.75rem;
   }
 
   .tab-btn:last-child {
     border-bottom: none;
+  }
+
+  .tool-item {
+    padding: 0.5rem;
+  }
+
+  .tool-link {
+    font-size: 0.85rem;
+  }
+
+  .input-group {
+    margin-bottom: 1rem;
+  }
+
+  .input-group label {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  input, textarea, select {
+    padding: 0.6rem;
+  }
+
+  .controls button {
+    min-width: 100px;
+    padding: 0.6rem 0.8rem;
   }
 }
 
@@ -419,7 +535,7 @@ button:disabled {
   }
 }
 
-/* 엔진 상태 표시 */
+/* Engine status display */
 .engine-status {
   padding: 0.5rem;
   margin: 1rem 0;
@@ -442,7 +558,7 @@ button:disabled {
   border: 1px solid #f5c6cb;
 }
 
-/* 제목 상태 표시 */
+/* Title status display */
 .title-with-status {
   display: flex;
   align-items: center;
@@ -500,7 +616,7 @@ button:disabled {
   100% { opacity: 1; }
 }
 
-/* 툴팁 */
+/* Tooltip */
 .tooltip {
   position: relative;
 }
@@ -541,7 +657,7 @@ button:disabled {
   opacity: 1;
 }
 
-/* 프로그레스 바 */
+/* Progress bar */
 .progress-bar {
   width: 100%;
   height: 10px;
@@ -556,13 +672,13 @@ button:disabled {
   transition: width 0.3s ease;
 }
 
-/* 체크박스와 라디오 버튼 스타일 */
+/* Checkbox and radio button styles */
 input[type="checkbox"], input[type="radio"] {
   width: auto;
   margin-right: 0.5rem;
 }
 
-/* 색상 입력 */
+/* Color input */
 input[type="color"] {
   width: 60px;
   height: 40px;
@@ -572,7 +688,7 @@ input[type="color"] {
   cursor: pointer;
 }
 
-/* 파일 업로드 영역 */
+/* File upload area */
 .upload-area {
   border: 2px dashed #ccc;
   border-radius: 5px;
@@ -586,7 +702,7 @@ input[type="color"] {
   background: #f9f9f9;
 }
 
-/* 모드 버튼 */
+/* Mode buttons */
 .mode-btn {
   background: #f8f9fa;
   color: #333;
@@ -604,7 +720,7 @@ input[type="color"] {
   background: #555;
 }
 
-/* 컨트롤 그룹 */
+/* Control groups */
 .control-group {
   margin-bottom: 1rem;
 }
@@ -615,7 +731,7 @@ input[type="color"] {
   flex-wrap: wrap;
 }
 
-/* 반응형 그리드 */
+/* Responsive grid */
 .converter-grid:not(.timezone-converter-grid), .formatter-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -628,7 +744,7 @@ input[type="color"] {
   }
 }
 
-/* 옵션 스타일 */
+/* Option styles */
 .options {
   margin: 1rem 0;
   padding: 1rem;
@@ -648,7 +764,7 @@ input[type="color"] {
   margin-bottom: 0.5rem;
 }
 
-/* 해시 결과 스타일 */
+/* Hash result styles */
 .hash-results {
   margin: 1rem 0;
 }
@@ -673,7 +789,7 @@ input[type="color"] {
   border-radius: 3px;
 }
 
-/* 복사 버튼 */
+/* Copy button */
 .copy-btn {
   background: #007bff;
   color: white;
@@ -691,7 +807,7 @@ input[type="color"] {
   background: #28a745 !important;
 }
 
-/* 비밀번호 출력 */
+/* Password output */
 .password-output {
   background: #f9f9f9;
   padding: 1rem;
@@ -703,7 +819,7 @@ input[type="color"] {
   border-radius: 3px;
 }
 
-/* 강도 측정기 */
+/* Strength meter */
 .strength-meter {
   margin: 1rem 0;
   padding: 1rem;
@@ -726,7 +842,7 @@ input[type="color"] {
 .strength-good { background: #28a745; }
 .strength-strong { background: #007bff; }
 
-/* 타임스탬프 결과 */
+/* Timestamp results */
 .timestamp-result {
   background: #f9f9f9;
   padding: 1rem;
@@ -736,7 +852,7 @@ input[type="color"] {
   border-radius: 3px;
 }
 
-/* 포맷 테이블 */
+/* Format table */
 .formats-table {
   width: 100%;
   border-collapse: collapse;
@@ -755,7 +871,7 @@ input[type="color"] {
   font-weight: bold;
 }
 
-/* 텍스트 diff 스타일 */
+/* Text diff styles */
 .diff-output {
   font-family: 'Monaco', 'Menlo', monospace;
   font-size: 0.9rem;
@@ -779,7 +895,7 @@ input[type="color"] {
   user-select: none;
 }
 
-/* 통계 표시 */
+/* Statistics display */
 .stats {
   background: #e9ecef;
   padding: 0.5rem 1rem;
@@ -788,7 +904,7 @@ input[type="color"] {
   font-size: 0.9rem;
 }
 
-/* 유사도 점수 */
+/* Similarity score */
 .similarity-score {
   background: #d1ecf1;
   color: #0c5460;

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <title>Image Format Converter</title>
   <meta charset="utf-8">
@@ -9,38 +9,39 @@
     /* {{COMMON_STYLES}} */
 
     .upload-area {
-      border: 2px dashed #ccc;
+      border: 2px dashed var(--border-medium);
       border-radius: 8px;
       padding: 3rem 2rem;
       text-align: center;
       margin: 2rem 0;
       cursor: pointer;
       transition: all 0.3s ease;
-      background: #f8f9fa;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
     }
     .upload-area:hover, .upload-area.dragover {
-      border-color: #007bff;
-      background: #e3f2fd;
+      border-color: var(--accent-color);
+      background: var(--bg-tertiary);
     }
     .upload-area-text {
       font-size: 1.1rem;
-      color: #495057;
+      color: var(--text-secondary);
       margin-bottom: 0.5rem;
     }
     .upload-area-hint {
       font-size: 0.9rem;
-      color: #6c757d;
+      color: var(--text-muted);
     }
     .controls-section {
-      background: #f8f9fa;
-      border: 1px solid #dee2e6;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-medium);
       border-radius: 8px;
       padding: 1.5rem;
       margin: 2rem 0;
     }
     .controls-section h3 {
       margin: 0 0 1rem 0;
-      color: #495057;
+      color: var(--text-primary);
       font-size: 1.2rem;
       font-weight: 600;
     }
@@ -51,22 +52,24 @@
       width: 100%;
       padding: 0.75rem;
       font-family: inherit;
-      border: 1px solid #ced4da;
+      border: 1px solid var(--border-medium);
+      background: var(--bg-primary);
+      color: var(--text-primary);
       border-radius: 6px;
       font-size: 1rem;
       transition: border-color 0.2s ease;
     }
     select:focus {
       outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
     }
     .hidden {
       display: none;
     }
     .format-note {
       font-size: 0.9rem;
-      color: #6c757d;
+      color: var(--text-muted);
       margin-top: 0.5rem;
       font-style: italic;
     }
@@ -74,6 +77,7 @@
       display: flex;
       gap: 1rem;
       margin: 1.5rem 0;
+      flex-wrap: wrap;
     }
     .button-group button {
       flex: 1;
@@ -84,35 +88,94 @@
       font-weight: 500;
       cursor: pointer;
       transition: all 0.2s ease;
+      min-width: 120px;
+      min-height: 44px;
+    }
+
+    /* Mobile responsive improvements */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .upload-area {
+        padding: 2rem 1rem;
+        margin: 1rem 0;
+      }
+
+      .controls-section {
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+
+      .button-group {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .button-group button {
+        flex: none;
+        width: 100%;
+        padding: 1rem;
+        font-size: 0.95rem;
+      }
+
+      select {
+        padding: 1rem;
+        font-size: 16px; /* Prevent zoom on iOS */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 0.5rem;
+      }
+
+      .upload-area {
+        padding: 1.5rem 0.5rem;
+      }
+
+      .controls-section {
+        padding: 0.75rem;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .button-group button {
+        padding: 0.85rem;
+        font-size: 0.9rem;
+      }
     }
     .primary-btn {
-      background: #007bff;
-      color: white;
+      background: var(--accent-color);
+      color: var(--bg-primary);
     }
     .primary-btn:hover:not(:disabled) {
-      background: #0056b3;
+      background: var(--accent-hover);
     }
     .primary-btn:disabled {
-      background: #6c757d;
+      background: var(--text-muted);
       cursor: not-allowed;
     }
     .secondary-btn {
-      background: #28a745;
-      color: white;
+      background: var(--success-border);
+      color: var(--bg-primary);
     }
     .secondary-btn:hover:not(:disabled) {
-      background: #1e7e34;
+      opacity: 0.8;
     }
     .secondary-btn:disabled {
-      background: #6c757d;
+      background: var(--text-muted);
       cursor: not-allowed;
     }
     .reset-btn {
-      background: #6c757d;
-      color: white;
+      background: var(--text-muted);
+      color: var(--bg-primary);
     }
     .reset-btn:hover {
-      background: #545b62;
+      opacity: 0.8;
     }
     .status {
       padding: 1rem;
@@ -121,57 +184,100 @@
       font-size: 0.95rem;
     }
     .status-success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
+      background: var(--success-bg);
+      color: var(--success-text);
+      border: 1px solid var(--success-border);
     }
     .status-error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+      background: var(--error-bg);
+      color: var(--error-text);
+      border: 1px solid var(--error-border);
     }
     .status-info {
-      background: #d1ecf1;
-      color: #0c5460;
-      border: 1px solid #bee5eb;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>이미지 포맷 변환기</h1>
-    <p>이미지를 다른 포맷으로 변환합니다</p>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+    <svg class="theme-icon" viewBox="0 0 24 24">
+      <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+    </svg>
+  </button>
 
+  <div class="header">
+    <a href="/" class="back-link">← Back</a>
+    <h1>Image Format Converter</h1>
+    <p>Convert between image formats with maximum quality</p>
+  </div>
+
+  <div class="container">
     <div class="upload-area" id="uploadArea">
-      <div class="upload-area-text">클릭하여 이미지 선택 또는 드래그앤드랍</div>
-      <div class="upload-area-hint">JPG, PNG, WebP 등 지원</div>
+      <div class="upload-area-text">Click to select image or drag and drop</div>
+      <div class="upload-area-hint">Supports JPG, PNG, WebP and more</div>
     </div>
 
     <input type="file" id="fileInput" accept="image/*" style="display: none;">
 
     <div id="controls" class="controls-section hidden">
-      <h3>변환 설정</h3>
+      <h3>Conversion Settings</h3>
 
       <div class="format-control">
-        <label for="outputFormat">출력 포맷:</label>
+        <label for="outputFormat">Output Format:</label>
         <select id="outputFormat">
-          <option value="webp">WebP (최적화된 품질)</option>
-          <option value="jpeg">JPEG (사진용)</option>
-          <option value="png">PNG (무손실)</option>
+          <option value="webp">WebP (Optimized Quality)</option>
+          <option value="jpeg">JPEG (For Photos)</option>
+          <option value="png">PNG (Lossless)</option>
         </select>
-        <div id="formatNote" class="format-note">WebP는 우수한 품질과 압축률을 제공합니다</div>
+        <div id="formatNote" class="format-note">WebP provides excellent quality and compression</div>
       </div>
 
       <div class="button-group">
-        <button id="convertBtn" class="primary-btn">포맷 변환</button>
-        <button id="downloadBtn" class="secondary-btn" disabled>다운로드</button>
-        <button onclick="reset()" class="reset-btn">초기화</button>
+        <button id="convertBtn" class="primary-btn">Convert Format</button>
+        <button id="downloadBtn" class="secondary-btn" disabled>Download</button>
+        <button onclick="reset()" class="reset-btn">Reset</button>
       </div>
     </div>
 
     <div id="status" class="status hidden"></div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    // Theme toggle functionality
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+
+      updateThemeIcon(newTheme);
+    }
+
+    // Update theme icon
+    function updateThemeIcon(theme) {
+      const toggle = document.querySelector('.theme-toggle svg');
+      if (theme === 'dark') {
+        // Moon icon
+        toggle.innerHTML = '<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>';
+      } else {
+        // Sun icon
+        toggle.innerHTML = '<path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>';
+      }
+    }
+
+    // Initialize theme
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeIcon(savedTheme);
+    }
+
+    // Initialize theme on page load
+    initTheme();
+  </script>
+  <script src="./script.js"></script>
 </body>
 </html>

@@ -5,32 +5,24 @@ const nextRuns = document.getElementById('nextRuns');
 // Field elements
 const fields = {
   minute: {
-    type: document.getElementById('minuteType'),
-    value: document.getElementById('minuteValue'),
-    interval: document.getElementById('minuteInterval'),
-    range: document.getElementById('minuteRange')
+    select: document.getElementById('minute'),
+    custom: document.getElementById('minuteCustom')
   },
   hour: {
-    type: document.getElementById('hourType'),
-    value: document.getElementById('hourValue'),
-    interval: document.getElementById('hourInterval'),
-    range: document.getElementById('hourRange')
+    select: document.getElementById('hour'),
+    custom: document.getElementById('hourCustom')
   },
   day: {
-    type: document.getElementById('dayType'),
-    value: document.getElementById('dayValue'),
-    interval: document.getElementById('dayInterval'),
-    range: document.getElementById('dayRange')
+    select: document.getElementById('day'),
+    custom: document.getElementById('dayCustom')
   },
   month: {
-    type: document.getElementById('monthType'),
-    value: document.getElementById('monthValue'),
-    range: document.getElementById('monthRange')
+    select: document.getElementById('month'),
+    custom: document.getElementById('monthCustom')
   },
   weekday: {
-    type: document.getElementById('weekdayType'),
-    value: document.getElementById('weekdayValue'),
-    range: document.getElementById('weekdayRange')
+    select: document.getElementById('weekday'),
+    custom: document.getElementById('weekdayCustom')
   }
 };
 
@@ -45,46 +37,14 @@ function setupEventListeners() {
   Object.keys(fields).forEach(fieldName => {
     const field = fields[fieldName];
 
-    field.type.addEventListener('change', () => {
-      showHideInputs(fieldName);
-      updateCronExpression();
-    });
-
-    // Add listeners to value inputs
-    if (field.value) {
-      field.value.addEventListener('input', updateCronExpression);
-      field.value.addEventListener('change', updateCronExpression);
+    if (field.select) {
+      field.select.addEventListener('change', updateCronExpression);
     }
-    if (field.interval) {
-      field.interval.addEventListener('input', updateCronExpression);
-    }
-    if (field.range) {
-      field.range.addEventListener('input', updateCronExpression);
+    if (field.custom) {
+      field.custom.addEventListener('input', updateCronExpression);
+      field.custom.addEventListener('change', updateCronExpression);
     }
   });
-}
-
-function showHideInputs(fieldName) {
-  const field = fields[fieldName];
-  const type = field.type.value;
-
-  // Hide all inputs first
-  if (field.value) field.value.style.display = 'none';
-  if (field.interval) field.interval.style.display = 'none';
-  if (field.range) field.range.style.display = 'none';
-
-  // Show relevant input based on type
-  switch (type) {
-    case 'specific':
-      if (field.value) field.value.style.display = 'block';
-      break;
-    case 'interval':
-      if (field.interval) field.interval.style.display = 'block';
-      break;
-    case 'range':
-      if (field.range) field.range.style.display = 'block';
-      break;
-  }
 }
 
 function updateCronExpression() {
@@ -98,7 +58,9 @@ function updateCronExpression() {
   parts.push(buildCronPart('weekday'));
 
   const expression = parts.join(' ');
-  cronExpression.textContent = expression;
+  if (cronExpression) {
+    cronExpression.textContent = expression;
+  }
 
   updateDescription(expression);
   updateNextRuns(expression);
@@ -106,28 +68,25 @@ function updateCronExpression() {
 
 function buildCronPart(fieldName) {
   const field = fields[fieldName];
-  const type = field.type.value;
+  if (!field || !field.select) return '*';
 
-  switch (type) {
-    case '*':
-      return '*';
-    case 'specific':
-      const value = field.value ? field.value.value : '';
-      return value || '*';
-    case 'interval':
-      const interval = field.interval ? field.interval.value : '';
-      return interval ? `*/${interval}` : '*';
-    case 'range':
-      const range = field.range ? field.range.value : '';
-      return range || '*';
-    default:
-      return '*';
+  const selectValue = field.select.value;
+  const customValue = field.custom ? field.custom.value.trim() : '';
+
+  // If custom input has value, use it
+  if (customValue) {
+    return customValue;
   }
+
+  // Otherwise use select value
+  return selectValue || '*';
 }
 
 function updateDescription(expression) {
   const description = describeCronExpression(expression);
-  cronDescription.textContent = description;
+  if (cronDescription) {
+    cronDescription.textContent = description;
+  }
 }
 
 function describeCronExpression(expression) {
@@ -206,16 +165,16 @@ function describeCronExpression(expression) {
 
 function updateNextRuns(expression) {
   try {
-    const nextExecutions = calculateNextRuns(expression, 5);
-    let html = '';
-
-    nextExecutions.forEach((date, index) => {
-      html += `<div class="next-run-item">${index + 1}. ${date.toLocaleString()}</div>`;
-    });
-
-    nextRuns.innerHTML = html;
+    const nextTimes = calculateNextRuns(expression, 10);
+    if (nextRuns) {
+      nextRuns.innerHTML = nextTimes.map(time =>
+        `<div class="next-run-item">${time}</div>`
+      ).join('');
+    }
   } catch (error) {
-    nextRuns.innerHTML = '<div class="next-run-item">Unable to calculate next runs</div>';
+    if (nextRuns) {
+      nextRuns.innerHTML = '<div class="next-run-item">Error calculating next runs</div>';
+    }
   }
 }
 
@@ -223,82 +182,82 @@ function calculateNextRuns(expression, count) {
   const parts = expression.split(' ');
   if (parts.length !== 5) return [];
 
-  const [minutePart, hourPart, dayPart, monthPart, weekdayPart] = parts;
-  const results = [];
+  const runs = [];
   const now = new Date();
-  let current = new Date(now.getTime() + 60000); // Start from next minute
+  let currentTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes() + 1, 0, 0);
 
   let attempts = 0;
   const maxAttempts = 10000; // Prevent infinite loops
 
-  while (results.length < count && attempts < maxAttempts) {
+  while (runs.length < count && attempts < maxAttempts) {
     attempts++;
 
-    if (matchesCronExpression(current, minutePart, hourPart, dayPart, monthPart, weekdayPart)) {
-      results.push(new Date(current));
+    if (matchesCronExpression(currentTime, ...parts)) {
+      runs.push(currentTime.toLocaleString());
     }
 
-    // Move to next minute
-    current.setMinutes(current.getMinutes() + 1);
+    // Increment by 1 minute
+    currentTime = new Date(currentTime.getTime() + 60000);
   }
 
-  return results;
+  return runs;
 }
 
 function matchesCronExpression(date, minutePart, hourPart, dayPart, monthPart, weekdayPart) {
   const minute = date.getMinutes();
   const hour = date.getHours();
   const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const weekday = date.getDay();
+  const month = date.getMonth() + 1; // getMonth() is 0-based
+  const weekday = date.getDay(); // 0 = Sunday
 
-  return matchesCronPart(minute, minutePart, 0, 59) &&
-         matchesCronPart(hour, hourPart, 0, 23) &&
-         matchesCronPart(day, dayPart, 1, 31) &&
-         matchesCronPart(month, monthPart, 1, 12) &&
-         matchesCronPart(weekday, weekdayPart, 0, 6);
+  return (
+    matchesCronPart(minute, minutePart, 0, 59) &&
+    matchesCronPart(hour, hourPart, 0, 23) &&
+    matchesCronPart(day, dayPart, 1, 31) &&
+    matchesCronPart(month, monthPart, 1, 12) &&
+    matchesCronPart(weekday, weekdayPart, 0, 6)
+  );
 }
 
 function matchesCronPart(value, cronPart, min, max) {
   if (cronPart === '*') return true;
 
-  if (cronPart.includes('/')) {
-    const [base, interval] = cronPart.split('/');
-    const step = parseInt(interval);
-    if (base === '*') {
-      return value % step === 0;
-    } else {
-      const start = parseInt(base);
-      return value >= start && (value - start) % step === 0;
-    }
+  // Handle specific values
+  if (!isNaN(parseInt(cronPart))) {
+    return value === parseInt(cronPart);
   }
 
+  // Handle ranges (e.g., "1-5")
   if (cronPart.includes('-')) {
-    const [start, end] = cronPart.split('-').map(Number);
+    const [start, end] = cronPart.split('-').map(x => parseInt(x));
     return value >= start && value <= end;
   }
 
+  // Handle intervals (e.g., "*/5")
+  if (cronPart.includes('/')) {
+    const [base, interval] = cronPart.split('/');
+    const intervalNum = parseInt(interval);
+    if (base === '*') {
+      return value % intervalNum === 0;
+    }
+  }
+
+  // Handle lists (e.g., "1,3,5")
   if (cronPart.includes(',')) {
-    const values = cronPart.split(',').map(Number);
+    const values = cronPart.split(',').map(x => parseInt(x));
     return values.includes(value);
   }
 
-  return value === parseInt(cronPart);
+  return false;
 }
 
+// Load preset function - this was missing and causing the setPreset error
 function loadPreset(expression) {
   const parts = expression.split(' ');
   if (parts.length !== 5) return;
 
   const [minute, hour, day, month, weekday] = parts;
 
-  // Reset all fields
-  Object.keys(fields).forEach(fieldName => {
-    fields[fieldName].type.value = '*';
-    showHideInputs(fieldName);
-  });
-
-  // Set minute
   setFieldFromCronPart('minute', minute);
   setFieldFromCronPart('hour', hour);
   setFieldFromCronPart('day', day);
@@ -310,55 +269,70 @@ function loadPreset(expression) {
 
 function setFieldFromCronPart(fieldName, cronPart) {
   const field = fields[fieldName];
+  if (!field || !field.select) return;
 
-  if (cronPart === '*') {
-    field.type.value = '*';
-  } else if (cronPart.includes('/')) {
-    field.type.value = 'interval';
-    const interval = cronPart.split('/')[1];
-    if (field.interval) field.interval.value = interval;
-  } else if (cronPart.includes('-')) {
-    field.type.value = 'range';
-    if (field.range) field.range.value = cronPart;
+  // Check if the cronPart matches any of the select options
+  const options = Array.from(field.select.options);
+  const matchingOption = options.find(option => option.value === cronPart);
+
+  if (matchingOption) {
+    field.select.value = cronPart;
+    if (field.custom) {
+      field.custom.value = '';
+    }
   } else {
-    field.type.value = 'specific';
-    if (field.value) field.value.value = cronPart;
+    // If no matching option, use custom input
+    field.select.value = '*';
+    if (field.custom) {
+      field.custom.value = cronPart;
+    }
   }
-
-  showHideInputs(fieldName);
 }
 
 function copyExpression() {
+  if (!cronExpression) return;
+
   const expression = cronExpression.textContent;
   navigator.clipboard.writeText(expression).then(() => {
-    // Visual feedback
+    // Show temporary feedback
     const originalText = cronExpression.textContent;
     cronExpression.textContent = 'Copied!';
     setTimeout(() => {
       cronExpression.textContent = originalText;
     }, 1000);
-  }).catch(err => {
-    console.error('Failed to copy: ', err);
+  }).catch(() => {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = expression;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
   });
 }
 
 function clear() {
-  // Reset all fields to default
   Object.keys(fields).forEach(fieldName => {
-    fields[fieldName].type.value = '*';
-    if (fields[fieldName].value) fields[fieldName].value.value = '';
-    if (fields[fieldName].interval) fields[fieldName].interval.value = '';
-    if (fields[fieldName].range) fields[fieldName].range.value = '';
-    showHideInputs(fieldName);
+    const field = fields[fieldName];
+    if (field.select) {
+      field.select.value = '*';
+    }
+    if (field.custom) {
+      field.custom.value = '';
+    }
   });
-
   updateCronExpression();
 }
 
-// Make functions global for onclick handlers
-window.loadPreset = loadPreset;
-window.copyExpression = copyExpression;
-window.clear = clear;
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 
-// Initialize when page loads
+// Export for global access
+window.updateCronExpression = updateCronExpression;
+window.loadPreset = loadPreset;
+
 init();

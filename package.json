@@ -1,7 +1,7 @@
 {
   "name": "tools",
   "version": "1.0.3",
-  "description": "Cloudflare Workers 빌드 환경",
+  "description": "Cloudflare Workers build environment",
   "type": "module",
   "main": "src/index.js",
   "scripts": {

@@ -28,9 +28,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Format descriptions
 const formatDescriptions = {
-  webp: 'WebP는 우수한 품질과 압축률을 제공합니다',
-  jpeg: 'JPEG는 사진에 적합한 포맷입니다',
-  png: 'PNG는 무손실 압축으로 투명도를 지원합니다'
+  webp: 'WebP provides excellent quality and compression',
+  jpeg: 'JPEG is suitable for photos',
+  png: 'PNG supports lossless compression with transparency'
 };
 
 // Load jSquash modules
@@ -77,7 +77,7 @@ function handleFileSelect(e) {
 function handleFile(file) {
   originalFile = file;
   controls.classList.remove('hidden');
-  showStatus(`파일 선택됨: ${file.name}`, 'info');
+  showStatus(`File selected: ${file.name}`, 'info');
 }
 
 function updateFormatNote() {
@@ -86,33 +86,36 @@ function updateFormatNote() {
 
 async function convert() {
   if (!originalFile) {
-    alert('이미지를 먼저 선택해주세요.');
+    showStatus('Please select an image first.', 'error');
     return;
   }
 
   const format = outputFormat.value;
 
   convertBtn.disabled = true;
-  convertBtn.textContent = '변환 중...';
-  showStatus('이미지 변환 중...', 'info');
+  convertBtn.textContent = 'Converting...';
+  showStatus('Converting image...', 'info');
 
   try {
-    // Try jSquash first for better quality
-    try {
-      convertedBlob = await processImageWithJSquash(originalFile, { format, quality: 95 });
-    } catch (jSquashError) {
-      convertedBlob = await processImageWithCanvas(originalFile, { format, quality: 95 });
+    // Always try canvas method first for better compatibility
+    convertedBlob = await processImageWithCanvas(originalFile, { format, quality: 95 });
+
+    // Validate the conversion result
+    if (!convertedBlob || !(convertedBlob instanceof Blob) || convertedBlob.size === 0) {
+      throw new Error('Conversion produced invalid result');
     }
 
-    showStatus('변환 완료!', 'success');
+    showStatus('Conversion completed!', 'success');
     downloadBtn.disabled = false;
 
   } catch (error) {
     console.error('Conversion failed:', error);
-    showStatus('변환 실패: ' + error.message, 'error');
+    showStatus('Conversion failed: ' + error.message, 'error');
+    convertedBlob = null;
+    downloadBtn.disabled = true;
   } finally {
     convertBtn.disabled = false;
-    convertBtn.textContent = '포맷 변환';
+    convertBtn.textContent = 'Convert Format';
   }
 }
 
@@ -129,16 +132,31 @@ function getFileName() {
 }
 
 function download() {
-  if (!convertedBlob) return;
+  if (!convertedBlob) {
+    showStatus('No converted image available for download', 'error');
+    return;
+  }
 
-  const url = URL.createObjectURL(convertedBlob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = getFileName();
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  try {
+    // Validate blob before creating URL
+    if (!(convertedBlob instanceof Blob) || convertedBlob.size === 0) {
+      showStatus('Invalid image data for download', 'error');
+      return;
+    }
+
+    const url = URL.createObjectURL(convertedBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = getFileName();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showStatus('Download started successfully', 'success');
+  } catch (error) {
+    console.error('Download failed:', error);
+    showStatus('Download failed: ' + error.message, 'error');
+  }
 }
 
 function reset() {
@@ -148,7 +166,7 @@ function reset() {
   status.classList.add('hidden');
   downloadBtn.disabled = true;
   convertBtn.disabled = false;
-  convertBtn.textContent = '포맷 변환';
+  convertBtn.textContent = 'Convert Format';
   fileInput.value = '';
 }
 
@@ -165,7 +183,17 @@ async function processImageWithJSquash(file, options) {
     throw new Error(`Unsupported format: ${options.format}`);
   }
 
-  return await module.encode(imageBuffer, { quality: options.quality / 100 });
+  const encodedData = await module.encode(imageBuffer, { quality: options.quality / 100 });
+
+  // Ensure we return a valid Blob
+  if (encodedData instanceof Uint8Array) {
+    const mimeType = options.format === 'jpeg' ? 'image/jpeg' :
+                    options.format === 'png' ? 'image/png' :
+                    'image/webp';
+    return new Blob([encodedData], { type: mimeType });
+  }
+
+  return encodedData;
 }
 
 async function processImageWithCanvas(file, options) {
@@ -175,18 +203,40 @@ async function processImageWithCanvas(file, options) {
     const img = new Image();
 
     img.onload = function() {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
+      try {
+        canvas.width = img.width;
+        canvas.height = img.height;
 
-      const mimeType = options.format === 'jpeg' ? 'image/jpeg' :
-                      options.format === 'png' ? 'image/png' :
-                      'image/webp';
+        // Clear canvas and draw image
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
 
-      canvas.toBlob(resolve, mimeType, options.quality / 100);
+        const mimeType = options.format === 'jpeg' ? 'image/jpeg' :
+                        options.format === 'png' ? 'image/png' :
+                        'image/webp';
+
+        // Convert with quality setting
+        canvas.toBlob((blob) => {
+          if (blob && blob.size > 0) {
+            resolve(blob);
+          } else {
+            reject(new Error('Failed to create blob from canvas'));
+          }
+        }, mimeType, options.quality / 100);
+
+      } catch (error) {
+        reject(new Error('Failed to process image: ' + error.message));
+      }
     };
 
-    img.onerror = () => reject(new Error('이미지 로드 실패'));
-    img.src = URL.createObjectURL(file);
+    img.onerror = () => reject(new Error('Failed to load image file'));
+
+    // Create object URL and clean up
+    const objectUrl = URL.createObjectURL(file);
+    img.src = objectUrl;
+
+    // Clean up object URL after image loads or fails
+    img.addEventListener('load', () => URL.revokeObjectURL(objectUrl));
+    img.addEventListener('error', () => URL.revokeObjectURL(objectUrl));
   });
 }

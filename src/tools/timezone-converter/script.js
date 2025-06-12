@@ -331,9 +331,109 @@ function convert() {
   convertTimezone();
 }
 
+// Functions for the current time display interface
+function updateTimes() {
+  const timezone1 = document.getElementById('timezone1');
+  const timezone2 = document.getElementById('timezone2');
+
+  if (!timezone1 || !timezone2) return;
+
+  const now = new Date();
+
+  const formatter1 = new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone1.value,
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
+
+  const formatter2 = new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone2.value,
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
+
+  const time1 = formatter1.format(now);
+  const time2 = formatter2.format(now);
+
+  const timezone1Name = timezone1.options[timezone1.selectedIndex].text;
+  const timezone2Name = timezone2.options[timezone2.selectedIndex].text;
+
+  const resultDiv = document.getElementById('timeResults');
+  if (resultDiv) {
+    resultDiv.innerHTML = `
+      <div class="result-item">
+        <span class="result-label">${timezone1Name}:</span>
+        <span class="result-value">${time1}</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">${timezone2Name}:</span>
+        <span class="result-value">${time2}</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Updated:</span>
+        <span class="result-value">${new Date().toLocaleString()}</span>
+      </div>
+    `;
+  }
+}
+
+function convertSpecificTime() {
+  const specificTime = document.getElementById('specificTime');
+  if (!specificTime || !specificTime.value) {
+    alert('Please select a date and time');
+    return;
+  }
+
+  const inputDate = new Date(specificTime.value);
+  const timezones = ['Asia/Seoul', 'America/New_York', 'Europe/London', 'Asia/Tokyo', 'America/Los_Angeles', 'UTC'];
+
+  let resultsHTML = '';
+  timezones.forEach(tz => {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
+
+    const formattedTime = formatter.format(inputDate);
+    resultsHTML += `
+      <div class="result-item">
+        <span class="result-label">${tz}:</span>
+        <span class="result-value">${formattedTime}</span>
+      </div>
+    `;
+  });
+
+  const resultDiv = document.getElementById('conversionResults');
+  if (resultDiv) {
+    resultDiv.innerHTML = resultsHTML;
+  }
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
   setCurrentTime();
+
+  // Initialize current time display
+  updateTimes();
 
   // Auto-convert on input change
   if (fromTime) fromTime.addEventListener('change', convertTimezone);

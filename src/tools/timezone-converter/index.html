@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <title>Timezone Converter</title>
   <meta charset="utf-8">
@@ -9,15 +9,15 @@
     /* {{COMMON_STYLES}} */
 
     .converter-section {
-      background: #f8f9fa;
-      border: 1px solid #dee2e6;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-medium);
       border-radius: 8px;
       padding: 1.5rem;
       margin: 1rem 0;
     }
     .converter-section h3 {
       margin: 0 0 1rem 0;
-      color: #495057;
+      color: var(--text-primary);
       font-size: 1.1rem;
       font-weight: 600;
     }
@@ -33,8 +33,9 @@
       }
     }
     .result-box {
-      background: #ffffff;
-      border: 1px solid #dee2e6;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
       border-radius: 6px;
       padding: 1rem;
       margin: 1rem 0;
@@ -44,7 +45,7 @@
     .result-item {
       margin-bottom: 0.5rem;
       padding-bottom: 0.5rem;
-      border-bottom: 1px solid #f1f3f4;
+      border-bottom: 1px solid var(--border-light);
     }
     .result-item:last-child {
       margin-bottom: 0;
@@ -53,25 +54,27 @@
     }
     .result-label {
       font-weight: 600;
-      color: #495057;
+      color: var(--text-secondary);
       margin-right: 0.5rem;
     }
     .result-value {
-      color: #212529;
+      color: var(--text-primary);
     }
-    select, input {
+    select, input, textarea {
       width: 100%;
       padding: 0.75rem;
       font-family: inherit;
-      border: 1px solid #ced4da;
+      border: 1px solid var(--border-medium);
+      background: var(--bg-primary);
+      color: var(--text-primary);
       border-radius: 6px;
       font-size: 1rem;
       transition: border-color 0.2s ease;
     }
-    select:focus, input:focus {
+    select:focus, input:focus, textarea:focus {
       outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
     }
     .button-group {
       display: flex;
@@ -81,59 +84,134 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>시간대 변환기</h1>
-    <p>다른 시간대의 시간을 확인합니다</p>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+    <svg class="theme-icon" viewBox="0 0 24 24">
+      <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+    </svg>
+  </button>
 
+  <div class="header">
+    <a href="/" class="back-link">← Back</a>
+    <h1>Universal Time Converter</h1>
+    <p>Convert between timezones, timestamps, and various time formats</p>
+  </div>
+
+  <div class="container">
     <div class="converter-section">
-      <h3>현재 시간 확인</h3>
+      <h3>Current Time Check</h3>
       <div class="time-grid">
         <div class="input-group">
-          <label for="timezone1">첫 번째 시간대</label>
+          <label for="timezone1">First Timezone</label>
           <select id="timezone1">
-            <option value="Asia/Seoul">서울 (KST)</option>
-            <option value="America/New_York">뉴욕 (EST/EDT)</option>
-            <option value="Europe/London">런던 (GMT/BST)</option>
-            <option value="Asia/Tokyo">도쿄 (JST)</option>
-            <option value="America/Los_Angeles">로스앤젤레스 (PST/PDT)</option>
-            <option value="Europe/Paris">파리 (CET/CEST)</option>
-            <option value="Asia/Shanghai">상하이 (CST)</option>
+            <option value="Asia/Seoul">Seoul (KST)</option>
+            <option value="America/New_York">New York (EST/EDT)</option>
+            <option value="Europe/London">London (GMT/BST)</option>
+            <option value="Asia/Tokyo">Tokyo (JST)</option>
+            <option value="America/Los_Angeles">Los Angeles (PST/PDT)</option>
+            <option value="Europe/Paris">Paris (CET/CEST)</option>
+            <option value="Asia/Shanghai">Shanghai (CST)</option>
             <option value="UTC">UTC</option>
           </select>
         </div>
         <div class="input-group">
-          <label for="timezone2">두 번째 시간대</label>
+          <label for="timezone2">Second Timezone</label>
           <select id="timezone2">
-            <option value="America/New_York">뉴욕 (EST/EDT)</option>
-            <option value="Asia/Seoul">서울 (KST)</option>
-            <option value="Europe/London">런던 (GMT/BST)</option>
-            <option value="Asia/Tokyo">도쿄 (JST)</option>
-            <option value="America/Los_Angeles">로스앤젤레스 (PST/PDT)</option>
-            <option value="Europe/Paris">파리 (CET/CEST)</option>
-            <option value="Asia/Shanghai">상하이 (CST)</option>
+            <option value="America/New_York">New York (EST/EDT)</option>
+            <option value="Asia/Seoul">Seoul (KST)</option>
+            <option value="Europe/London">London (GMT/BST)</option>
+            <option value="Asia/Tokyo">Tokyo (JST)</option>
+            <option value="America/Los_Angeles">Los Angeles (PST/PDT)</option>
+            <option value="Europe/Paris">Paris (CET/CEST)</option>
+            <option value="Asia/Shanghai">Shanghai (CST)</option>
             <option value="UTC">UTC</option>
           </select>
         </div>
       </div>
       <div class="button-group">
-        <button onclick="updateTimes()">시간 업데이트</button>
+        <button onclick="updateTimes()">Update Times</button>
       </div>
       <div id="timeResults" class="result-box"></div>
     </div>
 
     <div class="converter-section">
-      <h3>특정 시간 변환</h3>
+      <h3>Convert Specific Time</h3>
       <div class="input-group">
-        <label for="specificTime">날짜와 시간</label>
+        <label for="specificTime">Date and Time</label>
         <input type="datetime-local" id="specificTime">
       </div>
       <div class="button-group">
-        <button onclick="convertSpecificTime()">변환하기</button>
+        <button onclick="convertSpecificTime()">Convert</button>
       </div>
       <div id="conversionResults" class="result-box"></div>
     </div>
+
+    <div class="converter-section">
+      <h3>Unix Timestamp Converter</h3>
+      <div class="input-group">
+        <label for="timestampInput">Unix Timestamp (seconds or milliseconds)</label>
+        <input type="text" id="timestampInput" placeholder="1640995200 or 1640995200000" onchange="timestampToDate()">
+      </div>
+      <div class="button-group">
+        <button onclick="timestampToDate()">Convert Timestamp</button>
+      </div>
+      <div id="timestampResult" class="result-box"></div>
+    </div>
+
+    <div class="converter-section">
+      <h3>Date to Timestamp</h3>
+      <div class="input-group">
+        <label for="dateInput">Date and Time</label>
+        <input type="datetime-local" id="dateInput">
+      </div>
+      <div class="input-group">
+        <label for="dateSeconds">Seconds (optional)</label>
+        <input type="number" id="dateSeconds" min="0" max="59" placeholder="0">
+      </div>
+      <div class="input-group">
+        <label for="dateMilliseconds">Milliseconds (optional)</label>
+        <input type="number" id="dateMilliseconds" min="0" max="999" placeholder="0">
+      </div>
+      <div class="button-group">
+        <button onclick="dateToTimestamp()">Convert to Timestamp</button>
+      </div>
+      <div id="dateResult" class="result-box"></div>
+    </div>
   </div>
 
+  <script>
+    // Theme toggle functionality
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+
+      updateThemeIcon(newTheme);
+    }
+
+    // Update theme icon
+    function updateThemeIcon(theme) {
+      const toggle = document.querySelector('.theme-toggle svg');
+      if (theme === 'dark') {
+        // Moon icon
+        toggle.innerHTML = '<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>';
+      } else {
+        // Sun icon
+        toggle.innerHTML = '<path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>';
+      }
+    }
+
+    // Initialize theme
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeIcon(savedTheme);
+    }
+
+    // Initialize theme on page load
+    initTheme();
+  </script>
   <script src="./script.js"></script>
 </body>
 </html>
