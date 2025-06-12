@@ -37,55 +37,94 @@ const URL_MAPPING = {
 const TOOLS_CONFIG = {
   'text-counter': {
     html: textCounterHtml,
-    title: 'Text Counter'
+    title: 'Text Counter',
+    description: 'Count characters, words, lines',
+    category: 'text',
+    keywords: 'text counter character word line count'
   },
   'url-encoder': {
     html: urlEncoderHtml,
-    title: 'URL Encoder'
+    title: 'URL Encoder/Decoder',
+    description: 'Encode and decode URLs',
+    category: 'text',
+    keywords: 'url encoder decoder encode decode uri'
   },
   'json-formatter': {
     html: jsonFormatterHtml,
-    title: 'JSON Formatter'
+    title: 'JSON Formatter',
+    description: 'Format and validate JSON',
+    category: 'developer',
+    keywords: 'json formatter pretty print validate minify'
   },
   'base-converter': {
     html: baseConverterHtml,
-    title: 'Base Converter'
+    title: 'Base Converter',
+    description: 'Convert Base64, Hex, Binary, Decimal',
+    category: 'developer',
+    keywords: 'base64 base converter hex binary decimal encode decode'
   },
   'qr-generator': {
     html: qrGeneratorHtml,
-    title: 'QR Generator'
+    title: 'QR Code Generator',
+    description: 'Generate QR codes',
+    category: 'utility',
+    keywords: 'qr code generator qrcode'
   },
   'sql-formatter': {
     html: sqlFormatterHtml,
-    title: 'SQL Formatter'
+    title: 'SQL Formatter',
+    description: 'Format SQL queries',
+    category: 'developer',
+    keywords: 'sql formatter prettify query'
   },
   'text-diff': {
     html: textDiffHtml,
-    title: 'Text Diff'
+    title: 'Text Diff',
+    description: 'Compare text differences',
+    category: 'text',
+    keywords: 'text diff compare difference'
   },
   'timezone-converter': {
     html: timezoneConverterHtml,
-    title: 'Universal Time Converter'
+    title: 'Universal Time Converter',
+    description: 'Convert timezones and timestamps',
+    category: 'utility',
+    keywords: 'timezone converter time zone timestamp unix universal'
   },
   'image-converter': {
     html: imageConverterHtml,
-    title: 'Image Converter'
+    title: 'Image Format Converter',
+    description: 'Convert image formats',
+    category: 'utility',
+    keywords: 'image converter format'
   },
   'hash-generator': {
     html: hashGeneratorHtml,
-    title: 'Hash Generator'
+    title: 'Hash Generator',
+    description: 'Generate MD5, SHA1, SHA256 hashes',
+    category: 'developer',
+    keywords: 'hash generator md5 sha1 sha256'
   },
   'password-generator': {
     html: passwordGeneratorHtml,
-    title: 'Password Generator'
+    title: 'Password Generator',
+    description: 'Generate secure passwords',
+    category: 'utility',
+    keywords: 'password generator secure'
   },
   'unit-converter': {
     html: unitConverterHtml,
-    title: 'Unit Converter'
+    title: 'Unit Converter',
+    description: 'Convert units of measurement',
+    category: 'utility',
+    keywords: 'unit converter measurement length weight temperature'
   },
   'cron-builder': {
     html: cronBuilderHtml,
-    title: 'Cron Builder'
+    title: 'Cron Builder',
+    description: 'Build cron expressions',
+    category: 'utility',
+    keywords: 'cron expression builder scheduler'
   }
 };
 
@@ -147,7 +186,10 @@ export function getAvailableTools() {
     return {
       name,
       title: config.title,
-      path: `/${shortUrl || name}`, // Use short URL if available, otherwise original name
+      description: config.description,
+      keywords: config.keywords,
+      category: config.category,
+      path: `/${shortUrl || name}`, // Preferred (short if available)
       shortPath: shortUrl ? `/${shortUrl}` : null,
       fullPath: `/${name}`
     };

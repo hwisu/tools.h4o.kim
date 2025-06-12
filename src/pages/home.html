@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>tools.h4o.kim</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    /* {{COMMON_STYLES}} */
+    .search-container {
+      margin-bottom: 2rem;
+    }
+    .search-input {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid var(--border-medium);
+      font-family: var(--font-code);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+      background: var(--bg-primary);
+    }
+    .search-hints {
+      margin-top: 0.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .search-hints strong {
+      color: var(--text-secondary);
+    }
+    .search-hints kbd {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-medium);
+      padding: 0.1rem 0.3rem;
+      font-family: var(--font-code);
+      font-size: 0.8rem;
+      color: var(--text-primary);
+    }
+    .category {
+      margin-bottom: 2rem;
+    }
+    .category-title {
+      font-size: 1.3rem;
+      font-weight: normal;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-medium);
+      padding-bottom: 0.5rem;
+    }
+    .tool-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .tool-item {
+      margin-bottom: 0.5rem;
+      padding-left: 1rem;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+    .tool-item::before {
+      content: "- ";
+      margin-left: -1rem;
+      color: var(--text-muted);
+      font-family: var(--font-code);
+      transition: all 0.2s ease;
+    }
+    .tool-link {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 500;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+    .tool-link:hover {
+      text-decoration: underline;
+    }
+    .tool-description {
+      color: var(--text-muted);
+      font-weight: normal;
+    }
+    .hidden {
+      display: none;
+    }
+
+    /* Terminal-style keyboard navigation selection */
+    .tool-item.selected::before {
+      content: "+ ";
+      color: var(--accent-color);
+      font-weight: bold;
+      animation: blink 1.5s infinite;
+    }
+    .tool-item.selected .tool-link {
+      color: var(--accent-color);
+      text-decoration: underline;
+      text-decoration-color: var(--accent-color);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 2px;
+    }
+    .tool-item.selected .tool-description {
+      color: var(--text-secondary);
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+    <svg class="theme-icon" viewBox="0 0 24 24">
+      <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+    </svg>
+  </button>
+
+  <div class="header">
+    <h1>tools.h4o.kim</h1>
+    <p>Miscellaneous web tools for daily use</p>
+  </div>
+
+  <div class="search-container">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search tools..." autofocus>
+    <div class="search-hints">
+      <small>💡 <kbd>↑↓</kbd> Navigate • <kbd>Enter</kbd> Select • <kbd>Esc</kbd> Clear</small>
+    </div>
+  </div>
+
+  <!-- Dynamic tool list will be rendered here -->
+  <div id="toolsContainer"></div>
+
+  <script>
+    // ------------------ Theme toggle ------------------
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon(newTheme);
+    }
+
+    function updateThemeIcon(theme) {
+      const toggle = document.querySelector('.theme-toggle svg');
+      toggle.innerHTML = theme === 'dark'
+        ? '<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>'
+        : '<path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>';
+    }
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeIcon(savedTheme);
+    }
+
+    initTheme();
+
+    // ------------------ Dynamic tool list ------------------
+    const toolsContainer = document.getElementById('toolsContainer');
+
+    function buildToolList(tools) {
+      // Group by category preserving desired order
+      const order = ['text', 'developer', 'utility'];
+      const grouped = tools.reduce((acc, t) => {
+        (acc[t.category] ||= []).push(t);
+        return acc;
+      }, {});
+
+      order.forEach(category => {
+        if (!grouped[category]) return;
+
+        const section = document.createElement('div');
+        section.className = 'category';
+        section.dataset.category = category;
+
+        section.innerHTML = `
+          <h2 class="category-title">${category.charAt(0).toUpperCase() + category.slice(1)} Tools</h2>
+          <ul class="tool-list"></ul>`;
+
+        const list = section.querySelector('.tool-list');
+
+        grouped[category].forEach(tool => {
+          const li = document.createElement('li');
+          li.className = 'tool-item';
+          li.dataset.keywords = tool.keywords;
+          li.innerHTML = `<a href="${tool.path}" class="tool-link">${tool.title}</a>
+            <span class="tool-description"> : ${tool.description}</span>`;
+          list.appendChild(li);
+        });
+
+        toolsContainer.appendChild(section);
+      });
+    }
+
+    // Fetch tool metadata then initialize search
+    fetch('/api/tools')
+      .then(r => r.json())
+      .then(tools => {
+        buildToolList(tools);
+        initSearch();
+      })
+      .catch(err => console.error('Failed to load tools list', err));
+
+    // ------------------ Search & keyboard navigation ------------------
+    function initSearch() {
+      const searchInput = document.getElementById('searchInput');
+      const categories = document.querySelectorAll('.category');
+      let toolItems = Array.from(document.querySelectorAll('.tool-item'));
+      let selectedIndex = -1;
+      let visibleItems = [];
+
+      function updateVisibleItems() {
+        toolItems = Array.from(document.querySelectorAll('.tool-item'));
+        visibleItems = toolItems.filter(item => !item.classList.contains('hidden'));
+      }
+
+      function clearSelection() {
+        toolItems.forEach(item => item.classList.remove('selected'));
+        selectedIndex = -1;
+      }
+
+      function selectItem(index) {
+        clearSelection();
+        if (index >= 0 && index < visibleItems.length) {
+          selectedIndex = index;
+          visibleItems[index].classList.add('selected');
+          visibleItems[index].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+
+      function navigateToSelected() {
+        if (selectedIndex >= 0 && selectedIndex < visibleItems.length) {
+          const link = visibleItems[selectedIndex].querySelector('.tool-link');
+          link && (window.location.href = link.href);
+        }
+      }
+
+      // Initial list
+      updateVisibleItems();
+
+      searchInput.addEventListener('input', function () {
+        const query = this.value.toLowerCase();
+        clearSelection();
+
+        const hasVisible = {};
+
+        toolItems.forEach(item => {
+          const keywords = item.dataset.keywords || '';
+          const text = item.textContent.toLowerCase();
+          const matches = keywords.includes(query) || text.includes(query);
+          item.classList.toggle('hidden', !matches);
+          const cat = item.closest('.category');
+          if (matches) hasVisible[cat.dataset.category] = true;
+        });
+
+        categories.forEach(cat => cat.classList.toggle('hidden', !hasVisible[cat.dataset.category]));
+
+        updateVisibleItems();
+        if (visibleItems.length > 0) selectItem(0);
+      });
+
+      searchInput.addEventListener('keydown', function (e) {
+        if (visibleItems.length === 0) return;
+        switch (e.key) {
+          case 'ArrowDown':
+            e.preventDefault();
+            selectItem(selectedIndex < visibleItems.length - 1 ? selectedIndex + 1 : 0);
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            selectItem(selectedIndex > 0 ? selectedIndex - 1 : visibleItems.length - 1);
+            break;
+          case 'Enter':
+            e.preventDefault();
+            navigateToSelected();
+            break;
+          case 'Escape':
+            e.preventDefault();
+            clearSelection();
+            this.blur();
+            break;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
