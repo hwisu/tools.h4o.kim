@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { readFile } from 'fs/promises';
+import { builtinModules } from 'module';
 
 // 더 이상 개별 도구 파일들이 없으므로 이 함수는 불필요
 // 모든 도구는 통합 핸들러를 통해 처리됨
